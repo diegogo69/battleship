@@ -1,0 +1,31 @@
+{
+  "name": "battleship",
+  "version": "1.0.0",
+  "description": "Battleship based web game project as part of The Odin Project curriculum",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/diegogo69/battleship.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/diegogo69/battleship/issues"
+  },
+  "homepage": "https://github.com/diegogo69/battleship#readme",
+  "devDependencies": {
+    "@babel/core": "^7.26.8",
+    "@babel/preset-env": "^7.26.8",
+    "babel-jest": "^29.7.0",
+    "eslint": "8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-config-prettier": "^10.0.1",
+    "eslint-plugin-import": "2.25.2",
+    "jest": "^29.7.0",
+    "prettier": "3.5.0"
+  }
+}
