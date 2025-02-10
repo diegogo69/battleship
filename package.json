@@ -4,7 +4,7 @@
   "description": "Battleship based web game project as part of The Odin Project curriculum",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest --coverage"
   },
   "repository": {
     "type": "git",

@@ -1,0 +1,2 @@
+src/static/js/*.js
+!src/static/js/Ship.js
