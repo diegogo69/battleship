@@ -20,6 +20,18 @@ class Gameboard {
     // 4 of 1
   }
 
+  validateCoordinates(rowcol) {
+    if (typeof rowcol !== "string") throw "Invalid non string coordinates";
+
+    const validCoordinates = /^[0-9][0-9]$/.test(rowcol);
+    if (!validCoordinates) throw "Invalid out of bounds coordinates";
+
+    const row = parseInt(rowcol[0], 10);
+    const col = parseInt(rowcol[1], 10);
+
+    return { row, col };
+  }
+
   // Return index of added ship
   // As it was added with push, it is the last item (e.i. length - 1)
   addShip(length) {
@@ -28,10 +40,8 @@ class Gameboard {
   }
   // placeShip(s)
   placeShip(rowcol, length, horizontal) {
-    let row = parseInt(rowcol[0]);
-    let col = parseInt(rowcol[1]);
-
-    const shipIndex = this.addShip()
+    let { row, col } = this.validateCoordinates(rowcol);
+    const shipIndex = this.addShip();
 
     for (let i = 0; i < length; i++) {
       this.shipsBoard[row][col] = shipIndex;

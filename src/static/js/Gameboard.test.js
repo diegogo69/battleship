@@ -14,11 +14,11 @@ describe("Gameboard class contains respective properties", () => {
     expect(gameboard.shipsBoard).toEqual(arrFilledWithNull);
   });
 
-  test('Sunks prop is initialize to 0', () => {
+  test("Sunks prop is initialize to 0", () => {
     expect(gameboard.sunks).toBe(0);
   });
 
-  test('Ships array is initialize as empty', () => {
+  test("Ships array is initialize as empty", () => {
     expect(gameboard.ships).toEqual([]);
   });
 });
@@ -80,8 +80,7 @@ describe("Place a single ship correctly", () => {
   });
 });
 
-
-describe("Place a single ship correctly", () => {
+describe("Place two ships correctly", () => {
   test("Place two one square ship in coordinates 00 and 11", () => {
     const gameboard = new Gameboard();
 
@@ -112,7 +111,7 @@ describe("Place a single ship correctly", () => {
     expect(gameboard.ships.length).toBe(2);
   });
 
-  test("Place vertical 2 square ship at 00", () => {
+  test("Place vertical 2 square ship at 00 and 01", () => {
     const gameboard = new Gameboard();
 
     gameboard.placeShip("00", 2, false);
@@ -127,4 +126,41 @@ describe("Place a single ship correctly", () => {
 
     expect(gameboard.ships.length).toBe(2);
   });
+});
+
+describe("Accept valid coordinates", () => {
+  const gameboard = new Gameboard();
+
+  test("Only numeric string args", () => {
+    expect(() => {
+      gameboard.placeShip(true, 1, true);
+    }).toThrow("Invalid non string coordinates");
+
+    expect(() => {
+      gameboard.placeShip(10, 1, true);
+    }).toThrow("Invalid non string coordinates");
+
+    expect(() => {
+      gameboard.placeShip([], 1, true);
+    }).toThrow("Invalid non string coordinates");
+  });
+
+  test("Only positive integer coordinates", () => {
+    expect(() => {
+      gameboard.placeShip("-1-1", 1, true);
+    }).toThrow("Invalid out of bounds coordinates");
+
+    expect(() => {
+      gameboard.placeShip("-1-1", 1, true);
+    }).toThrow("Invalid out of bounds coordinates");
+
+    expect(() => {
+      gameboard.placeShip("catdog", 1, true);
+    }).toThrow("Invalid out of bounds coordinates");
+
+    expect(() => {
+      gameboard.placeShip("", 1, true);
+    }).toThrow("Invalid out of bounds coordinates");
+  });
+
 });
