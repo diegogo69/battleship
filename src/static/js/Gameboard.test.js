@@ -128,7 +128,7 @@ describe("Place two ships correctly", () => {
   });
 });
 
-describe("Accept valid coordinates", () => {
+describe("Check coordinates to be a valid format", () => {
   const gameboard = new Gameboard();
 
   test("Only numeric string args", () => {
@@ -141,7 +141,7 @@ describe("Accept valid coordinates", () => {
     }).toThrow("Invalid non string coordinates");
 
     expect(() => {
-      gameboard.placeShip([], 1, true);
+      gameboard.placeShip(["00"], 1, true);
     }).toThrow("Invalid non string coordinates");
   });
 
@@ -151,7 +151,7 @@ describe("Accept valid coordinates", () => {
     }).toThrow("Invalid out of bounds coordinates");
 
     expect(() => {
-      gameboard.placeShip("-1-1", 1, true);
+      gameboard.placeShip("100", 1, true);
     }).toThrow("Invalid out of bounds coordinates");
 
     expect(() => {
@@ -162,5 +162,40 @@ describe("Accept valid coordinates", () => {
       gameboard.placeShip("", 1, true);
     }).toThrow("Invalid out of bounds coordinates");
   });
+});
 
+describe("Reject when ship's length exceeds board bounds", () => {
+  const gameboard = new Gameboard();
+
+  test("Invalid horizontal ship of length 2 in row: 0, col: 9", () => {
+    expect(gameboard.placeShip("09", 2, true)).toBe(false);
+  });
+
+  test("Invalid vertical ship of length 2 in row: 9, col: 9", () => {
+    expect(gameboard.placeShip("90", 2, false)).toBe(false);
+  });
+
+  test("Valid horizontal ship of length 10 in row: 0, col: 0", () => {
+    expect(gameboard.placeShip("00", 10, true)).toBe(true);
+  });
+
+  test("Valid vertical ship of length 10 in row: 0, col: 0", () => {
+    expect(gameboard.placeShip("00", 10, true)).toBe(true);
+  });
+
+  test("Invalid horizontal ship of length 11 in row: 0, col: 0", () => {
+    expect(gameboard.placeShip("00", 11, true)).toBe(false);
+  });
+
+  test("Invalid vertical ship of length 11 in row: 0, col: 0", () => {
+    expect(gameboard.placeShip("00", 11, true)).toBe(false);
+  });
+
+  test("Invalid horizontal ship of length 3 in row: 9, col: 8", () => {
+    expect(gameboard.placeShip("98", 3, true)).toBe(false);
+  });
+
+  test("Invalid vertical ship of length 3 in row: 9, col: 9", () => {
+    expect(gameboard.placeShip("89", 3, false)).toBe(false);
+  });
 });

@@ -20,7 +20,9 @@ class Gameboard {
     // 4 of 1
   }
 
-  validateCoordinates(rowcol) {
+  #boardSize = 10;
+
+  #validateCoordinates(rowcol) {
     if (typeof rowcol !== "string") throw "Invalid non string coordinates";
 
     const validCoordinates = /^[0-9][0-9]$/.test(rowcol);
@@ -32,16 +34,29 @@ class Gameboard {
     return { row, col };
   }
 
+  #canBePlaced(row, col, length, horizontal) {
+    if (horizontal) {
+      if (col + length > this.#boardSize) return false;
+      return true;
+    } else {
+      if (row + length > this.#boardSize) return false;
+      return true;
+    }
+  }
+
   // Return index of added ship
   // As it was added with push, it is the last item (e.i. length - 1)
-  addShip(length) {
+  #addShip(length) {
     const arrLength = this.ships.push(new Ship(length));
     return arrLength - 1;
   }
+
   // placeShip(s)
   placeShip(rowcol, length, horizontal) {
-    let { row, col } = this.validateCoordinates(rowcol);
-    const shipIndex = this.addShip();
+    let { row, col } = this.#validateCoordinates(rowcol);
+    if (!this.#canBePlaced(row, col, length, horizontal)) return false;
+
+    const shipIndex = this.#addShip();
 
     for (let i = 0; i < length; i++) {
       this.shipsBoard[row][col] = shipIndex;
@@ -49,6 +64,8 @@ class Gameboard {
       if (horizontal) col += 1;
       else row += 1;
     }
+
+    return true;
   }
 }
 
