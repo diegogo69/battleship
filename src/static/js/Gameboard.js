@@ -21,11 +21,12 @@ class Gameboard {
 
   #boardSize = 10;
 
-  #validateCoordinates(rowcol) {
-    if (typeof rowcol !== "string") throw "Invalid non string coordinates";
+  static validateCoordinates(rowcol) {
+    if (typeof rowcol !== "string")
+      throw new Error("Invalid non string coordinates");
 
     const validCoordinates = /^[0-9][0-9]$/.test(rowcol);
-    if (!validCoordinates) throw "Invalid out of bounds coordinates";
+    if (!validCoordinates) throw new Error("Invalid out of bounds coordinates");
 
     const row = parseInt(rowcol[0], 10);
     const col = parseInt(rowcol[1], 10);
@@ -33,14 +34,20 @@ class Gameboard {
     return { row, col };
   }
 
+  // Check if a ship has already been placed in the given coordinates
+  // Check if a ship's lenght and orientation does not exceed board limits
   #canBePlaced(row, col, length, horizontal) {
+    if (this.shipsBoard[row][col] !== null) return false
+
     if (horizontal) {
       if (col + length > this.#boardSize) return false;
-      return true;
-    } else {
-      if (row + length > this.#boardSize) return false;
+
       return true;
     }
+
+    if (row + length > this.#boardSize) return false;
+
+    return true;
   }
 
   // Return index of added ship
@@ -50,16 +57,17 @@ class Gameboard {
     return shipsArrLength - 1;
   }
 
+  // Check wether all ships in board have been sunk
   areSunk() {
     return this.sunks === this.shipsNo;
   }
 
-  // placeShip(s)
+  // Place a ship in the board
   placeShip(rowcol, length, horizontal) {
     if (this.shipsNo === this.ships.length)
-      throw "Cannot place more ships, limit has been reached";
+      throw new Error("Cannot place more ships, limit has been reached");
 
-    let { row, col } = this.#validateCoordinates(rowcol);
+    let { row, col } = Gameboard.validateCoordinates(rowcol);
     if (!this.#canBePlaced(row, col, length, horizontal)) return false;
 
     const shipIndex = this.#addShip(length);
@@ -74,14 +82,14 @@ class Gameboard {
     return true;
   }
 
-  // Gameboards should keep track of missed attacks so they can display them properly
+  // Take a pair of coordinates an check if attack is hit or miss
+  // Register attack in shotsboard arr. And return according to the following:
+  // Miss = null
+  // Hit = false
+  // Hit and all ships sunk = true
   receiveAttack(rowcol) {
-    const { row, col } = this.#validateCoordinates(rowcol);
+    const { row, col } = Gameboard.validateCoordinates(rowcol);
 
-    // Check if attack is hit or miss. Register and return:
-    // Miss = null
-    // Hit = false
-    // Hit and all ships sunk = true
     if (this.shipsBoard[row][col] !== null) {
       const shipIndex = this.shipsBoard[row][col];
       const ship = this.ships[shipIndex];

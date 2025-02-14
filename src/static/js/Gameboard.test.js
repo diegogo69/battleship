@@ -163,10 +163,6 @@ describe("Reject when ship's length exceeds board bounds", () => {
     expect(gameboard.placeShip("00", 10, true)).toBe(true);
   });
 
-  test("Valid vertical ship of length 10 in row: 0, col: 0", () => {
-    expect(gameboard.placeShip("00", 10, true)).toBe(true);
-  });
-
   test("Invalid horizontal ship of length 11 in row: 0, col: 0", () => {
     expect(gameboard.placeShip("00", 11, true)).toBe(false);
   });
@@ -183,6 +179,26 @@ describe("Reject when ship's length exceeds board bounds", () => {
     expect(gameboard.placeShip("89", 3, false)).toBe(false);
   });
 });
+
+describe("Reject overlapping ship placement", () => {
+  const gameboard = new Gameboard();
+  
+  test("Place two ships of same length in same spot", () => {
+    gameboard.placeShip("00", 1, true);
+    expect(gameboard.placeShip("00", 1, true)).toBe(false);
+  });
+
+  test("Place horizontal 3 len ship in an occupied spot", () => {
+    expect(gameboard.placeShip("10", 3, false)).toBe(true);
+    expect(gameboard.placeShip("30", 3, false)).toBe(false);
+  });
+
+  test("Place vertical 3 len ship in an occupied spot", () => {
+    expect(gameboard.placeShip("01", 3, true)).toBe(true);
+    expect(gameboard.placeShip("03", 3, true)).toBe(false);
+  });
+});
+
 
 // Gameboards should have a receiveAttack function that takes a pair of coordinates,
 // determines whether or not the attack hit a ship and then
