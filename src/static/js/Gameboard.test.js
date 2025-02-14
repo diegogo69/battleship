@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import Gameboard from "./Gameboard";
 
 describe("Gameboard class contains respective properties", () => {
@@ -27,11 +28,6 @@ describe("Place a single ship correctly", () => {
   test("Place one square ship in coordinate 00", () => {
     const gameboard = new Gameboard();
 
-    const testShipBoard = [...Array(10)].map(() =>
-      [...Array(10)].map(() => null),
-    );
-    testShipBoard[0][0] = true;
-
     gameboard.placeShip("00", 1, true);
 
     expect(gameboard.shipsBoard[0][0]).toBe(0);
@@ -43,12 +39,6 @@ describe("Place a single ship correctly", () => {
 
   test("Place horizontal 2 square ship at 00", () => {
     const gameboard = new Gameboard();
-
-    const testShipBoard = [...Array(10)].map(() =>
-      [...Array(10)].map(() => null),
-    );
-    testShipBoard[0][0] = true;
-    testShipBoard[0][1] = true;
 
     gameboard.placeShip("00", 2, true);
 
@@ -62,12 +52,6 @@ describe("Place a single ship correctly", () => {
 
   test("Place vertical 2 square ship at 00", () => {
     const gameboard = new Gameboard();
-
-    const testShipBoard = [...Array(10)].map(() =>
-      [...Array(10)].map(() => null),
-    );
-    testShipBoard[0][0] = true;
-    testShipBoard[1][0] = true;
 
     gameboard.placeShip("00", 2, false);
 
@@ -198,4 +182,48 @@ describe("Reject when ship's length exceeds board bounds", () => {
   test("Invalid vertical ship of length 3 in row: 9, col: 9", () => {
     expect(gameboard.placeShip("89", 3, false)).toBe(false);
   });
+});
+
+// Gameboards should have a receiveAttack function that takes a pair of coordinates,
+// determines whether or not the attack hit a ship and then
+// sends the ‘hit’ function to the correct ship,
+// or records the coordinates of the missed shot.
+
+describe("receiveAttack determines whether or not the attack hit a ship", () => {
+  test("Valid attack hits ship on 00", () => {
+    const gameboard = new Gameboard();
+    gameboard.placeShip("00", 1, true);
+
+    expect(gameboard.receiveAttack("00")).toBe(true);
+  });
+
+  test("Valid attack hits ship on 99", () => {
+    const gameboard = new Gameboard();
+    gameboard.placeShip("99", 1, true);
+
+    expect(gameboard.receiveAttack("99")).toBe(true);
+  });
+  
+  test("Invalid attack does not hits any ship at 00", () => {
+    const gameboard = new Gameboard();
+    gameboard.placeShip("01", 1, true);
+
+    expect(gameboard.receiveAttack("00")).toBe(false);
+  });
+
+  test("Invalid attack does not hits any ship at 99", () => {
+    const gameboard = new Gameboard();
+    gameboard.placeShip("98", 1, true);
+
+    expect(gameboard.receiveAttack("99")).toBe(false);
+  });
+
+  test("Reject invalid attack at 999", () => {
+    const gameboard = new Gameboard();
+
+    expect(() => {
+      gameboard.receiveAttack("999");
+    }).toThrow("Invalid out of bounds coordinates");
+  });
+  
 });

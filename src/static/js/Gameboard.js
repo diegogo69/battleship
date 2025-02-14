@@ -11,6 +11,7 @@ class Gameboard {
     // shipsarr
     this.ships = [];
     // areSunk
+    
     // receiveAttack
 
     // Ships fleet
@@ -66,6 +67,12 @@ class Gameboard {
     }
 
     return true;
+  }
+
+  receiveAttack(rowcol) {
+    const { row, col } = this.#validateCoordinates(rowcol);
+
+    return this.shipsBoard[row][col] !== null;
   }
 }
 
