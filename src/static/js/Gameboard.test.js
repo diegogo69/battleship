@@ -3,16 +3,16 @@ import Gameboard from "./Gameboard";
 
 describe("Gameboard class contains respective properties", () => {
   const gameboard = new Gameboard();
-  const arrFilledWithNull = [...Array(10)].map(() =>
+  const boardFilledWithNull = [...Array(10)].map(() =>
     [...Array(10)].map(() => null),
   );
 
   test("Default shots board array is filled with null", () => {
-    expect(gameboard.shotsBoard).toEqual(arrFilledWithNull);
+    expect(gameboard.shotsBoard).toEqual(boardFilledWithNull);
   });
 
   test("Default ships board array is filled with null", () => {
-    expect(gameboard.shipsBoard).toEqual(arrFilledWithNull);
+    expect(gameboard.shipsBoard).toEqual(boardFilledWithNull);
   });
 
   test("Sunks prop is initialize to 0", () => {
@@ -182,7 +182,7 @@ describe("Reject when ship's length exceeds board bounds", () => {
 
 describe("Reject overlapping ship placement", () => {
   const gameboard = new Gameboard();
-  
+
   test("Place two ships of same length in same spot", () => {
     gameboard.placeShip("00", 1, true);
     expect(gameboard.placeShip("00", 1, true)).toBe(false);
@@ -198,7 +198,6 @@ describe("Reject overlapping ship placement", () => {
     expect(gameboard.placeShip("03", 3, true)).toBe(false);
   });
 });
-
 
 // Gameboards should have a receiveAttack function that takes a pair of coordinates,
 // determines whether or not the attack hit a ship and then
@@ -222,7 +221,7 @@ describe("receiveAttack determines whether or not the attack hit a ship", () => 
 
     expect(gameboard.receiveAttack("99")).toBe(false);
   });
-  
+
   test("Invalid attack does not hits any ship at 00", () => {
     const gameboard = new Gameboard();
     gameboard.placeShip("01", 1, true);
@@ -244,7 +243,6 @@ describe("receiveAttack determines whether or not the attack hit a ship", () => 
       gameboard.receiveAttack("999");
     }).toThrow("Invalid out of bounds coordinates");
   });
-  
 });
 
 describe("Keep track of missed attacks", () => {
@@ -256,7 +254,6 @@ describe("Keep track of missed attacks", () => {
     expect(gameboard.shotsBoard[0][1]).toBe(null);
     expect(gameboard.shotsBoard[1][0]).toBe(null);
   });
- 
 });
 
 // report whether or not all of their ships have been sunk
@@ -265,9 +262,9 @@ describe("Report whether or not all of their ships have been sunk", () => {
     const shipsNo = 3;
     const gameboard = new Gameboard(shipsNo);
 
-    gameboard.placeShip('00', 1, true);
-    gameboard.placeShip('10', 1, true);
-    gameboard.placeShip('20', 1, true);
+    gameboard.placeShip("00", 1, true);
+    gameboard.placeShip("10", 1, true);
+    gameboard.placeShip("20", 1, true);
 
     expect(gameboard.receiveAttack("00")).toBe(false);
     expect(gameboard.receiveAttack("10")).toBe(false);
@@ -278,9 +275,9 @@ describe("Report whether or not all of their ships have been sunk", () => {
     const shipsNo = 3;
     const gameboard = new Gameboard(shipsNo);
 
-    gameboard.placeShip('00', 1, true);
-    gameboard.placeShip('10', 2, true);
-    gameboard.placeShip('20', 3, true);
+    gameboard.placeShip("00", 1, true);
+    gameboard.placeShip("10", 2, true);
+    gameboard.placeShip("20", 3, true);
 
     expect(gameboard.receiveAttack("00")).toBe(false);
     expect(gameboard.receiveAttack("10")).toBe(false);
@@ -294,9 +291,9 @@ describe("Report whether or not all of their ships have been sunk", () => {
     const shipsNo = 3;
     const gameboard = new Gameboard(shipsNo);
 
-    gameboard.placeShip('00', 1, true);
-    gameboard.placeShip('10', 2, true);
-    gameboard.placeShip('20', 3, true);
+    gameboard.placeShip("00", 1, true);
+    gameboard.placeShip("10", 2, true);
+    gameboard.placeShip("20", 3, true);
 
     expect(gameboard.receiveAttack("00")).toBe(false);
     expect(gameboard.receiveAttack("10")).toBe(false);
