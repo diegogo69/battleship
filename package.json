@@ -4,7 +4,14 @@
   "description": "Battleship based web game project as part of The Odin Project curriculum",
   "main": "index.js",
   "scripts": {
-    "test": "jest --coverage"
+    "test": "jest --coverage",
+    "build": "webpack --config webpack.prod.js",
+    "dev": "webpack serve --config webpack.dev.js",
+    "deploy": "npm run dep-merge-build && npm run dep-add-commit && npm run dep-push && npm run checkout-main",
+    "dep-merge-build": "git checkout gh-pages && git merge main --no-edit && npm run build",
+    "dep-add-commit": "git add dist -f && git commit -m \"Deployment commit\"",
+    "dep-push": "git subtree push --prefix dist origin gh-pages",
+    "checkout-main": "git checkout main"
   },
   "repository": {
     "type": "git",
@@ -21,11 +28,18 @@
     "@babel/core": "^7.26.8",
     "@babel/preset-env": "^7.26.8",
     "babel-jest": "^29.7.0",
+    "css-loader": "^7.1.2",
     "eslint": "8.2.0",
     "eslint-config-airbnb-base": "^15.0.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import": "2.25.2",
+    "html-webpack-plugin": "^5.6.3",
     "jest": "^29.7.0",
-    "prettier": "3.5.0"
+    "prettier": "3.5.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0",
+    "webpack-merge": "^6.0.1"
   }
 }
