@@ -1,4 +1,5 @@
 import Ship from "./Ship";
+/* eslint-disable no-plusplus */
 
 // Ships fleet
 // 1 of 4
