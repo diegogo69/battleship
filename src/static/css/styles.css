@@ -1,0 +1,12 @@
+svg {
+    width: 24px;
+}
+
+.boards-container {
+    display: flex;
+}
+
+.boards-container > div {
+    min-width: 200px;
+    min-height: 200px;
+}

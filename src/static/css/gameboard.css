@@ -1,0 +1,31 @@
+.gameboard {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    border: 2px solid lightpink;
+}
+
+.gameboard-row {
+    flex: 1;
+    display: flex;
+}
+
+.gameboard-col {
+    flex: 1;
+    outline: 1px solid lightgrey;
+
+}
+
+.hasShip {
+    outline: 1px solid red;
+    z-index: 1;
+}
+
+.isHit {
+    background-color: lightcoral;
+}
+
+.isMiss {
+    background-color: lightgrey;
+}
