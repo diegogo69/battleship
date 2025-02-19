@@ -4,9 +4,10 @@
 // a shipsBoard array with the board ships
 // a shotsBoard array with the received attacks
 // The board dipslays a player ships, and the received shots
-const createBoard = function createBoard(gameboard) {
+const createBoard = function createBoard(gameboard, boardNo, clickCallback) {
   const boardNode = document.createElement('div');
   boardNode.classList.add('gameboard');
+  boardNode.dataset.boardNo = boardNo;
   
   const shipsBoard = gameboard.shipsBoard;
   const shotsBoard = gameboard.shotsBoard;
@@ -18,6 +19,8 @@ const createBoard = function createBoard(gameboard) {
     shipsBoard[rowIndex].forEach(function iterateCols(col, colIndex) {
       const colNode = document.createElement('div');
       colNode.classList.add('gameboard-col');
+      colNode.dataset.rowcol = `${rowIndex}${colIndex}`;
+
       // Each node may contain classes that identify if:
       // contains a ship, have been shot (miss or hit)
       const shipIndex = shipsBoard[rowIndex][colIndex];
@@ -44,6 +47,7 @@ const createBoard = function createBoard(gameboard) {
     boardNode.appendChild(rowNode);
   })
 
+  boardNode.addEventListener('click', clickCallback);
   return boardNode;
 }
 
