@@ -84,10 +84,8 @@ class Gameboard {
   }
 
   // Take a pair of coordinates an check if attack is hit or miss
-  // Register attack in shotsboard arr. And return according to the following:
-  // Miss = null
-  // Hit = false
-  // Hit and all ships sunk = true
+  // Register attack in shotsboard arr: hit=true, miss=false
+  // Function return null for a miss, false for a hit, and true if hit and all ships sunk
   receiveAttack(rowcol) {
     const { row, col } = Gameboard.validateCoordinates(rowcol);
 
@@ -95,13 +93,14 @@ class Gameboard {
       const shipIndex = this.shipsBoard[row][col];
       const ship = this.ships[shipIndex];
       ship.hit();
-
+      
+      this.shotsBoard[row][col] = true;
+      
       if (ship.isSunk()) {
         this.sunks += 1;
         if (this.areSunk()) return true;
       }
 
-      this.shotsBoard[row][col] = true;
       return false;
     }
 
