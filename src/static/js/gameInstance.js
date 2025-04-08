@@ -8,37 +8,40 @@ const testPlaceShips = function (player) {
   player.gameboard.placeShip("10", 2, false);
 };
 
-// Game instance module (Factory)
 const gameInstance = function gameInstance() {
-  // Create Player1
-  // Create Player2
+  // Create players. One real, one computer. Populate each gameboard
   const players = {
-    player1: null,
-    player2: null,
+    1: null,
+    2: null,
+  }
+  let turn = 1;
+  let winner = null;
+
+
+  // Display gameboards
+  const displayBoard = function displayBoard(playerNo) {
+    const player = players[playerNo];
+    const board = createBoard(player.gameboard, playerNo);
+    domHandler.render.board[playerNo](board);
   };
 
-  let callback = null;
+  const init = function init(callback) {
+    players[1] = new Player(true, 3),
+    players[2] = new Player(false, 3),
 
-  const init = function init(fn) {
-    callback = fn;
-
-    players.player1 = new Player(true, 3);
-    players.player2 = new Player(false, 3);
-    // Populate each player's gameboard with predetermined coordinates
-    // Place three ships. Of len 1, 2, 2. For each
-    testPlaceShips(players.player1);
-    testPlaceShips(players.player2);
+    testPlaceShips(players[1]);
+    testPlaceShips(players[2]);
 
     displayBoard(1);
     displayBoard(2);
-  };
-  let winner = null;
-  const getWinner = function getWinner() {
-    return winner
-  }
-  // For testing place default ships for both players
 
-  let turn = 1;
+    domHandler.initHandlers('click', handleTurn)
+  }
+
+  const endGame = function endGame() {
+    winner = turn
+    alert('winner is player' + turn)
+  }
 
   const getRivalTurn = function () {
     return turn === 1 ? 2 : 1;
@@ -48,54 +51,45 @@ const gameInstance = function gameInstance() {
     turn = getRivalTurn();
   };
 
-  const displayBoard = function displayBoard(playerNo) {
-    const player = `player${playerNo}`;
-    const board = createBoard(players[player].gameboard, playerNo, callback);
-    domHandler.render.board[player](board);
-  };
-  const updateBoard = function updateBoard(playerNo) {
-    const player = `player${playerNo}`;
-
-    domHandler.clear[player]();
-    const board = createBoard(players[player].gameboard, playerNo, callback);
-    domHandler.render.board[player](board);
-  };
-
   const playTurn = function playTurn(rival, rowcol) {
-    return players[`player${rival}`].gameboard.receiveAttack(rowcol);
+    return players[rival].gameboard.receiveAttack(rowcol);
   };
 
   const handleTurn = function handleTurn(e) {
+    if (winner) return
+
     const rowcol = e.target.dataset.rowcol;
     if (!rowcol) return;
 
-    if (e.currentTarget.dataset.boardNo == turn) {
+    if (e.currentTarget.firstChild.dataset.boardNo == turn) {
       console.log("Ignored. Player click on its own board");
       return;
     }
 
     const rival = getRivalTurn();
+    let attack = playTurn(rival, rowcol);
+    // If attacking the same spot twice
+    if (attack === null) return
+    displayBoard(rival);
 
-    const gameover = playTurn(rival, rowcol);
-    updateBoard(rival);
-
+    let gameover = players[rival].gameboard.areSunk()
     if (gameover === true) endGame();
+
+    else if (players[rival].type === 'computer') {
+      const AIrowcol = players[rival].generateRandomMove();
+      const AIrival = turn;
+      attack = playTurn(AIrival, AIrowcol)
+      displayBoard(AIrival);
+
+      let gameover = players[AIrival].gameboard.areSunk()
+      if (gameover === true) endGame();
+    }
+
     else changeTurn();
   };
 
-  const endGame = function endGame() {
-    winner = turn;
+  return { init, }
+}
 
-    domHandler.removeEventListener.player1('click', callback)
-    domHandler.removeEventListener.player2('click', callback)
-    // Determine winner based on current turn
-
-    // Remove board event listeners
-    // Show winner msg
-    // Show new game button
-  };
-
-  return { init, getWinner, handleTurn };
-};
 
 export default gameInstance;
