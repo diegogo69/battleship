@@ -10,17 +10,13 @@ import Ship from "./Ship";
 class Gameboard {
   constructor(shipsNo = 5) {
     this.shipsNo = shipsNo;
-    // sunks
     this.sunks = 0;
-    // shipsarr32
     this.ships = [];
-    // Shots board
     this.shotsBoard = [...Array(10)].map(() => [...Array(10)].map(() => null));
-    // Ships board
     this.shipsBoard = [...Array(10)].map(() => [...Array(10)].map(() => null));
   }
 
-  #boardSize = 10;
+  boardSize = 10;
 
   static validateCoordinates(rowcol) {
     if (typeof rowcol !== "string")
@@ -41,12 +37,10 @@ class Gameboard {
     if (this.shipsBoard[row][col] !== null) return false
 
     if (horizontal) {
-      if (col + length > this.#boardSize) return false;
-
-      return true;
+      if (col + length > this.boardSize) return false;
+    } else {
+      if (row + length > this.boardSize) return false;
     }
-
-    if (row + length > this.#boardSize) return false;
 
     return true;
   }
@@ -85,10 +79,17 @@ class Gameboard {
 
   // Take a pair of coordinates an check if attack is hit or miss
   // Register attack in shotsboard arr: hit=true, miss=false
-  // Function return null for a miss, false for a hit, and true if hit and all ships sunk
+  // Function returns True = hit, False = miss Null = spot taken
   receiveAttack(rowcol) {
     const { row, col } = Gameboard.validateCoordinates(rowcol);
 
+    // If coordinate already attacked
+    if (this.shotsBoard[row][col] !== null) {
+      console.log('coordinate already attacked')
+      return null
+    }
+
+    // If ship placed at coordinate. HIT
     if (this.shipsBoard[row][col] !== null) {
       const shipIndex = this.shipsBoard[row][col];
       const ship = this.ships[shipIndex];
@@ -96,16 +97,16 @@ class Gameboard {
       
       this.shotsBoard[row][col] = true;
       
-      if (ship.isSunk()) {
-        this.sunks += 1;
-        if (this.areSunk()) return true;
-      }
+      if (ship.isSunk()) this.sunks += 1;
 
-      return false;
+      console.log('Ship hit')
+      return true
     }
 
+    // If no ship at coordinate. MISS
     this.shotsBoard[row][col] = false;
-    return null;
+    console.log('No ship at coordinate. MISS')
+    return false
   }
 }
 
