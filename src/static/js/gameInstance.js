@@ -1,6 +1,6 @@
 import domHandler from "./domHandler";
 import createBoard from "./createBoard";
-import Player from "./Player";
+import { Player, AIPlayer } from "./Player";
 
 const testPlaceShips = function (player) {
   player.gameboard.placeShip("00", 1, true);
@@ -25,9 +25,10 @@ const gameInstance = function gameInstance() {
     domHandler.render.board[playerNo](board);
   };
 
-  const init = function init(callback) {
-    players[1] = new Player(true, 3),
-    players[2] = new Player(false, 3),
+  const init = function init(pvp) {
+    players[1] = new Player(3);
+    if (pvp === true) players[2] = new Player(3) 
+    else players[2] = new AIPlayer(3)
 
     testPlaceShips(players[1]);
     testPlaceShips(players[2]);

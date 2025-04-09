@@ -4,12 +4,12 @@ import "./static/css/gameboard.css";
 
 import gameInstance from "./static/js/gameInstance";
 
-const initGame = function initGame() {
+const initGame = function initGame(pvp) {
   const game = gameInstance();
-  game.init();
+  game.init(pvp);
 };
 
-const newGameBtn = document.querySelector('.new-game-btn')
-newGameBtn.addEventListener('click', initGame)
-
-initGame();
+const newPvPBtn = document.querySelector('.new-pvp-btn')
+const newPvCBtn = document.querySelector('.new-pvc-btn')
+newPvPBtn.addEventListener('click', () => initGame(true))
+newPvCBtn.addEventListener('click', () => initGame(false))
