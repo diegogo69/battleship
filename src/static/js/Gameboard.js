@@ -23,7 +23,8 @@ class Gameboard {
       throw new Error("Invalid non string coordinates");
 
     const validCoordinates = /^[0-9][0-9]$/.test(rowcol);
-    if (!validCoordinates) throw new Error("Invalid out of bounds coordinates");
+    if (!validCoordinates)
+      throw new Error("Invalid format/out of bound coordinates");
 
     const row = parseInt(rowcol[0], 10);
     const col = parseInt(rowcol[1], 10);
@@ -34,12 +35,27 @@ class Gameboard {
   // Check if a ship has already been placed in the given coordinates
   // Check if a ship's lenght and orientation does not exceed board limits
   #canBePlaced(row, col, length, horizontal) {
-    if (this.shipsBoard[row][col] !== null) return false
-
+    // Validate bounds
     if (horizontal) {
-      if (col + length > this.boardSize) return false;
+      if (col + length > this.boardSize) {
+        console.log("Invalid drop: Ship exceeds grid boundaries horizontally.");
+        return false;
+      }
     } else {
-      if (row + length > this.boardSize) return false;
+      if (row + length > this.boardSize) {
+        console.log("Invalid drop: Ship exceeds grid boundaries vertically.");
+        return false;
+      }
+    }
+    // Validate overlapping
+    for (let i = 0; i < length; i++) {
+      const targetCol = horizontal === true ? col + i : col;
+      const targetRow = horizontal !== true ? row + i : row;
+
+      if (this.shipsBoard[targetRow][targetCol] !== null) {
+        console.log("Invalid overlapping ship placement");
+        return false;
+      }
     }
 
     return true;
@@ -85,8 +101,8 @@ class Gameboard {
 
     // If coordinate already attacked
     if (this.shotsBoard[row][col] !== null) {
-      console.log('coordinate already attacked')
-      return null
+      console.log("coordinate already attacked");
+      return null;
     }
 
     // If ship placed at coordinate. HIT
@@ -94,19 +110,19 @@ class Gameboard {
       const shipIndex = this.shipsBoard[row][col];
       const ship = this.ships[shipIndex];
       ship.hit();
-      
+
       this.shotsBoard[row][col] = true;
-      
+
       if (ship.isSunk()) this.sunks += 1;
 
-      console.log('Ship hit')
-      return true
+      console.log("Ship hit");
+      return true;
     }
 
     // If no ship at coordinate. MISS
     this.shotsBoard[row][col] = false;
-    console.log('No ship at coordinate. MISS')
-    return false
+    console.log("No ship at coordinate. MISS");
+    return false;
   }
 }
 
