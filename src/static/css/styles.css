@@ -10,3 +10,30 @@ svg {
     min-width: 200px;
     min-height: 200px;
 }
+
+.ship {
+    max-width: max-content;
+    background-color: salmon;
+    display: flex;
+    outline: 1px solid red;
+}
+
+.ship-cell {
+    width: 20px;
+    height: 20px;
+    border: 1px solid red;
+    background-color: salmon;
+    position: relative;
+}
+
+.gameboard-col.hovered {
+    background-color: yellow;
+}
+
+.ship.dragging {
+    opacity: 0.7;
+}
+
+.cell.invalid-drop {
+    background-color: red;
+}
