@@ -1,5 +1,5 @@
 import domHandler from "./domHandler";
-import { displayBoard, testPlaceShips } from "./eventHandlers";
+import { displayBoard, enableDragDrop, displayShips, disableDragDrop, testPlaceShips } from "./handlers";
 import { Player, AIPlayer } from "./Player";
 
 const gameInstance = function gameInstance() {
@@ -11,16 +11,37 @@ const gameInstance = function gameInstance() {
   let turn = 1;
   let winner = null;
 
+  const createPlayers = function createPlayers(pvp) {
+    if (pvp === true) return [new Player(3), new Player(3)];
+    else return [new Player(3), new AIPlayer(3)()];
+  };
+
   const init = function init(pvp) {
-    players[1] = new Player(3);
-    if (pvp === true) players[2] = new Player(3);
-    else players[2] = new AIPlayer(3);
+    // Create players
+    [players[1], players[2]] = createPlayers(pvp);
+
+    // Enable drag n drop functionality on ships and gameboard
+    enableDragDrop();
+    // Render gameboards
+    displayBoard(1, players[1].gameboard);
+    displayBoard(2, players[2].gameboard);
+
+    // Setup for ship placement
+    // Display available ships
+    displayShips()
+    // When ship is placed
+    // If all ships are placed
+    // Disable drag n drop functionality
+    
+
+    
+    // At all ship placed
+    // Start game instance
+    // Enable attack functionaly
 
     // testPlaceShips(players[1]);
     // testPlaceShips(players[2]);
 
-    const player = displayBoard(1, players[1].gameboard);
-    displayBoard(2, players[2].gameboard);
 
     domHandler.initHandlers("click", handleTurn);
   };
