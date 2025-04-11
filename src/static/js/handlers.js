@@ -1,37 +1,35 @@
 import domHandler from "./domHandler";
+import createShips from "./createShips";
 import createBoard from "./createBoard";
 import gameInstance from "./gameInstance";
 
-
 const initGame = function initGame(pvp) {
   const game = gameInstance();
+  createBoard.enableDragDrop;
   game.init(pvp);
 };
 
 const isValidPlacement = function isValidPlacement(
+  shipHeadCoordinate,
   shipLength,
   orientation,
-  shipHeadCoordinate,
   gameboard,
 ) {
   return gameboard.placeShip(
     shipHeadCoordinate,
-    +shipLength,
+    parseInt(shipLength),
     orientation === "horizontal",
   );
 };
 
 function dragstartHandler(e) {
   const ship = e.currentTarget;
-  const gameboard = e.target.closest(".gameboard");
 
   e.dataTransfer.setData("ship-id", ship.id);
   e.dataTransfer.setData("length", ship.dataset.length);
   e.dataTransfer.setData("orientation", ship.dataset.orientation);
-  //   e.dataTransfer.setData("boardNo", gameboard.dataset.boardNo);
-  // e.dataTransfer.setData('draggedCellIndex', e.target.dataset.cellIndex); // Actual ship cell that fired drag event
 
-  e.dataTransfer.setDragImage(e.currentTarget, 10, 10);
+  e.dataTransfer.setDragImage(e.currentTarget, 15, 10); // 10, 10 -> drag image xOffset, yOffset
 
   ship.classList.add("dragging");
 
@@ -49,19 +47,18 @@ const dropHandler = function dropHandler(e, gameboard) {
   e.preventDefault();
   const cell = e.currentTarget;
 
-  const shipID = e.dataTransfer.getData("ship-id");
   const dropCoordinate = cell.dataset.rowcol;
   const shipLength = e.dataTransfer.getData("length");
   const orientation = e.dataTransfer.getData("orientation");
-  //   const boardNo = e.dataTransfer.getData("boardNo");
+  const shipID = e.dataTransfer.getData("ship-id");
   const boardNo = cell.closest(".gameboard").dataset.boardNo;
 
   console.log(`Dropped ship of length ${shipLength} at ${dropCoordinate}`);
 
   const validPlacement = isValidPlacement(
+    dropCoordinate,
     shipLength,
     orientation,
-    dropCoordinate,
     gameboard,
   );
 
@@ -81,17 +78,32 @@ const dropHandler = function dropHandler(e, gameboard) {
   cell.classList.remove("hovered");
   displayBoard(boardNo, gameboard);
 
-  // cell.appendChild(document.getElementById(shipID));
+  const ship = document.getElementById(shipID)
+  ship.parentNode.removeChild(ship)
 };
 
 const dragleaveHandler = function dragleaveHandler(e) {
   e.currentTarget.classList.remove("hovered");
 };
 
+// Display ships container
+const displayShips = function displayShipContainer() {
+  const ships = createShips();
+  domHandler.render.ships(ships)
+}
+
 // Display gameboards
 const displayBoard = function displayBoard(playerNo, gameboard) {
-  const board = createBoard(gameboard, playerNo);
+  const board = createBoard.boardNode(gameboard, playerNo);
   domHandler.render.board[playerNo](board);
+};
+
+// Intermediate functions to be used in gameInstance module
+const enableDragDrop = function enableDragDrop() {
+  createBoard.enableDragDrop();
+};
+const disableDragDrop = function disableDragDrop() {
+  createBoard.disableDragDrop();
 };
 
 const testPlaceShips = function (player) {
@@ -103,6 +115,9 @@ const testPlaceShips = function (player) {
 export {
   initGame,
   displayBoard,
+  displayShips,
+  enableDragDrop,
+  disableDragDrop,
   dragstartHandler,
   dropHandler,
   dragoverHandler,
