@@ -1,5 +1,7 @@
 class Ship {
-  constructor(length = 0) {
+  constructor(length) {
+    if (typeof length !== 'number') throw 'Invalid length argument'
+    if (length <= 0) throw 'Invalid length argument'
     this.length = length;
     this.hits = 0;
     this.sunk = false;
