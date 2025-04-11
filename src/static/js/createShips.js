@@ -1,9 +1,11 @@
-import { dragstartHandler } from "./handlers";
+import handlers from "./handlers";
+
+const SHIPS_NO = 3;
 const createShips = function () {
     const shipContainer = document.createElement('div');
     shipContainer.classList.add('ships-container')
 
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < SHIPS_NO; i++) {
         const shipLength = i + 1;
         
         const ship = document.createElement('div');
@@ -19,7 +21,7 @@ const createShips = function () {
             ship.appendChild(shipCell)
         }
 
-        ship.addEventListener('dragstart', dragstartHandler)
+        ship.addEventListener('dragstart', handlers.dragstart)
         shipContainer.appendChild(ship)
     }
 

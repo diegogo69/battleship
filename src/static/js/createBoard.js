@@ -1,4 +1,3 @@
-import { dropHandler, dragoverHandler, dragleaveHandler } from "./handlers";
 // Function to create a board node, of the same structure as a board array
 // A board node, with row nodes, each with col nodes
 // board argument is expected to be a Gameboard object wich contains
@@ -7,14 +6,30 @@ import { dropHandler, dragoverHandler, dragleaveHandler } from "./handlers";
 // The board dipslays a player ships, and the received shots
 
 const createBoard = (function () {
-  let dropFn = null;
+  let clickFn = null;
   let dragoverFn = null;
+  let dropFn = null;
   let dragleaveFn = null;
+  let turnFn = null;
 
-  const enableDragDrop = function enableDragDrop() {
-    dropFn = dropHandler;
-    dragoverFn = dragoverHandler;
-    dragleaveFn = dragleaveHandler;
+  // Reference game instance
+  const initGameboard = function init(turnHandler) {
+    turnFn = turnHandler;
+  }
+
+  const enableTurnHandler = function enableTurnHandler() {
+    clickFn = turnFn;
+    console.log("Click attack handler enabled");
+  };
+
+  const disableTurnHandler = function disableTurnHandler() {
+    clickFn = null;
+  };
+
+  const enableDragDrop = function enableDragDrop(dragover, drop, dragleave) {
+    dragoverFn = dragover;
+    dropFn = drop;
+    dragleaveFn = dragleave;
   };
 
   const disableDragDrop = function disableDragDrop() {
@@ -72,12 +87,15 @@ const createBoard = (function () {
       boardNode.appendChild(rowNode);
     });
 
-    // boardNode.addEventListener('click', clickFn);
+    if (clickFn) boardNode.addEventListener("click", clickFn);
     return boardNode;
   };
 
   return {
     boardNode,
+    initGameboard,
+    enableTurnHandler,
+    disableTurnHandler,
     enableDragDrop,
     disableDragDrop,
   };
