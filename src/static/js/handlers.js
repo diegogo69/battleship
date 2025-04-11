@@ -10,14 +10,14 @@ const initGame = function initGame(pvp) {
 };
 
 const isValidPlacement = function isValidPlacement(
-  shipHeadCoordinate,
-  shipLength,
+  rowcol,
+  length,
   orientation,
   gameboard,
 ) {
   return gameboard.placeShip(
-    shipHeadCoordinate,
-    parseInt(shipLength),
+    rowcol,
+    parseInt(length),
     orientation === "horizontal",
   );
 };
@@ -26,6 +26,7 @@ function dragstartHandler(e) {
   const ship = e.currentTarget;
 
   e.dataTransfer.setData("ship-id", ship.id);
+  e.dataTransfer.setData("ship-class", ship.classList.contains('ship'));
   e.dataTransfer.setData("length", ship.dataset.length);
   e.dataTransfer.setData("orientation", ship.dataset.orientation);
 
@@ -39,6 +40,10 @@ function dragstartHandler(e) {
 
 const dragoverHandler = function dragoverHandler(e) {
   e.preventDefault(); // Necessary to allow dropping
+
+  const shipClass = e.dataTransfer.getData("ship-class");
+  if (shipClass !== "true") return
+  
   e.currentTarget.classList.add("hovered");
   e.dataTransfer.dropEffect = "move";
 };
@@ -47,13 +52,14 @@ const dropHandler = function dropHandler(e, gameboard) {
   e.preventDefault();
   const cell = e.currentTarget;
 
+  const shipClass = e.dataTransfer.getData("ship-class");
+  if (shipClass !== "true") return
+
+  const shipID = e.dataTransfer.getData("ship-id");
   const dropCoordinate = cell.dataset.rowcol;
   const shipLength = e.dataTransfer.getData("length");
   const orientation = e.dataTransfer.getData("orientation");
-  const shipID = e.dataTransfer.getData("ship-id");
   const boardNo = cell.closest(".gameboard").dataset.boardNo;
-
-  console.log(`Dropped ship of length ${shipLength} at ${dropCoordinate}`);
 
   const validPlacement = isValidPlacement(
     dropCoordinate,
@@ -61,6 +67,11 @@ const dropHandler = function dropHandler(e, gameboard) {
     orientation,
     gameboard,
   );
+
+  // If all ships have been placed
+  if (validPlacement === null) {
+    // Remove ships container
+  }
 
   // INVALID DROP
   if (!validPlacement) {
@@ -74,12 +85,12 @@ const dropHandler = function dropHandler(e, gameboard) {
   }
 
   // VALID DROP
-  console.log(`Valid drop: Ship placed starting at ${dropCoordinate}.`);
+  console.log(`Valid drop ship of length ${shipLength} at ${dropCoordinate}`);
   cell.classList.remove("hovered");
   displayBoard(boardNo, gameboard);
 
-  const ship = document.getElementById(shipID)
-  ship.parentNode.removeChild(ship)
+  const ship = document.getElementById(shipID);
+  ship.parentNode.removeChild(ship);
 };
 
 const dragleaveHandler = function dragleaveHandler(e) {
@@ -89,8 +100,8 @@ const dragleaveHandler = function dragleaveHandler(e) {
 // Display ships container
 const displayShips = function displayShipContainer() {
   const ships = createShips();
-  domHandler.render.ships(ships)
-}
+  domHandler.render.ships(ships);
+};
 
 // Display gameboards
 const displayBoard = function displayBoard(playerNo, gameboard) {
