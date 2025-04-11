@@ -73,10 +73,12 @@ class Gameboard {
     return this.sunks === this.shipsNo;
   }
 
-  // Place a ship in the board
+  // Place a ship in the board.
+  // Return true is placed, false if not, null if placed and limit reached
   placeShip(rowcol, length, horizontal) {
     if (typeof horizontal !== 'boolean') throw 'Invalid orientation argument'
 
+    // Throw error if ship limit is met beforehand
     if (this.shipsNo === this.ships.length)
       throw new Error("Cannot place more ships, limit has been reached");
 
@@ -91,6 +93,10 @@ class Gameboard {
       if (horizontal) col += 1;
       else row += 1;
     }
+
+    // After ship has been placed, check if gameboard limit is reached.
+    if (this.shipsNo === this.ships.length)
+      return null
 
     return true;
   }
