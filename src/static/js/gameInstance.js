@@ -1,6 +1,6 @@
-import domHandler from "./domHandler";
-import { displayBoard, enableDragDrop, displayShips, disableDragDrop, testPlaceShips } from "./handlers";
+import handlers from "./handlers";
 import { Player, AIPlayer } from "./Player";
+import createBoard from "./createBoard";
 
 const gameInstance = function gameInstance() {
   // Create players. One real, one computer. Populate each gameboard
@@ -13,49 +13,38 @@ const gameInstance = function gameInstance() {
 
   const createPlayers = function createPlayers(pvp) {
     if (pvp === true) return [new Player(3), new Player(3)];
-    else return [new Player(3), new AIPlayer(3)()];
+    return [new Player(3), new AIPlayer(3)()];
   };
 
-  const init = function init(pvp) {
-    // Create players
+  // Create players and reference game instance for creating gameboard elements
+  // Setup ship placement by enabling drag and drop handlers for ships and gameboards
+  // Display available ships
+  // Render gameboards
+  const init = function initGame(pvp) {
     [players[1], players[2]] = createPlayers(pvp);
+    createBoard.initGameboard(handleTurn);
+    createBoard.enableDragDrop(
+      handlers.dragover,
+      handlers.drop,
+      handlers.dragleave,
+    );
 
-    // Enable drag n drop functionality on ships and gameboard
-    enableDragDrop();
-    // Render gameboards
-    displayBoard(1, players[1].gameboard);
-    displayBoard(2, players[2].gameboard);
+    handlers.displayBoard(1, players[1].gameboard);
+    handlers.displayBoard(2, players[2].gameboard);
 
-    // Setup for ship placement
-    // Display available ships
-    displayShips()
-    // When ship is placed
-    // If all ships are placed
-    // Disable drag n drop functionality
-    
-
-    
-    // At all ship placed
-    // Start game instance
-    // Enable attack functionaly
-
-    // testPlaceShips(players[1]);
-    // testPlaceShips(players[2]);
-
-
-    domHandler.initHandlers("click", handleTurn);
-  };
+    handlers.displayShips();
+  }
 
   const endGame = function endGame() {
     winner = turn;
     alert("winner is player" + turn);
   };
 
-  const getRivalTurn = function () {
+  const getRivalTurn = function getRivalTurn() {
     return turn === 1 ? 2 : 1;
   };
 
-  const changeTurn = function () {
+  const changeTurn = function changeTurn() {
     turn = getRivalTurn();
   };
 
@@ -69,16 +58,18 @@ const gameInstance = function gameInstance() {
     const rowcol = e.target.dataset.rowcol;
     if (!rowcol) return;
 
-    if (e.currentTarget.firstChild.dataset.boardNo == turn) {
+    if (e.target.closest(".gameboard").dataset.boardNo == turn) {
       console.log("Ignored. Player click on its own board");
       return;
     }
 
     const rival = getRivalTurn();
     let attack = playTurn(rival, rowcol);
+
     // If attacking the same spot twice
     if (attack === null) return;
-    displayBoard(rival);
+
+    handlers.displayBoard(rival);
 
     let gameover = players[rival].gameboard.areSunk();
     if (gameover === true) endGame();
@@ -86,14 +77,14 @@ const gameInstance = function gameInstance() {
       const AIrowcol = players[rival].generateRandomMove();
       const AIrival = turn;
       attack = playTurn(AIrival, AIrowcol);
-      displayBoard(AIrival);
+      handlers.displayBoard(AIrival);
 
       let gameover = players[AIrival].gameboard.areSunk();
       if (gameover === true) endGame();
     } else changeTurn();
   };
 
-  return { init };
+  return { init, handleTurn };
 };
 
 export default gameInstance;
