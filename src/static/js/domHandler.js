@@ -1,6 +1,7 @@
 const domHandler = (function () {
   const player1Container = document.querySelector(".player1-container");
   const player2Container = document.querySelector(".player2-container");
+  const shipsContainer = document.querySelector('.ships-container')
 
   const initHandlers = function(e, fn) {
     player1Container.addEventListener(e, fn)
@@ -32,6 +33,10 @@ const domHandler = (function () {
       2: function() {
         clear.node(player2Container);
       },
+    },
+
+    ships() {
+      clear.node(shipsContainer)
     }
   };
 
@@ -47,6 +52,11 @@ const domHandler = (function () {
         player2Container.appendChild(boardNode);
       },
     },
+
+    ships(ships) {
+      clear.ships()
+      shipsContainer.appendChild(ships)
+    }
   };
 
   return { clear, render, removeEventListener, initHandlers };
