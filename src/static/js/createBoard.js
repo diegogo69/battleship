@@ -5,6 +5,8 @@
 // a shotsBoard array with the received attacks
 // The board dipslays a player ships, and the received shots
 
+import shipsFromBoard from "./shipsFromBoard";
+
 const createBoard = (function () {
   let clickFn = null;
   let dragoverFn = null;
@@ -12,9 +14,34 @@ const createBoard = (function () {
   let dragleaveFn = null;
   let turnFn = null;
 
+  const players = {
+    1: null,
+    2: null,
+  };
+
+  const doneFn = function() {
+    console.log('Done fn')
+    const boardNode = document.querySelector('.gameboard')
+    console.log(boardNode)
+
+    const boardNo = boardNode.dataset.boardNo;
+    // players[boardNo].gameboard
+    const ships = shipsFromBoard(boardNode)
+    console.log(ships)
+
+    ships.forEach(ship => {
+      players[boardNo].gameboard.placeShip(ship.rowcol, ship.length, ship.orientation)
+      console.log(ship)
+    });
+
+  };
+
+  
   // Reference game instance
-  const initGameboard = function init(turnHandler) {
+  const initGameboard = function init(turnHandler, player1, player2) {
     turnFn = turnHandler;
+    [players[1], players[2]] = [player1, player2]
+    console.log(players)
   }
 
   const enableTurnHandler = function enableTurnHandler() {
@@ -38,7 +65,10 @@ const createBoard = (function () {
     dragleaveFn = null;
   };
 
-  const boardNode = function boardNode(gameboard, boardNo) {
+  const boardNode = function boardNode(boardNo, board=null) {
+    let gameboard;
+    if (board == null) gameboard = players[boardNo].gameboard
+    else gameboard = board
     const boardNode = document.createElement("div");
     boardNode.classList.add("gameboard");
     boardNode.dataset.boardNo = boardNo;
@@ -93,6 +123,7 @@ const createBoard = (function () {
 
   return {
     boardNode,
+    doneFn,
     initGameboard,
     enableTurnHandler,
     disableTurnHandler,
