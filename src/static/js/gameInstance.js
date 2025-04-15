@@ -13,7 +13,7 @@ const gameInstance = function gameInstance() {
 
   const createPlayers = function createPlayers(pvp) {
     if (pvp === true) return [new Player(3), new Player(3)];
-    return [new Player(3), new AIPlayer(3)()];
+    return [new Player(3), new AIPlayer(3)];
   };
 
   // Create players and reference game instance for creating gameboard elements
@@ -22,17 +22,16 @@ const gameInstance = function gameInstance() {
   // Render gameboards
   const init = function initGame(pvp) {
     [players[1], players[2]] = createPlayers(pvp);
-    createBoard.initGameboard(handleTurn);
+    
+    createBoard.initGameboard(handleTurn, players[1], players[2]);
     createBoard.enableDragDrop(
       handlers.dragover,
       handlers.drop,
       handlers.dragleave,
     );
 
-    handlers.displayBoard(1, players[1].gameboard);
-    handlers.displayBoard(2, players[2].gameboard);
-
-    handlers.displayShips();
+    handlers.displayBoards();
+    handlers.displayShips(createBoard.doneFn);
   }
 
   const endGame = function endGame() {
