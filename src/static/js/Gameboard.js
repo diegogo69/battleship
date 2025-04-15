@@ -34,7 +34,7 @@ class Gameboard {
 
   // Check if a ship has already been placed in the given coordinates
   // Check if a ship's lenght and orientation does not exceed board limits
-  #canBePlaced(row, col, length, horizontal) {
+  canBePlaced(row, col, length, horizontal) {
     // Validate bounds
     if (horizontal) {
       if (col + length > this.boardSize) {
@@ -83,7 +83,7 @@ class Gameboard {
       throw new Error("Cannot place more ships, limit has been reached");
 
     let { row, col } = Gameboard.validateCoordinates(rowcol);
-    if (!this.#canBePlaced(row, col, length, horizontal)) return false;
+    if (!this.canBePlaced(row, col, length, horizontal)) return false;
 
     const shipIndex = this.#addShip(length);
 
