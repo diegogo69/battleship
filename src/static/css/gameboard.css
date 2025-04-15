@@ -14,7 +14,7 @@
 .gameboard-col {
     flex: 1;
     outline: 1px solid lightgrey;
-
+    position: relative;
 }
 
 .hasShip {
@@ -28,4 +28,11 @@
 
 .isMiss {
     background-color: lightgrey;
+}
+
+.positioned {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
 }
