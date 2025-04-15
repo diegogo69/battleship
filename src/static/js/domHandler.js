@@ -53,9 +53,10 @@ const domHandler = (function () {
       },
     },
 
-    ships(ships) {
+    ships(ships, doneBtn) {
       clear.ships()
       shipsContainer.appendChild(ships)
+      shipsContainer.appendChild(doneBtn)
     }
   };
 
