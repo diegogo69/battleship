@@ -2,6 +2,7 @@ import domHandler from "./domHandler";
 import createShips from "./createShips";
 import createBoard from "./createBoard";
 import gameInstance from "./gameInstance";
+import Gameboard from "./Gameboard";
 
 const handlers = (function () {
   const initGame = function initGame(pvp) {
@@ -12,24 +13,54 @@ const handlers = (function () {
   const isValidPlacement = function isValidPlacement(
     rowcol,
     length,
-    orientation,
+    horizontal,
     gameboard,
+    boardNode,
+    shipID,
   ) {
-    return gameboard.placeShip(
-      rowcol,
-      parseInt(length),
-      orientation === "horizontal",
-    );
+
+    const {row, col} = Gameboard.validateCoordinates(rowcol)
+
+    // Ship element overlaps other ship elements
+    for (let next = 1; next < length; next++) {
+      let nextCell = null;
+      if (horizontal) {
+        nextCell = boardNode.children[row].children[col + next];
+      } else {
+        nextCell = boardNode.children[row + next].children[col];
+      }
+      
+      if ((nextCell.firstChild) && (nextCell.firstChild.classList.contains("ship"))) {
+        if (nextCell.firstChild.id === shipID) {
+          console.log('Ship overlaps itself. So it is a realocation') 
+        } else {
+          console.log('Ship element overlaps another ship element')
+          return false
+        }
+      }
+    }
+
+    return gameboard.canBePlaced(row, col, length, horizontal)
   };
 
   const dragstart = function dragstartHandler(e) {
     const ship = e.currentTarget;
-
+    
     e.dataTransfer.setData("ship-id", ship.id);
     e.dataTransfer.setData("ship-class", ship.classList.contains("ship"));
     e.dataTransfer.setData("length", ship.dataset.length);
     e.dataTransfer.setData("orientation", ship.dataset.orientation);
 
+    // random test to create and arbitrary el render img
+    // const img = document.createElement('div');
+    // img.classList.add('ship');
+    // [1,2,3].forEach(el => {
+    //   const cel = document.createElement('div')
+    //   cel.classList.add('ship-cell')
+    //   img.appendChild(cel)
+    // });
+    // e.dataTransfer.setDragImage(img, 10, 10); // 10, 10 -> drag image xOffset, yOffset
+    
     e.dataTransfer.setDragImage(e.currentTarget, 10, 10); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
@@ -37,6 +68,11 @@ const handlers = (function () {
     console.log(`Dragging ship of length: ${ship.dataset.length}`);
     console.log(`Dragging ship of orientation: ${ship.dataset.orientation}`);
   };
+
+  const dragend = function dragendHandler(e) {
+    const ship = e.currentTarget;
+    ship.classList.remove("dragging");
+  }
 
   const dragover = function dragoverHandler(e) {
     e.preventDefault(); // Necessary to allow dropping
@@ -48,24 +84,31 @@ const handlers = (function () {
     e.dataTransfer.dropEffect = "move";
   };
 
+
   const drop = function dropHandler(e, gameboard) {
     e.preventDefault();
-    const cell = e.currentTarget;
-
+    // Dragged element is not ship
     const shipClass = e.dataTransfer.getData("ship-class");
     if (shipClass !== "true") return;
 
+    // Ship dropped in a non valid gameboard grid cell
+    if (!(e.target.classList.contains('gameboard-col'))) return;
+
+    const cell = e.currentTarget;
     const shipID = e.dataTransfer.getData("ship-id");
     const dropCoordinate = cell.dataset.rowcol;
-    const shipLength = e.dataTransfer.getData("length");
-    const orientation = e.dataTransfer.getData("orientation");
-    const boardNo = cell.closest(".gameboard").dataset.boardNo;
+    const shipLength = parseInt(e.dataTransfer.getData("length"));
+    const orientation = e.dataTransfer.getData("orientation") === 'horizontal';
+    const boardNode = cell.closest(".gameboard");
+    const boardNo = boardNode.dataset.boardNo;
 
     const validPlacement = isValidPlacement(
       dropCoordinate,
       shipLength,
       orientation,
       gameboard,
+      boardNode,
+      shipID,
     );
 
     // INVALID DROP
@@ -82,9 +125,12 @@ const handlers = (function () {
     // VALID DROP
     console.log(`Valid drop ship of length ${shipLength} at ${dropCoordinate}`);
     cell.classList.remove("hovered");
-
+    
     const ship = document.getElementById(shipID);
-    ship.parentNode.removeChild(ship);
+    // ship.parentNode.removeChild(ship);
+    ship.classList.add('positioned')
+    ship.classList.remove("dragging");
+    cell.appendChild(ship)
 
     // If all ships have been placed
     if (validPlacement === null) {
@@ -93,7 +139,8 @@ const handlers = (function () {
       createBoard.disableDragDrop();
       createBoard.enableTurnHandler();
     }
-    displayBoard(boardNo, gameboard);
+    // displayBoard(boardNo, gameboard);
+    // displayBoards();
   };
 
   const dragleave = function dragleaveHandler(e) {
@@ -101,15 +148,24 @@ const handlers = (function () {
   };
 
   // Display ships container
-  const displayShips = function displayShipContainer() {
+  const displayShips = function displayShipContainer(doneFn) {
     const ships = createShips();
-    domHandler.render.ships(ships);
+    const doneBtn = document.createElement('button')
+    doneBtn.textContent = 'Done'
+    doneBtn.classList.add('done-btn')
+    doneBtn.addEventListener('click', doneFn)
+    domHandler.render.ships(ships, doneBtn);
   };
 
   // Display gameboards
-  const displayBoard = function displayBoard(playerNo, gameboard) {
-    const board = createBoard.boardNode(gameboard, playerNo);
+  const displayBoard = function displayBoard(playerNo) {
+    const board = createBoard.boardNode(playerNo);
     domHandler.render.board[playerNo](board);
+  };
+
+  const displayBoards = function displayBoards() {
+    displayBoard(1)
+    displayBoard(2)
   };
 
   const testPlaceShips = function (player) {
@@ -121,8 +177,10 @@ const handlers = (function () {
   return {
     initGame,
     displayBoard,
+    displayBoards,
     displayShips,
     dragstart,
+    dragend,
     drop,
     dragover,
     dragleave,
