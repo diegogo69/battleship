@@ -34,6 +34,8 @@ const createBoard = (function () {
       console.log(ship)
     });
 
+    disableDragDrop();
+    enableTurnHandler();
   };
 
   

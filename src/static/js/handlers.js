@@ -153,7 +153,10 @@ const handlers = (function () {
     const doneBtn = document.createElement('button')
     doneBtn.textContent = 'Done'
     doneBtn.classList.add('done-btn')
-    doneBtn.addEventListener('click', doneFn)
+    doneBtn.addEventListener('click', (e) => {
+      doneFn(e);
+      displayBoards();
+    })
     domHandler.render.ships(ships, doneBtn);
   };
 
