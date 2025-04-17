@@ -1,4 +1,5 @@
 const domHandler = (function () {
+  const boardsContainer = document.querySelector(".boards-container");
   const player1Container = document.querySelector(".player1-container");
   const player2Container = document.querySelector(".player2-container");
   const shipsContainer = document.querySelector('.ships-container')

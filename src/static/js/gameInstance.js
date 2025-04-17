@@ -10,6 +10,7 @@ const gameInstance = function gameInstance() {
   };
   let turn = 1;
   let winner = null;
+  let pvpGamemode = null;
 
   const createPlayers = function createPlayers(pvp) {
     if (pvp === true) return [new Player(3), new Player(3)];
@@ -23,7 +24,7 @@ const gameInstance = function gameInstance() {
   const init = function initGame(pvp) {
     [players[1], players[2]] = createPlayers(pvp);
     
-    createBoard.initGameboard(handleTurn, players[1], players[2]);
+    createBoard.initGameboard(turn, pvpGamemode, handleTurn, players[1], players[2]);
     createBoard.enableDragDrop(
       handlers.dragover,
       handlers.drop,
@@ -37,6 +38,7 @@ const gameInstance = function gameInstance() {
   const endGame = function endGame() {
     winner = turn;
     alert("winner is player" + turn);
+    createBoard.disableTurnHandler()
   };
 
   const getRivalTurn = function getRivalTurn() {
@@ -61,26 +63,39 @@ const gameInstance = function gameInstance() {
       console.log("Ignored. Player click on its own board");
       return;
     }
+    console.log('Turn on game Instance ' + turn)
 
     const rival = getRivalTurn();
-    let attack = playTurn(rival, rowcol);
+    let hit = playTurn(rival, rowcol);
 
     // If attacking the same spot twice
-    if (attack === null) return;
+    if (hit === null) return null;
 
-    handlers.displayBoard(rival);
+    // handlers.displayBoard(rival);
+    // If ship is hit. Do not change turn
+    if (hit === true) {
+      let gameover = players[rival].gameboard.areSunk();
+      if (gameover === true) {
+        endGame();
+        return 
+      }
 
-    let gameover = players[rival].gameboard.areSunk();
-    if (gameover === true) endGame();
-    else if (players[rival].type === "computer") {
+      return true
+    };
+
+    // Computer turn handler
+    if (players[rival].type === "computer") {
       const AIrowcol = players[rival].generateRandomMove();
       const AIrival = turn;
-      attack = playTurn(AIrival, AIrowcol);
-      handlers.displayBoard(AIrival);
+      hit = playTurn(AIrival, AIrowcol);
+      // handlers.displayBoard(AIrival);
 
       let gameover = players[AIrival].gameboard.areSunk();
       if (gameover === true) endGame();
-    } else changeTurn();
+    }
+    
+    changeTurn();
+    return false
   };
 
   return { init, handleTurn };

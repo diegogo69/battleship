@@ -61,7 +61,7 @@ const handlers = (function () {
     // });
     // e.dataTransfer.setDragImage(img, 10, 10); // 10, 10 -> drag image xOffset, yOffset
     
-    e.dataTransfer.setDragImage(e.currentTarget, 10, 10); // 10, 10 -> drag image xOffset, yOffset
+    e.dataTransfer.setDragImage(e.currentTarget, 10, 15); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
 
@@ -161,9 +161,18 @@ const handlers = (function () {
   };
 
   // Display gameboards
-  const displayBoard = function displayBoard(playerNo) {
-    const board = createBoard.boardNode(playerNo);
+  const displayBoard = function displayBoard(playerNo, pass) {
+    const board = createBoard.boardNode(playerNo, pass);
     domHandler.render.board[playerNo](board);
+  };
+
+  // Display gameboards
+  const displayPassScreen = function passScreen() {
+    const pass = true;
+    displayBoard(1, pass)
+    displayBoard(2, pass)
+
+    // Display pass header and button
   };
 
   const displayBoards = function displayBoards() {
@@ -181,6 +190,7 @@ const handlers = (function () {
     initGame,
     displayBoard,
     displayBoards,
+    displayPassScreen,
     displayShips,
     dragstart,
     dragend,
