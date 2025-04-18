@@ -18,8 +18,12 @@ const boardNode = (function () {
   let game = null;
   let shipsPlaced = null;
 
-  const doneFn = function () {
+  const doneFn = function (e) {
     if (shipsPlaced !== false) return;
+    // If there are still ship element to allocate
+    const shipsContainer = e.currentTarget.parentNode.querySelector('.ships-container');
+    if (shipsContainer.firstChild) return
+
     const turn = game.getTurn();
 
     console.log("Done fn");
@@ -40,15 +44,18 @@ const boardNode = (function () {
       console.log(ship);
     });
 
-    if (turn === 2) {
-      disableDragDrop();
-      enableTurnHandler();
-      shipsPlaced = true;
-    } else {
-      handlers.displayShips(doneFn);
+    if (turn === 1) {
+      game.changeTurn(); // Now it's 2
+      handlers.displayShips(doneFn, game.getTurn());
+      handlers.displayBoard(game.getTurn());
+      return;
     }
 
     game.changeTurn(); // Change turn in dom
+    disableDragDrop();
+    enableTurnHandler();
+    shipsPlaced = true;
+    handlers.displayBoards();
   };
 
   // Reference game instance
