@@ -8,25 +8,20 @@
 import handlers from "./handlers";
 import shipsFromBoard from "./shipsFromBoard";
 
-const createBoard = (function () {
+const boardNode = (function () {
   let clickFn = null;
   let dragoverFn = null;
   let dropFn = null;
   let dragleaveFn = null;
   let turnFn = null;
-  let turn = null;
-  let pvpGamemode = null;
 
-  const players = {
-    1: null,
-    2: null,
-  };
-
-  const changeTurn = function () {
-    turn = turn === 1 ? 2 : 1;
-  };
+  let game = null;
+  let shipsPlaced = null;
 
   const doneFn = function () {
+    if (shipsPlaced !== false) return;
+    const turn = game.getTurn();
+
     console.log("Done fn");
     const boardNode = document.querySelector(`#gameboard-${turn}`);
     console.log(boardNode);
@@ -37,7 +32,7 @@ const createBoard = (function () {
     console.log(ships);
 
     ships.forEach((ship) => {
-      players[turn].gameboard.placeShip(
+      game.players[turn].gameboard.placeShip(
         ship.rowcol,
         ship.length,
         ship.orientation,
@@ -48,48 +43,49 @@ const createBoard = (function () {
     if (turn === 2) {
       disableDragDrop();
       enableTurnHandler();
+      shipsPlaced = true;
     } else {
       handlers.displayShips(doneFn);
     }
 
-    changeTurn();
+    game.changeTurn(); // Change turn in dom
   };
 
   // Reference game instance
-  const initGameboard = function init(
-    turnVal,
-    pvp,
-    turnHandler,
-    player1,
-    player2,
-  ) {
-    turn = turnVal;
-    pvpGamemode = pvp;
-    turnFn = turnHandler;
-    [players[1], players[2]] = [player1, player2];
-    console.log(players);
+  const initGameboard = function init(gameInstance) {
+    shipsPlaced = false;
+    game = gameInstance;
+    turnFn = game.handleTurn;
   };
 
   const enableTurnHandler = function enableTurnHandler() {
     clickFn = (e) => {
       const rowcol = e.target.dataset.rowcol;
       if (!rowcol) return;
-      
+
+      const turn = game.getTurn();
+
       console.log("Turn on board node " + turn);
       if (turn == e.currentTarget.dataset.boardNo) {
         console.log("Ignored, player click in its own board");
         return;
       }
-      let hit = turnFn(e);
+
+      const hit = turnFn(e);
       if (hit === true) {
-        handlers.displayBoards()
-        return
+        const winner = game.checkWinner();
+        if (winner !== null) {
+          disableTurnHandler();
+          handlers.displayWinner(winner);
+        }
+
+        handlers.displayBoards();
+        return;
       } else if (hit === null) {
-        console.log('Board node: hitting same spot twice')
-        return
+        console.log("Board node: hitting same spot twice");
+        return;
       }
 
-      changeTurn();
       handlers.displayPassScreen();
     };
     console.log("Click attack handler enabled");
@@ -112,9 +108,13 @@ const createBoard = (function () {
   };
 
   const boardNode = function boardNode(boardNo, pass = false, board = null) {
+    // Kinda use arguments, instead of module coupling and direct reference
     let gameboard;
-    if (board == null) gameboard = players[boardNo].gameboard;
+    if (board == null) gameboard = game.players[boardNo].gameboard;
     else gameboard = board;
+
+    const turn = game.getTurn();
+
     const boardNode = document.createElement("div");
     boardNode.id = `gameboard-${boardNo}`;
     boardNode.classList.add("gameboard");
@@ -201,4 +201,4 @@ const createBoard = (function () {
   };
 })();
 
-export default createBoard;
+export default boardNode;
