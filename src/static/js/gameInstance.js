@@ -10,8 +10,8 @@ const gameInstance = function gameInstance() {
   let winner = null;
   let pvpGamemode = null;
 
-  const createPlayers = function createPlayers(pvp) {
-    if (pvp === true) return [new Player(3), new Player(3)];
+  const createPlayers = function createPlayers() {
+    if (pvpGamemode === true) return [new Player(3), new Player(3)];
     return [new Player(3), new AIPlayer(3)];
   };
 
@@ -21,8 +21,7 @@ const gameInstance = function gameInstance() {
   // Render gameboards
   const init = function initGame(pvp) {
     pvpGamemode = pvp;
-    [players[1], players[2]] = createPlayers(pvp);
-    
+    [players[1], players[2]] = createPlayers();
   }
 
   const endGame = function endGame() {
