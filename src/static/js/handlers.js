@@ -1,14 +1,10 @@
 import domHandler from "./domHandler";
 import createShips from "./createShips";
-import createBoard from "./createBoard";
+import boardNode from "./GameboardNode";
 import gameInstance from "./gameInstance";
 import Gameboard from "./Gameboard";
 
 const handlers = (function () {
-  const initGame = function initGame(pvp) {
-    const game = gameInstance();
-    game.init(pvp);
-  };
 
   const isValidPlacement = function isValidPlacement(
     rowcol,
@@ -18,8 +14,7 @@ const handlers = (function () {
     boardNode,
     shipID,
   ) {
-
-    const {row, col} = Gameboard.validateCoordinates(rowcol)
+    const { row, col } = Gameboard.validateCoordinates(rowcol);
 
     // Ship element overlaps other ship elements
     for (let next = 1; next < length; next++) {
@@ -29,23 +24,26 @@ const handlers = (function () {
       } else {
         nextCell = boardNode.children[row + next].children[col];
       }
-      
-      if ((nextCell.firstChild) && (nextCell.firstChild.classList.contains("ship"))) {
+
+      if (
+        nextCell.firstChild &&
+        nextCell.firstChild.classList.contains("ship")
+      ) {
         if (nextCell.firstChild.id === shipID) {
-          console.log('Ship overlaps itself. So it is a realocation') 
+          console.log("Ship overlaps itself. So it is a realocation");
         } else {
-          console.log('Ship element overlaps another ship element')
-          return false
+          console.log("Ship element overlaps another ship element");
+          return false;
         }
       }
     }
 
-    return gameboard.canBePlaced(row, col, length, horizontal)
+    return gameboard.canBePlaced(row, col, length, horizontal);
   };
 
   const dragstart = function dragstartHandler(e) {
     const ship = e.currentTarget;
-    
+
     e.dataTransfer.setData("ship-id", ship.id);
     e.dataTransfer.setData("ship-class", ship.classList.contains("ship"));
     e.dataTransfer.setData("length", ship.dataset.length);
@@ -60,7 +58,7 @@ const handlers = (function () {
     //   img.appendChild(cel)
     // });
     // e.dataTransfer.setDragImage(img, 10, 10); // 10, 10 -> drag image xOffset, yOffset
-    
+
     e.dataTransfer.setDragImage(e.currentTarget, 10, 15); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
@@ -72,7 +70,7 @@ const handlers = (function () {
   const dragend = function dragendHandler(e) {
     const ship = e.currentTarget;
     ship.classList.remove("dragging");
-  }
+  };
 
   const dragover = function dragoverHandler(e) {
     e.preventDefault(); // Necessary to allow dropping
@@ -84,7 +82,6 @@ const handlers = (function () {
     e.dataTransfer.dropEffect = "move";
   };
 
-
   const drop = function dropHandler(e, gameboard) {
     e.preventDefault();
     // Dragged element is not ship
@@ -92,13 +89,13 @@ const handlers = (function () {
     if (shipClass !== "true") return;
 
     // Ship dropped in a non valid gameboard grid cell
-    if (!(e.target.classList.contains('gameboard-col'))) return;
+    if (!e.target.classList.contains("gameboard-col")) return;
 
     const cell = e.currentTarget;
     const shipID = e.dataTransfer.getData("ship-id");
     const dropCoordinate = cell.dataset.rowcol;
     const shipLength = parseInt(e.dataTransfer.getData("length"));
-    const orientation = e.dataTransfer.getData("orientation") === 'horizontal';
+    const orientation = e.dataTransfer.getData("orientation") === "horizontal";
     const boardNode = cell.closest(".gameboard");
     const boardNo = boardNode.dataset.boardNo;
 
@@ -125,19 +122,19 @@ const handlers = (function () {
     // VALID DROP
     console.log(`Valid drop ship of length ${shipLength} at ${dropCoordinate}`);
     cell.classList.remove("hovered");
-    
+
     const ship = document.getElementById(shipID);
     // ship.parentNode.removeChild(ship);
-    ship.classList.add('positioned')
+    ship.classList.add("positioned");
     ship.classList.remove("dragging");
-    cell.appendChild(ship)
+    cell.appendChild(ship);
 
     // If all ships have been placed
     if (validPlacement === null) {
       // Remove ships container
 
-      createBoard.disableDragDrop();
-      createBoard.enableTurnHandler();
+      boardNode.disableDragDrop();
+      boardNode.enableTurnHandler();
     }
     // displayBoard(boardNo, gameboard);
     // displayBoards();
@@ -150,40 +147,73 @@ const handlers = (function () {
   // Display ships container
   const displayShips = function displayShipContainer(doneFn) {
     const ships = createShips();
-    const doneBtn = document.createElement('button')
-    doneBtn.textContent = 'Done'
-    doneBtn.classList.add('done-btn')
-    doneBtn.addEventListener('click', (e) => {
+    const doneBtn = document.createElement("button");
+    doneBtn.textContent = "Done";
+    doneBtn.classList.add("done-btn");
+    doneBtn.addEventListener("click", (e) => {
       doneFn(e);
       displayBoards();
-    })
+    });
     domHandler.render.ships(ships, doneBtn);
   };
 
   // Display gameboards
   const displayBoard = function displayBoard(playerNo, pass) {
-    const board = createBoard.boardNode(playerNo, pass);
+    const board = boardNode.boardNode(playerNo, pass);
     domHandler.render.board[playerNo](board);
   };
 
   // Display gameboards
   const displayPassScreen = function passScreen() {
     const pass = true;
-    displayBoard(1, pass)
-    displayBoard(2, pass)
+    displayBoard(1, pass);
+    displayBoard(2, pass);
 
     // Display pass header and button
   };
 
   const displayBoards = function displayBoards() {
-    displayBoard(1)
-    displayBoard(2)
+    displayBoard(1);
+    displayBoard(2);
   };
+
+  const displayWinner = function displayWinner(winner) {
+    console.log('display winner fn')
+    const dialog = document.createElement('dialog');
+    const dialHeader = document.createElement('h2');
+    const closeBtn = document.createElement('button');
+
+    dialHeader.textContent = `Player ${winner} wins!`;
+    closeBtn.textContent = 'Ok';
+    closeBtn.autofocus = true;
+    closeBtn.addEventListener('click', (e) => {
+      dialog.close()
+      dialog.parentNode.removeChild(dialog);
+    })
+
+    dialog.appendChild(dialHeader)
+    dialog.appendChild(closeBtn)
+    domHandler.render.dialog(dialog);
+  }
 
   const testPlaceShips = function (player) {
     player.gameboard.placeShip("00", 1, true);
     player.gameboard.placeShip("01", 2, true);
     player.gameboard.placeShip("10", 2, false);
+  };
+
+  const initGame = function initGame(pvp) {
+    // Creeate new game instance
+    const game = gameInstance();
+    game.init(pvp);
+
+    // Initialize the gameboard DOM handlers to current game instance
+    boardNode.initGameboard(game);
+    boardNode.enableDragDrop(dragover, drop, dragleave);
+
+    // Display gameboards
+    handlers.displayBoards();
+    handlers.displayShips(boardNode.doneFn);
   };
 
   return {
@@ -192,6 +222,7 @@ const handlers = (function () {
     displayBoards,
     displayPassScreen,
     displayShips,
+    displayWinner,
     dragstart,
     dragend,
     drop,
