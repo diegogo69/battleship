@@ -1,6 +1,4 @@
-import handlers from "./handlers";
 import { Player, AIPlayer } from "./Player";
-import createBoard from "./createBoard";
 
 const gameInstance = function gameInstance() {
   // Create players. One real, one computer. Populate each gameboard
@@ -22,32 +20,30 @@ const gameInstance = function gameInstance() {
   // Display available ships
   // Render gameboards
   const init = function initGame(pvp) {
+    pvpGamemode = pvp;
     [players[1], players[2]] = createPlayers(pvp);
     
-    createBoard.initGameboard(turn, pvpGamemode, handleTurn, players[1], players[2]);
-    createBoard.enableDragDrop(
-      handlers.dragover,
-      handlers.drop,
-      handlers.dragleave,
-    );
-
-    handlers.displayBoards();
-    handlers.displayShips(createBoard.doneFn);
   }
 
   const endGame = function endGame() {
     winner = turn;
-    alert("winner is player" + turn);
-    createBoard.disableTurnHandler()
   };
 
   const getRivalTurn = function getRivalTurn() {
-    return turn === 1 ? 2 : 1;
+    return (turn === 1) ? 2 : 1;
   };
 
   const changeTurn = function changeTurn() {
     turn = getRivalTurn();
   };
+
+  const getTurn = function getTurn() {
+    return turn
+  }
+
+  const checkWinner = function checkWinner() {
+    return winner
+  }
 
   const playTurn = function playTurn(rival, rowcol) {
     return players[rival].gameboard.receiveAttack(rowcol);
@@ -77,7 +73,6 @@ const gameInstance = function gameInstance() {
       let gameover = players[rival].gameboard.areSunk();
       if (gameover === true) {
         endGame();
-        return 
       }
 
       return true
@@ -98,7 +93,7 @@ const gameInstance = function gameInstance() {
     return false
   };
 
-  return { init, handleTurn };
+  return { init, handleTurn, changeTurn, players, getTurn, checkWinner };
 };
 
 export default gameInstance;
