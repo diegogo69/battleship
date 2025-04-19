@@ -3,9 +3,9 @@ import createShips from "./createShips";
 import boardNode from "./GameboardNode";
 import gameInstance from "./gameInstance";
 import Gameboard from "./Gameboard";
+import createMainPage from "./createMainPage";
 
 const handlers = (function () {
-
   const isValidPlacement = function isValidPlacement(
     rowcol,
     length,
@@ -26,6 +26,7 @@ const handlers = (function () {
       }
 
       if (
+        nextCell &&
         nextCell.firstChild &&
         nextCell.firstChild.classList.contains("ship")
       ) {
@@ -145,16 +146,19 @@ const handlers = (function () {
   };
 
   // Display ships container
-  const displayShips = function displayShipContainer(doneFn) {
+  const displayShips = function displayShipContainer(doneFn, turn) {
+    const rivalTurn = turn === 1 ? 2 : 1;
+    const placeShipsNode = document.createElement("div");
+    placeShipsNode.classList.add("place-ships-wrapper");
     const ships = createShips();
     const doneBtn = document.createElement("button");
     doneBtn.textContent = "Done";
     doneBtn.classList.add("done-btn");
-    doneBtn.addEventListener("click", (e) => {
-      doneFn(e);
-      displayBoards();
-    });
-    domHandler.render.ships(ships, doneBtn);
+    doneBtn.addEventListener("click", doneFn);
+
+    placeShipsNode.appendChild(ships);
+    placeShipsNode.appendChild(doneBtn);
+    domHandler.render.ships(placeShipsNode, rivalTurn);
   };
 
   // Display gameboards
@@ -178,23 +182,23 @@ const handlers = (function () {
   };
 
   const displayWinner = function displayWinner(winner) {
-    console.log('display winner fn')
-    const dialog = document.createElement('dialog');
-    const dialHeader = document.createElement('h2');
-    const closeBtn = document.createElement('button');
+    console.log("display winner fn");
+    const dialog = document.createElement("dialog");
+    const dialHeader = document.createElement("h2");
+    const closeBtn = document.createElement("button");
 
     dialHeader.textContent = `Player ${winner} wins!`;
-    closeBtn.textContent = 'Ok';
+    closeBtn.textContent = "Ok";
     closeBtn.autofocus = true;
-    closeBtn.addEventListener('click', (e) => {
-      dialog.close()
+    closeBtn.addEventListener("click", (e) => {
+      dialog.close();
       dialog.parentNode.removeChild(dialog);
-    })
+    });
 
-    dialog.appendChild(dialHeader)
-    dialog.appendChild(closeBtn)
+    dialog.appendChild(dialHeader);
+    dialog.appendChild(closeBtn);
     domHandler.render.dialog(dialog);
-  }
+  };
 
   const testPlaceShips = function (player) {
     player.gameboard.placeShip("00", 1, true);
@@ -211,10 +215,12 @@ const handlers = (function () {
     boardNode.initGameboard(game);
     boardNode.enableDragDrop(dragover, drop, dragleave);
 
-    // Display gameboards
-    handlers.displayBoards();
-    handlers.displayShips(boardNode.doneFn);
+    // Display gameboard only for player 1. As the other will hold the ships elements
+    const turn = game.getTurn(); // 1
+    handlers.displayBoard(turn);
+    handlers.displayShips(boardNode.doneFn, turn);
   };
+
 
   return {
     initGame,
@@ -229,6 +235,7 @@ const handlers = (function () {
     dragover,
     dragleave,
     testPlaceShips,
+
   };
 })();
 
