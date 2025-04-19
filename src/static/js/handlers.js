@@ -221,6 +221,19 @@ const handlers = (function () {
     handlers.displayShips(boardNode.doneFn, turn);
   };
 
+  const initDomHandlers = function initDom() {
+    const pvpHandler = () => initGame(true);
+    const pvcHandler = () => initGame(false);
+
+    domHandler.initDomHandlers(pvcHandler, pvpHandler);
+  };
+
+  const mainPage = function mainPage() {
+    const homeNode = createMainPage();
+    domHandler.render.mainPage(homeNode);
+    domHandler.referenceDom()
+    initDomHandlers();
+  };
 
   return {
     initGame,
@@ -235,7 +248,8 @@ const handlers = (function () {
     dragover,
     dragleave,
     testPlaceShips,
-
+    initDomHandlers,
+    mainPage,
   };
 })();
 
