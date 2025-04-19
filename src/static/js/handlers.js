@@ -156,7 +156,7 @@ const handlers = (function () {
       ship.classList.remove('flex-row');
       ship.classList.add('flex-col');
       ship.dataset.orientation = 'vertical';
-    } else if (flexRow === "column") {
+    } else {
       ship.classList.remove('flex-col');
       ship.classList.add('flex-row');
       ship.dataset.orientation = 'horizontal'
