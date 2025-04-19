@@ -18,6 +18,14 @@ svg {
     outline: 1px solid red;
 }
 
+.flex-row {
+    flex-direction: row;
+}
+
+.flex-col {
+    flex-direction: column;
+}
+
 .ship-cell {
     width: 20px;
     height: 20px;
