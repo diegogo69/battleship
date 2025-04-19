@@ -149,7 +149,19 @@ const handlers = (function () {
     e.currentTarget.classList.remove("hovered");
   };
 
-
+  const rotateShip = function rotateShip(e) {
+    const ship = e.currentTarget;
+    const flexRow = ship.classList.contains('flex-row');
+    if (flexRow === true) {
+      ship.classList.remove('flex-row');
+      ship.classList.add('flex-col');
+      ship.dataset.orientation = 'vertical';
+    } else if (flexRow === "column") {
+      ship.classList.remove('flex-col');
+      ship.classList.add('flex-row');
+      ship.dataset.orientation = 'horizontal'
+    }
+  };
 
   // Display ships container
   const displayShips = function displayShipContainer(doneFn, turn) {
@@ -260,6 +272,7 @@ const handlers = (function () {
     drop,
     dragover,
     dragleave,
+    rotateShip,
     testPlaceShips,
     initDomHandlers,
     mainPage,
