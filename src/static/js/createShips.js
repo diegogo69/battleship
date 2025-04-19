@@ -4,6 +4,7 @@ const SHIPS_NO = 3;
 const createShips = function (
   dragstartFn = handlers.dragstart,
   dragendFn = handlers.dragend,
+  rotateFn = handlers.rotateShip,
 ) {
   const shipContainer = document.createElement("div");
   shipContainer.classList.add("ships-container");
@@ -12,8 +13,9 @@ const createShips = function (
     const shipLength = i + 1;
 
     const ship = document.createElement("div");
-    ship.setAttribute("id", shipLength);
+    ship.id = shipLength;
     ship.classList.add("ship");
+    ship.classList.add('flex-row');
     ship.setAttribute("draggable", true);
     ship.dataset.length = shipLength;
     ship.dataset.orientation = "horizontal";
@@ -26,6 +28,7 @@ const createShips = function (
 
     ship.addEventListener("dragstart", dragstartFn);
     ship.addEventListener("dragend", dragendFn);
+    ship.addEventListener('dblclick', rotateFn)
     shipContainer.appendChild(ship);
   }
 
