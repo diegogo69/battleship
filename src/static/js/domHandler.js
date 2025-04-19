@@ -1,10 +1,14 @@
 const domHandler = (function () {
   const nodes = {
     main: document.querySelector("main"),
+    gameContainer: null,
     boardsContainer: null,
     btnWrapper: null,
     newPvPBtn: null,
     newPvCBtn: null,
+    goBackBtn: null,
+    footer: null,
+    footerText: null,
     player: {
       1: null,
       2: null,
@@ -12,17 +16,26 @@ const domHandler = (function () {
   };
 
   const referenceDom = function () {
-    nodes.boardsContainer = nodes.main.querySelector(".boards-container");
+    nodes.gameContainer = nodes.main.querySelector(".game-container");
+    nodes.boardsContainer = nodes.gameContainer.querySelector(".boards-container");
     nodes.player[1] = nodes.boardsContainer.querySelector(".player1-container");
     nodes.player[2] = nodes.boardsContainer.querySelector(".player2-container");
-    nodes.btnWrapper = nodes.main.querySelector(".boards-btns");
+    nodes.footer = nodes.main.querySelector("footer");
+    nodes.footerText = nodes.footer.querySelector("p");
+    nodes.btnWrapper = nodes.footer.querySelector(".boards-btns");
     nodes.newPvPBtn = nodes.btnWrapper.querySelector(".new-pvp-btn");
     nodes.newPvCBtn = nodes.btnWrapper.querySelector(".new-pvc-btn");
   };
 
-  const initDomHandlers = function initDom(pvcFn, pvpFn) {
-    nodes.newPvCBtn.addEventListener("click", pvcFn);
-    nodes.newPvPBtn.addEventListener("click", pvpFn);
+  const initHandlers = {
+    gamemodes(pvcFn, pvpFn) {
+      nodes.newPvCBtn.addEventListener("click", pvcFn);
+      nodes.newPvPBtn.addEventListener("click", pvpFn);
+    },
+    goBack(goBackFn) {
+      nodes.goBackBtn = nodes.footer.querySelector(".go-back-btn");
+      nodes.goBackBtn.addEventListener("click", goBackFn);
+    },
   };
 
   const removeEventListener = {
@@ -36,6 +49,7 @@ const domHandler = (function () {
       this.node(player2Container.firstChild, type, fn);
     },
   };
+
   const clear = {
     node(node) {
       while (node.firstChild) {
@@ -57,6 +71,12 @@ const domHandler = (function () {
     mainPage(node) {
       clear.node(nodes.main);
       nodes.main.appendChild(node);
+    },
+
+    footer(node) {
+      nodes.gameContainer.removeChild(nodes.footer);
+      nodes.gameContainer.appendChild(node);
+      nodes.footer = node;
     },
 
     board: {
@@ -87,7 +107,7 @@ const domHandler = (function () {
     clear,
     render,
     removeEventListener,
-    initDomHandlers,
+    initHandlers,
     referenceDom,
   };
 })();
