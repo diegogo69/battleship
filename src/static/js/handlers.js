@@ -217,19 +217,26 @@ const handlers = (function () {
 
     // Display gameboard only for player 1. As the other will hold the ships elements
     const turn = game.getTurn(); // 1
-    handlers.displayBoard(turn);
-    handlers.displayShips(boardNode.doneFn, turn);
+    displayBoard(turn);
+    displayShips(boardNode.doneFn, turn);
+    hideGamemodes()
   };
+
+  const hideGamemodes = function hideGamemodes() {
+    const footer = createMainPage.footer(false);
+    domHandler.render.footer(footer);
+    domHandler.initHandlers.goBack(mainPage)
+  }
 
   const initDomHandlers = function initDom() {
     const pvpHandler = () => initGame(true);
     const pvcHandler = () => initGame(false);
 
-    domHandler.initDomHandlers(pvcHandler, pvpHandler);
+    domHandler.initHandlers.gamemodes(pvcHandler, pvpHandler);
   };
 
   const mainPage = function mainPage() {
-    const homeNode = createMainPage();
+    const homeNode = createMainPage.main();
     domHandler.render.mainPage(homeNode);
     domHandler.referenceDom()
     initDomHandlers();
