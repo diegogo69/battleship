@@ -15,14 +15,18 @@ const handlers = (function () {
     shipID,
   ) {
     const { row, col } = Gameboard.validateCoordinates(rowcol);
-
     // Ship element overlaps other ship elements
-    for (let next = 1; next < length; next++) {
+    for (let i = 1; i < length; i++) {
       let nextCell = null;
+      
       if (horizontal) {
-        nextCell = boardNode.children[row].children[col + next];
+        const next = col + i;
+        if (next >= Gameboard.SIZE) return false
+        nextCell = boardNode.children[row].children[next];
       } else {
-        nextCell = boardNode.children[row + next].children[col];
+        const next = row + i;
+        if (next >= Gameboard.SIZE) return false
+        nextCell = boardNode.children[next].children[col];
       }
 
       if (
@@ -145,6 +149,8 @@ const handlers = (function () {
     e.currentTarget.classList.remove("hovered");
   };
 
+
+
   // Display ships container
   const displayShips = function displayShipContainer(doneFn, turn) {
     const rivalTurn = turn === 1 ? 2 : 1;
@@ -219,14 +225,14 @@ const handlers = (function () {
     const turn = game.getTurn(); // 1
     displayBoard(turn);
     displayShips(boardNode.doneFn, turn);
-    hideGamemodes()
+    hideGamemodes();
   };
 
   const hideGamemodes = function hideGamemodes() {
     const footer = createMainPage.footer(false);
     domHandler.render.footer(footer);
-    domHandler.initHandlers.goBack(mainPage)
-  }
+    domHandler.initHandlers.goBack(mainPage);
+  };
 
   const initDomHandlers = function initDom() {
     const pvpHandler = () => initGame(true);
@@ -238,7 +244,7 @@ const handlers = (function () {
   const mainPage = function mainPage() {
     const homeNode = createMainPage.main();
     domHandler.render.mainPage(homeNode);
-    domHandler.referenceDom()
+    domHandler.referenceDom();
     initDomHandlers();
   };
 
