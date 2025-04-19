@@ -12,11 +12,18 @@ class Gameboard {
     this.shipsNo = shipsNo;
     this.sunks = 0;
     this.ships = [];
-    this.shotsBoard = [...Array(10)].map(() => [...Array(10)].map(() => null));
-    this.shipsBoard = [...Array(10)].map(() => [...Array(10)].map(() => null));
+    const SIZE = Gameboard.SIZE;
+    this.shotsBoard = [...Array(SIZE)].map(() =>
+      [...Array(SIZE)].map(() => null),
+    );
+    this.shipsBoard = [...Array(SIZE)].map(() =>
+      [...Array(SIZE)].map(() => null),
+    );
   }
 
-  boardSize = 10;
+  static get SIZE() {
+    return 10;
+  }
 
   static validateCoordinates(rowcol) {
     if (typeof rowcol !== "string")
@@ -76,7 +83,7 @@ class Gameboard {
   // Place a ship in the board.
   // Return true is placed, false if not, null if placed and limit reached
   placeShip(rowcol, length, horizontal) {
-    if (typeof horizontal !== 'boolean') throw 'Invalid orientation argument'
+    if (typeof horizontal !== "boolean") throw "Invalid orientation argument";
 
     // Throw error if ship limit is met beforehand
     if (this.shipsNo === this.ships.length)
@@ -95,8 +102,7 @@ class Gameboard {
     }
 
     // After ship has been placed, check if gameboard limit is reached.
-    if (this.shipsNo === this.ships.length)
-      return null
+    if (this.shipsNo === this.ships.length) return null;
 
     return true;
   }
