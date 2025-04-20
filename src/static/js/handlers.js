@@ -7,6 +7,46 @@ import createMainPage from "./createMainPage";
 
 const handlers = (function () {
 
+  const occupyCells = function occupyCells(ship, isOccupy = true) {
+    const isGridCell = (ship.parentNode.classList.contains('gameboard-col'))
+    if (!isGridCell) return
+    
+    const gridCell = ship.parentNode;
+    const row = parseInt(gridCell.dataset.rowcol[0]);
+    const col = parseInt(gridCell.dataset.rowcol[1]);
+    const length = parseInt(ship.dataset.length);
+    const isHorizontal = (ship.dataset.orientation == "horizontal");
+    const boardNode = ship.closest(".gameboard");
+    for (let i = 0; i < length; i++) {
+      let cell = null;
+
+      if (i === 0) {
+        cell = boardNode.children[row].children[col];
+      } else if (isHorizontal) {
+        const next = col + i;
+        if (next >= Gameboard.SIZE) return false;
+        cell = boardNode.children[row].children[next];
+      } else {
+        const next = row + i;
+        if (next >= Gameboard.SIZE) return false;
+        cell = boardNode.children[next].children[col];
+      }
+
+      if (isOccupy == true) {
+        cell.classList.add(`occupied`);
+        cell.classList.add(`by-ship-${ship.id}`);
+      } else if (isOccupy == false) {
+        if (
+          cell != null &&
+          cell.classList.contains(`occupied`) &&
+          cell.classList.contains(`by-ship-${ship.id}`)
+        ) {
+          cell.classList.remove(`occupied`);
+          cell.classList.remove(`by-ship-${ship.id}`);
+        }
+      }
+    }
+  };
   const isValidDomPlacement = function isValidDomPlacement(
     row,
     col,
@@ -68,6 +108,10 @@ const handlers = (function () {
   const dragstart = function dragstartHandler(e) {
     const ship = e.currentTarget;
 
+    const isPlaced = ship.parentNode.classList.contains("gameboard-col");
+    if (isPlaced) {
+      occupyCells(ship, false);
+    }
     e.dataTransfer.setData("ship-id", ship.id);
     e.dataTransfer.setData("ship-class", ship.classList.contains("ship"));
     e.dataTransfer.setData("length", ship.dataset.length);
@@ -143,6 +187,7 @@ const handlers = (function () {
     ship.classList.remove("dragging");
     cell.appendChild(ship);
 
+    occupyCells(ship, true);
     // If all ships have been placed
     if (validPlacement === null) {
       // Remove ships container
