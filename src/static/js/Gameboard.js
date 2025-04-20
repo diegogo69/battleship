@@ -25,7 +25,7 @@ class Gameboard {
     return 10;
   }
 
-  static getValidCoordinate = (length, isHorizontal) => {
+  static getValidCoordinate(length, isHorizontal) {
     const size = Gameboard.SIZE;
     // Based on the orientation
     // substract the length of the ship to the board size, so it is within bounds
@@ -40,7 +40,7 @@ class Gameboard {
     const col = Math.floor(Math.random() * limitCol);
 
     return { row, col };
-  };
+  }
 
   static getValidCoordinates = () => {
     const coordinates = [];
@@ -66,7 +66,6 @@ class Gameboard {
     const isFirstCol = (col === 0);
     const isFirstRow = (row === 0);
 
-
     if (isFirstCol) {
       colStart = col;
     } else {
@@ -79,23 +78,23 @@ class Gameboard {
     }
 
     if (isHorizontal) {
-      const colLimit = (col + length);
+      const colLimit = col + length;
       const colLimitValid = (colLimit < Gameboard.SIZE);
 
       if (colLimitValid) {
         colEnd = colLimit;
       } else {
         //if (colLimit >= Gameboard.SIZE) {
-        // colEnd = col;
+        // colEnd = col;#######
         colEnd = Gameboard.SIZE - 1;
       }
       if (nextRow < Gameboard.SIZE) {
         rowEnd = nextRow;
       } else {
-        rowEnd = row;
+        rowEnd = row; // ########
       }
     } else {
-      const rowLimit = (row + length);
+      const rowLimit = row + length;
       const rowLimitValid = (rowLimit < Gameboard.SIZE);
 
       // if (rowLimitValid) {
@@ -105,7 +104,6 @@ class Gameboard {
         //if ((rowLimit) > Gameboard.SIZE) {
         // rowEnd = row;
         rowEnd = Gameboard.SIZE - 1;
-
       }
       if (nextCol < Gameboard.SIZE) {
         colEnd = nextCol;
@@ -147,27 +145,50 @@ class Gameboard {
   canBePlaced(row, col, length, horizontal) {
     // Validate bounds
     if (horizontal) {
-      if (col + length > Gameboard.SIZE) {
+      if ((col + length) > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries horizontally.");
         return false;
       }
     } else {
-      if (row + length > Gameboard.SIZE) {
+      if ((row + length) > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries vertically.");
         return false;
       }
     }
     // Validate overlapping
-    for (let i = 0; i < length; i++) {
-      const targetCol = horizontal === true ? col + i : col;
-      const targetRow = horizontal !== true ? row + i : row;
+    // for (let i = 0; i < length; i++) {
+    //   const targetCol = horizontal === true ? col + i : col;
+    //   const targetRow = horizontal !== true ? row + i : row;
 
-      if (this.shipsBoard[targetRow][targetCol] !== null) {
-        console.log("Invalid overlapping ship placement");
-        return false;
+    //   if (this.shipsBoard[targetRow][targetCol] !== null) {
+    //     console.log("Invalid overlapping ship placement");
+    //     return false;
+    //   }
+    // }
+
+    const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
+      row,
+      col,
+      horizontal,
+      length,
+    );
+
+    for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
+      for (let curCol = colStart; curCol <= colEnd; curCol++) {
+        const cell = this.shipsBoard[curRow][curCol];
+        const occupied = (cell !== null);
+
+        if (occupied) {
+          console.log(
+            "AI Ship element overlaps another ship element at " +
+              curRow +
+              "" +
+              curCol,
+          );
+          return false;
+        }
       }
     }
-
     return true;
   }
 
