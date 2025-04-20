@@ -1,11 +1,49 @@
 import domHandler from "./domHandler";
 import createShips from "./createShips";
-import boardNode from "./GameboardNode";
+import GameboardNode from "./GameboardNode";
 import gameInstance from "./gameInstance";
 import Gameboard from "./Gameboard";
 import createMainPage from "./createMainPage";
 
 const handlers = (function () {
+
+  const isValidDomPlacement = function isValidDomPlacement(
+    row,
+    col,
+    length,
+    horizontal,
+    boardNode,
+    shipID,
+  ) {
+    // Ship element overlaps other ship elements
+    for (let i = 0; i < length; i++) {
+      let cell = null;
+
+      if (i === 0) {
+        cell = boardNode.children[row].children[col];
+      } else if (horizontal) {
+        const next = col + i;
+        if (next >= Gameboard.SIZE) return false;
+        cell = boardNode.children[row].children[next];
+      } else {
+        const next = row + i;
+        if (next >= Gameboard.SIZE) return false;
+        cell = boardNode.children[next].children[col];
+      }
+
+      if (cell != null && cell.classList.contains(`occupied`)) {
+        // does not gets execute because the class is remove at dragstart
+        // But it does on random placement
+        if (cell.classList.contains(`by-ship-${shipID}`)) {
+          console.log("Ship overlaps itself. So it is a realocation");
+        } else {
+          console.log("Ship element overlaps another ship element");
+          return false;
+        }
+      }
+    }
+    return true;
+  };
   const isValidPlacement = function isValidPlacement(
     rowcol,
     length,
@@ -15,34 +53,15 @@ const handlers = (function () {
     shipID,
   ) {
     const { row, col } = Gameboard.validateCoordinates(rowcol);
-    // Ship element overlaps other ship elements
-    for (let i = 1; i < length; i++) {
-      let nextCell = null;
-      
-      if (horizontal) {
-        const next = col + i;
-        if (next >= Gameboard.SIZE) return false
-        nextCell = boardNode.children[row].children[next];
-      } else {
-        const next = row + i;
-        if (next >= Gameboard.SIZE) return false
-        nextCell = boardNode.children[next].children[col];
-      }
-
-      if (
-        nextCell &&
-        nextCell.firstChild &&
-        nextCell.firstChild.classList.contains("ship")
-      ) {
-        if (nextCell.firstChild.id === shipID) {
-          console.log("Ship overlaps itself. So it is a realocation");
-        } else {
-          console.log("Ship element overlaps another ship element");
-          return false;
-        }
-      }
-    }
-
+    const isDomValid = isValidDomPlacement(
+      row,
+      col,
+      length,
+      horizontal,
+      boardNode,
+      shipID,
+    );
+    if (!isDomValid) return false;
     return gameboard.canBePlaced(row, col, length, horizontal);
   };
 
@@ -53,16 +72,6 @@ const handlers = (function () {
     e.dataTransfer.setData("ship-class", ship.classList.contains("ship"));
     e.dataTransfer.setData("length", ship.dataset.length);
     e.dataTransfer.setData("orientation", ship.dataset.orientation);
-
-    // random test to create and arbitrary el render img
-    // const img = document.createElement('div');
-    // img.classList.add('ship');
-    // [1,2,3].forEach(el => {
-    //   const cel = document.createElement('div')
-    //   cel.classList.add('ship-cell')
-    //   img.appendChild(cel)
-    // });
-    // e.dataTransfer.setDragImage(img, 10, 10); // 10, 10 -> drag image xOffset, yOffset
 
     e.dataTransfer.setDragImage(e.currentTarget, 10, 15); // 10, 10 -> drag image xOffset, yOffset
 
@@ -138,8 +147,8 @@ const handlers = (function () {
     if (validPlacement === null) {
       // Remove ships container
 
-      boardNode.disableDragDrop();
-      boardNode.enableTurnHandler();
+      GameboardNode.disableDragDrop();
+      GameboardNode.enableTurnHandler();
     }
     // displayBoard(boardNo, gameboard);
     // displayBoards();
@@ -151,16 +160,40 @@ const handlers = (function () {
 
   const rotateShip = function rotateShip(e) {
     const ship = e.currentTarget;
-    const flexRow = ship.classList.contains('flex-row');
-    if (flexRow === true) {
-      ship.classList.remove('flex-row');
-      ship.classList.add('flex-col');
-      ship.dataset.orientation = 'vertical';
-    } else {
-      ship.classList.remove('flex-col');
-      ship.classList.add('flex-row');
-      ship.dataset.orientation = 'horizontal'
+
+    if (ship.parentNode.classList.contains("gameboard-col")) {
+      const row = parseInt(ship.parentNode.dataset.rowcol[0]);
+      const col = parseInt(ship.parentNode.dataset.rowcol[1]);
+      const length = parseInt(ship.dataset.length);
+      const horizontal = ship.dataset.orientation !== "horizontal";
+      const boardNode = ship.closest(".gameboard");
+      const shipID = ship.id;
+      const canRotate = isValidDomPlacement(
+        row,
+        col,
+        length,
+        horizontal,
+        boardNode,
+        shipID,
+      );
+      if (!canRotate) {
+        console.log("Cannot rotate as it overlaps other ships");
+        return;
+      } else {
+        occupyCells(ship, false);
+      }
     }
+    const flexRow = ship.classList.contains("flex-row");
+    if (flexRow === true) {
+      ship.classList.remove("flex-row");
+      ship.classList.add("flex-col");
+      ship.dataset.orientation = "vertical";
+    } else {
+      ship.classList.remove("flex-col");
+      ship.classList.add("flex-row");
+      ship.dataset.orientation = "horizontal";
+    }
+    occupyCells(ship, true);
   };
 
   // Display ships container
@@ -181,7 +214,7 @@ const handlers = (function () {
 
   // Display gameboards
   const displayBoard = function displayBoard(playerNo, pass) {
-    const board = boardNode.boardNode(playerNo, pass);
+    const board = GameboardNode.boardNode(playerNo, pass);
     domHandler.render.board[playerNo](board);
   };
 
@@ -230,13 +263,13 @@ const handlers = (function () {
     game.init(pvp);
 
     // Initialize the gameboard DOM handlers to current game instance
-    boardNode.initGameboard(game);
-    boardNode.enableDragDrop(dragover, drop, dragleave);
+    GameboardNode.initGameboard(game);
+    GameboardNode.enableDragDrop(dragover, drop, dragleave);
 
     // Display gameboard only for player 1. As the other will hold the ships elements
     const turn = game.getTurn(); // 1
     displayBoard(turn);
-    displayShips(boardNode.doneFn, turn);
+    displayShips(GameboardNode.doneFn, turn);
     hideGamemodes();
   };
 
