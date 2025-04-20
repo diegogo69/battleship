@@ -365,13 +365,18 @@ const handlers = (function () {
     displayBoard(2);
   };
 
-  const displayWinner = function displayWinner(winner) {
+  const displayWinner = function displayWinner(winner, isPvp) {
     console.log("display winner fn");
     const dialog = document.createElement("dialog");
+    
     const dialHeader = document.createElement("h2");
-    const closeBtn = document.createElement("button");
+    if ((!isPvp) && (winner === 2)) {
+      dialHeader.textContent = 'Computer wins! :(';
+    } else {
+      dialHeader.textContent = `Player ${winner} wins!`;
+    }
 
-    dialHeader.textContent = `Player ${winner} wins!`;
+    const closeBtn = document.createElement("button");
     closeBtn.textContent = "Ok";
     closeBtn.autofocus = true;
     closeBtn.addEventListener("click", (e) => {
