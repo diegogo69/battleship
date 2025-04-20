@@ -25,6 +25,48 @@ class Gameboard {
     return 10;
   }
 
+  randomShips() {
+    // Create as many ships as needed
+    // Get a random coordinate
+    // Create a ship, of one of available lengths and random orientation
+    // Place ship
+    // Disable sorrounding coordinates
+    const getShips = () => {
+      const arr = [];
+      for (let i = 1; i <= this.shipsNo; i++) {
+        const ship = {
+          length: i,
+          horizontal: (Math.floor(Math.random() * 2) === 0),
+        };
+
+        arr.push(ship);
+      }
+      return arr;
+    };
+
+    const shipsArr = getShips();
+    shipsArr.forEach((shipData) => {
+      let shipPlaced = false;
+
+      while (shipPlaced === false) {
+        let { row, col } = Gameboard.getValidCoordinate(
+          shipData.length,
+          shipData.horizontal,
+        );
+        shipPlaced = this.placeShip(
+          `${row}${col}`,
+          shipData.length,
+          shipData.horizontal,
+        );
+      }
+      console.log('Ship placed')
+      console.log(shipData)
+    });
+
+    console.log('All ships randomly placed')
+    console.log(this.shipsBoard);
+  }
+
   static getValidCoordinate(length, isHorizontal) {
     const size = Gameboard.SIZE;
     // Based on the orientation
