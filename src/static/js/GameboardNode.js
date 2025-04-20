@@ -8,7 +8,7 @@
 import handlers from "./handlers";
 import shipsFromBoard from "./shipsFromBoard";
 
-const boardNode = (function () {
+const GameboardNode = (function () {
   let clickFn = null;
   let dragoverFn = null;
   let dropFn = null;
@@ -208,4 +208,4 @@ const boardNode = (function () {
   };
 })();
 
-export default boardNode;
+export default GameboardNode;
