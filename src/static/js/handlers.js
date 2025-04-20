@@ -6,7 +6,6 @@ import Gameboard from "./Gameboard";
 import createMainPage from "./createMainPage";
 
 const handlers = (function () {
-
   const occupyCells = function occupyCells(ship, isOccupy = true) {
     const isGridCell = (ship.parentNode.classList.contains('gameboard-col'))
     if (!isGridCell) return
@@ -241,6 +240,50 @@ const handlers = (function () {
     occupyCells(ship, true);
   };
 
+  const placeShipsRandomly = function placeShipsRandomly() {
+    // Get all ship elements
+    const ships = document.querySelectorAll(".ship");
+    const boardNode = document.querySelector(".gameboard");
+    ships.forEach((ship) => {
+      if (ship.parentNode.classList.contains("gameboard-col")) {
+        occupyCells(ship, false);
+      }
+      const length = parseInt(ship.dataset.length);
+      const orientation = ship.dataset.orientation;
+      const isHorizontal = orientation === "horizontal";
+
+      let i = 0;
+      while (true) {
+        if (i >= 100) throw "Something went wrong positioning the ships";
+
+        const { row, col } = Gameboard.getValidCoordinate(length, isHorizontal);
+        const isDomValid = isValidDomPlacement(
+          row,
+          col,
+          length,
+          isHorizontal,
+          boardNode,
+          ship.id,
+        );
+
+        if (isDomValid == true) {
+          console.log("Dom valid?");
+          const shipNode = document.getElementById(ship.id);
+          const gridCell = boardNode.children[row].children[col];
+          shipNode.classList.add("positioned");
+          shipNode.classList.remove("dragging");
+          gridCell.appendChild(shipNode);
+          occupyCells(shipNode, true);
+
+          break;
+        } else {
+          i++;
+          console.log("invalid");
+        }
+      }
+    });
+  };
+
   // Display ships container
   const displayShips = function displayShipContainer(doneFn, turn) {
     const rivalTurn = turn === 1 ? 2 : 1;
@@ -251,8 +294,13 @@ const handlers = (function () {
     doneBtn.textContent = "Done";
     doneBtn.classList.add("done-btn");
     doneBtn.addEventListener("click", doneFn);
+    const randomBtn = document.createElement("button");
+    randomBtn.textContent = "Random";
+    randomBtn.classList.add("random-btn");
+    randomBtn.addEventListener("click", placeShipsRandomly);
 
     placeShipsNode.appendChild(ships);
+    placeShipsNode.appendChild(randomBtn);
     placeShipsNode.appendChild(doneBtn);
     domHandler.render.ships(placeShipsNode, rivalTurn);
   };
