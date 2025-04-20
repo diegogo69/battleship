@@ -12,7 +12,7 @@ const gameInstance = function gameInstance() {
 
   const createPlayers = function createPlayers() {
     if (pvpGamemode === true) return [new Player(3), new Player(3)];
-    const computer = new AIPlayer(3)
+    const computer = new AIPlayer(3);
     computer.gameboard.randomShips();
     return [new Player(3), computer];
   };
@@ -24,10 +24,10 @@ const gameInstance = function gameInstance() {
   const init = function initGame(pvp) {
     pvpGamemode = pvp;
     [players[1], players[2]] = createPlayers();
-  }
+  };
 
   const getRivalTurn = function getRivalTurn() {
-    return (turn === 1) ? 2 : 1;
+    return turn === 1 ? 2 : 1;
   };
 
   const changeTurn = function changeTurn() {
@@ -35,28 +35,24 @@ const gameInstance = function gameInstance() {
   };
 
   const getTurn = function getTurn() {
-    return turn
-  }
+    return turn;
+  };
 
   const checkWinner = function checkWinner() {
-    return winner
-  }
+    return winner;
+  };
 
   const playPlayerTurn = function playPlayerTurn(rowcol) {
     const rival = getRivalTurn();
     return players[rival].gameboard.receiveAttack(rowcol);
-  }
+  };
 
   const playAITurn = function playAITurn() {
-    let attack = null;
     const AIplayer = getRivalTurn();
     const AIrival = turn;
-    // while (attack === null) {
-      const AIrowcol = players[AIplayer].generateRandomMove();
-      attack = players[AIrival].gameboard.receiveAttack(AIrowcol);
-      if (attack === null) alert('Computer hit same spot twice')
-    // }
-    return attack;
+
+    const AIrowcol = players[AIplayer].generateRandomMove();
+    return players[AIrival].gameboard.receiveAttack(AIrowcol);
   };
 
   const handleTurn = function handleTurn(e) {
@@ -69,49 +65,48 @@ const gameInstance = function gameInstance() {
       console.log("Ignored. Player click on its own board");
       return;
     }
-    
-    console.log('Turn on game Instance ' + turn)
-    
+
+    console.log("Turn on game Instance " + turn);
+
     const rival = getRivalTurn();
     let hit = playPlayerTurn(rowcol);
 
     // If attacking the same spot twice
     if (hit === null) return null;
 
-    // handlers.displayBoard(rival);
     // If ship is hit. Do not change turn
     if (hit === true) {
       let gameover = players[rival].gameboard.areSunk();
       if (gameover === true) {
         winner = turn;
       }
+      return true;
+    }
 
-      return true
-    };
-
-    // Computer turn handler
-    // if (players[rival].type === "computer") {
-    if (pvpGamemode === false) {
-      // const AIrowcol = players[rival].generateRandomMove();
-      // const AIrival = turn;
-      // hit = playTurn(AIrival, AIrowcol);
+    if (pvpGamemode === true) {
+      changeTurn();
+    } else {
       const AIPlayer = rival;
       const AIrival = turn;
       hit = playAITurn();
-      // handlers.displayBoard(AIrival);
-      
+
       let gameover = players[AIrival].gameboard.areSunk();
-      console.log(players[AIPlayer].type);
-      console.log(players[AIPlayer].gameboard.shipsBoard);
       if (gameover === true) winner = AIPlayer;
-    } else {
-      changeTurn();
     }
-    
-    return false
+
+    return false;
   };
 
-  return { init, handleTurn, changeTurn, players, getTurn, checkWinner, pvpGamemode, getRivalTurn };
+  return {
+    init,
+    handleTurn,
+    changeTurn,
+    players,
+    getTurn,
+    checkWinner,
+    pvpGamemode,
+    getRivalTurn,
+  };
 };
 
 export default gameInstance;
