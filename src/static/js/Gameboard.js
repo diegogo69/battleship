@@ -26,45 +26,22 @@ class Gameboard {
   }
 
   randomShips() {
-    // Create as many ships as needed
-    // Get a random coordinate
-    // Create a ship, of one of available lengths and random orientation
-    // Place ship
-    // Disable sorrounding coordinates
-    const getShips = () => {
-      const arr = [];
-      for (let i = 1; i <= this.shipsNo; i++) {
-        const ship = {
-          length: i,
-          horizontal: (Math.floor(Math.random() * 2) === 0),
-        };
-
-        arr.push(ship);
-      }
-      return arr;
-    };
-
-    const shipsArr = getShips();
+    const shipsArr = Ship.createShips(this.shipsNo);
     shipsArr.forEach((shipData) => {
-      let shipPlaced = false;
+      let shipIsPlaced = false;
 
-      while (shipPlaced === false) {
+      while (shipIsPlaced === false) {
         let { row, col } = Gameboard.getValidCoordinate(
           shipData.length,
           shipData.horizontal,
         );
-        shipPlaced = this.placeShip(
+        shipIsPlaced = this.placeShip(
           `${row}${col}`,
           shipData.length,
           shipData.horizontal,
         );
       }
-      console.log('Ship placed')
-      console.log(shipData)
     });
-
-    console.log('All ships randomly placed')
-    console.log(this.shipsBoard);
   }
 
   static getValidCoordinate(length, isHorizontal) {
@@ -105,8 +82,8 @@ class Gameboard {
     const nextCol = col + 1;
     const prevCol = col - 1;
     const prevRow = row - 1;
-    const isFirstCol = (col === 0);
-    const isFirstRow = (row === 0);
+    const isFirstCol = col === 0;
+    const isFirstRow = row === 0;
 
     if (isFirstCol) {
       colStart = col;
@@ -121,7 +98,7 @@ class Gameboard {
 
     if (isHorizontal) {
       const colLimit = col + length;
-      const colLimitValid = (colLimit < Gameboard.SIZE);
+      const colLimitValid = colLimit < Gameboard.SIZE;
 
       if (colLimitValid) {
         colEnd = colLimit;
@@ -137,7 +114,7 @@ class Gameboard {
       }
     } else {
       const rowLimit = row + length;
-      const rowLimitValid = (rowLimit < Gameboard.SIZE);
+      const rowLimitValid = rowLimit < Gameboard.SIZE;
 
       // if (rowLimitValid) {
       if (rowLimitValid) {
@@ -180,6 +157,19 @@ class Gameboard {
     return { row, col };
   }
 
+  // Currently unnused function
+  static validateOverlapping(col, row, horizontal, length) {
+    for (let i = 0; i < length; i++) {
+      const targetCol = horizontal === true ? col + i : col;
+      const targetRow = horizontal !== true ? row + i : row;
+
+      if (this.shipsBoard[targetRow][targetCol] !== null) {
+        console.log("Invalid overlapping ship placement");
+        return false;
+      }
+    }
+    return true;
+  }
   static validCoordinates = Gameboard.getValidCoordinates();
 
   // Check if a ship has already been placed in the given coordinates
@@ -187,27 +177,18 @@ class Gameboard {
   canBePlaced(row, col, length, horizontal) {
     // Validate bounds
     if (horizontal) {
-      if ((col + length) > Gameboard.SIZE) {
+      if (col + length > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries horizontally.");
         return false;
       }
     } else {
-      if ((row + length) > Gameboard.SIZE) {
+      if (row + length > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries vertically.");
         return false;
       }
     }
-    // Validate overlapping
-    // for (let i = 0; i < length; i++) {
-    //   const targetCol = horizontal === true ? col + i : col;
-    //   const targetRow = horizontal !== true ? row + i : row;
 
-    //   if (this.shipsBoard[targetRow][targetCol] !== null) {
-    //     console.log("Invalid overlapping ship placement");
-    //     return false;
-    //   }
-    // }
-
+    // Validate area, at least one free cell in all directions
     const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
       row,
       col,
@@ -218,19 +199,12 @@ class Gameboard {
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
         const cell = this.shipsBoard[curRow][curCol];
-        const occupied = (cell !== null);
+        const occupied = cell !== null;
 
-        if (occupied) {
-          console.log(
-            "AI Ship element overlaps another ship element at " +
-              curRow +
-              "" +
-              curCol,
-          );
-          return false;
-        }
+        if (occupied) return false
       }
     }
+    
     return true;
   }
 
