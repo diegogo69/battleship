@@ -31,7 +31,7 @@ class Gameboard {
       let shipIsPlaced = false;
 
       while (shipIsPlaced === false) {
-        let { row, col } = Gameboard.getValidCoordinate(
+        let { row, col } = Gameboard.getValidRandomCoordinate(
           shipData.length,
           shipData.horizontal,
         );
@@ -44,20 +44,23 @@ class Gameboard {
     });
   }
 
-  static getValidCoordinate(length, isHorizontal) {
+  static getValidRandomCoordinate(length, isHorizontal) {
     const size = Gameboard.SIZE;
-    // Based on the orientation
-    // substract the length of the ship to the board size, so it is within bounds
-    // else substract 1 so it's a valid index (10 - 1 = 9 -> valid index)
-    const limitRow = size - (isHorizontal == true ? length : 0); // 1
-    const limitCol = size - (isHorizontal == false ? length : 0); // 1
+    // Return a random coordinate based on ship's length and orientation
+    let limitRow = null;
+    let limitCol = null;
+    if (isHorizontal) {
+      limitRow = size - length;
+      limitCol = size - 1;
+    } else {
+      limitRow = size - 1;
+      limitCol = size - length;
+    }
 
-    // const row = Math.floor(Math.random() * 1);//limitRow);
-    const row = Math.floor(Math.random() * limitRow);
+    const row = Math.floor(Math.random() * (limitRow + 1));
+    const col = Math.floor(Math.random() * (limitCol + 1));
 
-    // const col = Math.floor(Math.random() * 4);//limitCol);
-    const col = Math.floor(Math.random() * limitCol);
-
+    console.log('GIVEN COORDINATES: ' + row + col)
     return { row, col };
   }
 
@@ -134,6 +137,7 @@ class Gameboard {
     return { rowStart, rowEnd, colStart, colEnd };
   }
 
+  // UNUSED FUNCTIONF
   static getRandomCoordinate() {
     // Choose a random rowcol
     const randomIndex = Math.floor(
@@ -172,10 +176,7 @@ class Gameboard {
   }
   static validCoordinates = Gameboard.getValidCoordinates();
 
-  // Check if a ship has already been placed in the given coordinates
-  // Check if a ship's lenght and orientation does not exceed board limits
-  canBePlaced(row, col, length, horizontal) {
-    // Validate bounds
+  static validateBounds(row, col, length, horizontal) {
     if (horizontal) {
       if (col + length > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries horizontally.");
@@ -187,7 +188,14 @@ class Gameboard {
         return false;
       }
     }
-
+    return true;
+  }
+  // Check if a ship has already been placed in the given coordinates
+  // Check if a ship's lenght and orientation does not exceed board limits
+  canBePlaced(row, col, length, horizontal) {
+    // Validate bounds
+    const validBounds = Gameboard.validateBounds(row, col, length, horizontal);
+    if (!validBounds) return false;
     // Validate area, at least one free cell in all directions
     const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
       row,
@@ -201,10 +209,10 @@ class Gameboard {
         const cell = this.shipsBoard[curRow][curCol];
         const occupied = cell !== null;
 
-        if (occupied) return false
+        if (occupied) return false;
       }
     }
-    
+
     return true;
   }
 

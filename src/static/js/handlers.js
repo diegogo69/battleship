@@ -6,7 +6,7 @@ import Gameboard from "./Gameboard";
 import createMainPage from "./createMainPage";
 
 const handlers = (function () {
-  const isValidArea = function isValidArea(row, col, length, isHorizontal, boardNode, shipID) {
+  const isValidDomArea = function isValidDomArea(row, col, length, isHorizontal, boardNode, shipID) {
     // const {row, col} = Gameboard.validateCoordinates(rowcol)
 
     const {rowStart, rowEnd, colStart, colEnd} = Gameboard.getSorroundings(row, col, isHorizontal, length)
@@ -15,7 +15,7 @@ const handlers = (function () {
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
         const rowNode = boardNode.children[curRow]
-        // if (rowNode == null) return [false]
+        if (rowNode == null) return [false]
         const cell = rowNode.children[curCol];
         if (cell == null) return false
 
@@ -84,7 +84,10 @@ const handlers = (function () {
     shipID,
   ) {
 
-    const validArea = isValidArea(
+    const validBounds = Gameboard.validateBounds(row, col, length, horizontal);
+    if (!validBounds) return false;
+
+    const validArea = isValidDomArea(
       row,
       col,
       length,
@@ -94,34 +97,6 @@ const handlers = (function () {
     )
 
     return validArea;
-    // Ship element overlaps other ship elements
-    for (let i = 0; i < length; i++) {
-      let cell = null;
-
-      if (i === 0) {
-        cell = boardNode.children[row].children[col];
-      } else if (horizontal) {
-        const next = col + i;
-        if (next >= Gameboard.SIZE) return false;
-        cell = boardNode.children[row].children[next];
-      } else {
-        const next = row + i;
-        if (next >= Gameboard.SIZE) return false;
-        cell = boardNode.children[next].children[col];
-      }
-
-      if (cell != null && cell.classList.contains(`occupied`)) {
-        // does not gets execute because the class is remove at dragstart
-        // But it does on random placement
-        if (cell.classList.contains(`by-ship-${shipID}`)) {
-          console.log("Ship overlaps itself. So it is a realocation");
-        } else {
-          console.log("Ship element overlaps another ship element");
-          return false;
-        }
-      }
-    }
-    return true;
   };
   const isValidPlacement = function isValidPlacement(
     rowcol,
@@ -284,19 +259,31 @@ const handlers = (function () {
     // Get all ship elements
     const ships = document.querySelectorAll(".ship");
     const boardNode = document.querySelector(".gameboard");
+    boardNode.classList.remove
     ships.forEach((ship) => {
       if (ship.parentNode.classList.contains("gameboard-col")) {
         occupyCells(ship, false);
       }
       const length = parseInt(ship.dataset.length);
+      // Set a random orientation
+      const random01 = Math.floor(Math.random() * 2);
+      if (random01  === 0) {
+        ship.classList.remove('flex-row')
+        ship.classList.add('flex-col')
+        ship.dataset.orientation = 'vertical'
+      } else {
+        ship.classList.remove('flex-col')
+        ship.classList.add('flex-row')
+        ship.dataset.orientation = 'horizontal'
+      }
       const orientation = ship.dataset.orientation;
-      const isHorizontal = orientation === "horizontal";
+      const isHorizontal = (orientation === "horizontal");
 
       let i = 0;
       while (true) {
         if (i >= 100) throw "Something went wrong positioning the ships";
 
-        const { row, col } = Gameboard.getValidCoordinate(length, isHorizontal);
+        const { row, col } = Gameboard.getValidRandomCoordinate(length, isHorizontal);
         const isDomValid = isValidDomPlacement(
           row,
           col,
