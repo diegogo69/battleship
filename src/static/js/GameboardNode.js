@@ -5,6 +5,7 @@
 // a shotsBoard array with the received attacks
 // The board dipslays a player ships, and the received shots
 
+import gameInstance from "./gameInstance";
 import handlers from "./handlers";
 import shipsFromBoard from "./shipsFromBoard";
 
@@ -44,14 +45,16 @@ const GameboardNode = (function () {
       console.log(ship);
     });
 
-    if (turn === 1) {
-      game.changeTurn(); // Now it's 2
-      handlers.displayShips(doneFn, game.getTurn());
-      handlers.displayBoard(game.getTurn());
-      return;
+    if (game.pvpGamemode) {
+      if (turn === 1) {
+        // game.changeTurn(); // Now it's 2
+        handlers.displayShips(doneFn, game.getRivalTurn());
+        handlers.displayBoard(game.getRivalTurn());
+        return;
+      }
+      game.changeTurn(); // Change turn in dom
     }
 
-    game.changeTurn(); // Change turn in dom
     disableDragDrop();
     enableTurnHandler();
     shipsPlaced = true;
@@ -81,19 +84,30 @@ const GameboardNode = (function () {
       const hit = turnFn(e);
       if (hit === true) {
         const winner = game.checkWinner();
-        if (winner !== null) {
+        if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
-          handlers.displayWinner(winner);
+          handlers.displayWinner(winner, game.pvpGamemode);
         }
-
-        handlers.displayBoards();
+        handlers.displayBoards(); // Display boards as player continue hitting
         return;
       } else if (hit === null) {
         console.log("Board node: hitting same spot twice");
         return;
       }
 
-      handlers.displayPassScreen();
+      // HIt false: is miss
+      if (game.pvpGamemode === true) {
+        handlers.displayPassScreen();
+        return
+      } else {
+        const winner = game.checkWinner();
+        if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
+          disableTurnHandler();
+          handlers.displayWinner(winner, game.pvpGamemode);
+        }
+        handlers.displayBoards(); 
+      }
+      // handlers.displayPassScreen();
     };
     console.log("Click attack handler enabled");
   };
