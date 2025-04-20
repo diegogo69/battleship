@@ -25,13 +25,114 @@ class Gameboard {
     return 10;
   }
 
+  static getValidCoordinate = (length, isHorizontal) => {
+    const size = Gameboard.SIZE;
+    // Based on the orientation
+    // substract the length of the ship to the board size, so it is within bounds
+    // else substract 1 so it's a valid index (10 - 1 = 9 -> valid index)
+    const limitRow = size - (isHorizontal == true ? length : 0); // 1
+    const limitCol = size - (isHorizontal == false ? length : 0); // 1
+
+    // const row = Math.floor(Math.random() * 1);//limitRow);
+    const row = Math.floor(Math.random() * limitRow);
+
+    // const col = Math.floor(Math.random() * 4);//limitCol);
+    const col = Math.floor(Math.random() * limitCol);
+
+    return { row, col };
+  };
+
+  static getValidCoordinates = () => {
+    const coordinates = [];
+    for (let row = 0; row < Gameboard.SIZE; row++) {
+      for (let col = 0; col < Gameboard.SIZE; col++) {
+        // this.availableCoordinates.push([row, col]);
+        coordinates.push(`${row}${col}`);
+      }
+    }
+    return coordinates;
+  };
+
+  static getSorroundings(row, col, isHorizontal, length) {
+    let rowStart = null;
+    let rowEnd = null;
+    let colStart = null;
+    let colEnd = null;
+
+    const nextRow = row + 1;
+    const nextCol = col + 1;
+    const prevCol = col - 1;
+    const prevRow = row - 1;
+    const isFirstCol = (col === 0);
+    const isFirstRow = (row === 0);
+
+
+    if (isFirstCol) {
+      colStart = col;
+    } else {
+      colStart = prevCol;
+    }
+    if (isFirstRow) {
+      rowStart = row;
+    } else {
+      rowStart = prevRow;
+    }
+
+    if (isHorizontal) {
+      const colLimit = (col + length);
+      const colLimitValid = (colLimit < Gameboard.SIZE);
+
+      if (colLimitValid) {
+        colEnd = colLimit;
+      } else {
+        //if (colLimit >= Gameboard.SIZE) {
+        // colEnd = col;
+        colEnd = Gameboard.SIZE - 1;
+      }
+      if (nextRow < Gameboard.SIZE) {
+        rowEnd = nextRow;
+      } else {
+        rowEnd = row;
+      }
+    } else {
+      const rowLimit = (row + length);
+      const rowLimitValid = (rowLimit < Gameboard.SIZE);
+
+      // if (rowLimitValid) {
+      if (rowLimitValid) {
+        rowEnd = rowLimit;
+      } else {
+        //if ((rowLimit) > Gameboard.SIZE) {
+        // rowEnd = row;
+        rowEnd = Gameboard.SIZE - 1;
+
+      }
+      if (nextCol < Gameboard.SIZE) {
+        colEnd = nextCol;
+      } else {
+        colEnd = col;
+      }
+    }
+
+    return { rowStart, rowEnd, colStart, colEnd };
+  }
+
+  static getRandomCoordinate() {
+    // Choose a random rowcol
+    const randomIndex = Math.floor(
+      Math.random() * Gameboard.validCoordinates.length,
+    );
+    const rowcol = Gameboard.validCoordinates[randomIndex];
+
+    return rowcol;
+  }
+
   static validateCoordinates(rowcol) {
     if (typeof rowcol !== "string")
       throw new Error("Invalid non string coordinates");
 
-    const validCoordinates = /^[0-9][0-9]$/.test(rowcol);
-    if (!validCoordinates)
-      throw new Error("Invalid format/out of bound coordinates");
+    const valid = /^[0-9][0-9]$/.test(rowcol);
+    if (!valid) throw new Error("Invalid format/out of bound coordinates");
 
     const row = parseInt(rowcol[0], 10);
     const col = parseInt(rowcol[1], 10);
@@ -39,17 +140,19 @@ class Gameboard {
     return { row, col };
   }
 
+  static validCoordinates = Gameboard.getValidCoordinates();
+
   // Check if a ship has already been placed in the given coordinates
   // Check if a ship's lenght and orientation does not exceed board limits
   canBePlaced(row, col, length, horizontal) {
     // Validate bounds
     if (horizontal) {
-      if (col + length > this.boardSize) {
+      if (col + length > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries horizontally.");
         return false;
       }
     } else {
-      if (row + length > this.boardSize) {
+      if (row + length > Gameboard.SIZE) {
         console.log("Invalid drop: Ship exceeds grid boundaries vertically.");
         return false;
       }
