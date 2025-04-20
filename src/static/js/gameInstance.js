@@ -12,7 +12,9 @@ const gameInstance = function gameInstance() {
 
   const createPlayers = function createPlayers() {
     if (pvpGamemode === true) return [new Player(3), new Player(3)];
-    return [new Player(3), new AIPlayer(3)];
+    const computer = new AIPlayer(3)
+    computer.gameboard.randomShips();
+    return [new Player(3), computer];
   };
 
   // Create players and reference game instance for creating gameboard elements
@@ -23,10 +25,6 @@ const gameInstance = function gameInstance() {
     pvpGamemode = pvp;
     [players[1], players[2]] = createPlayers();
   }
-
-  const endGame = function endGame() {
-    winner = turn;
-  };
 
   const getRivalTurn = function getRivalTurn() {
     return (turn === 1) ? 2 : 1;
@@ -44,8 +42,21 @@ const gameInstance = function gameInstance() {
     return winner
   }
 
-  const playTurn = function playTurn(rival, rowcol) {
+  const playPlayerTurn = function playPlayerTurn(rowcol) {
+    const rival = getRivalTurn();
     return players[rival].gameboard.receiveAttack(rowcol);
+  }
+
+  const playAITurn = function playAITurn() {
+    let attack = null;
+    const AIplayer = getRivalTurn();
+    const AIrival = turn;
+    // while (attack === null) {
+      const AIrowcol = players[AIplayer].generateRandomMove();
+      attack = players[AIrival].gameboard.receiveAttack(AIrowcol);
+      if (attack === null) alert('Computer hit same spot twice')
+    // }
+    return attack;
   };
 
   const handleTurn = function handleTurn(e) {
@@ -58,10 +69,11 @@ const gameInstance = function gameInstance() {
       console.log("Ignored. Player click on its own board");
       return;
     }
+    
     console.log('Turn on game Instance ' + turn)
-
+    
     const rival = getRivalTurn();
-    let hit = playTurn(rival, rowcol);
+    let hit = playPlayerTurn(rowcol);
 
     // If attacking the same spot twice
     if (hit === null) return null;
@@ -71,28 +83,35 @@ const gameInstance = function gameInstance() {
     if (hit === true) {
       let gameover = players[rival].gameboard.areSunk();
       if (gameover === true) {
-        endGame();
+        winner = turn;
       }
 
       return true
     };
 
     // Computer turn handler
-    if (players[rival].type === "computer") {
-      const AIrowcol = players[rival].generateRandomMove();
+    // if (players[rival].type === "computer") {
+    if (pvpGamemode === false) {
+      // const AIrowcol = players[rival].generateRandomMove();
+      // const AIrival = turn;
+      // hit = playTurn(AIrival, AIrowcol);
+      const AIPlayer = rival;
       const AIrival = turn;
-      hit = playTurn(AIrival, AIrowcol);
+      hit = playAITurn();
       // handlers.displayBoard(AIrival);
-
+      
       let gameover = players[AIrival].gameboard.areSunk();
-      if (gameover === true) endGame();
+      console.log(players[AIPlayer].type);
+      console.log(players[AIPlayer].gameboard.shipsBoard);
+      if (gameover === true) winner = AIPlayer;
+    } else {
+      changeTurn();
     }
     
-    changeTurn();
     return false
   };
 
-  return { init, handleTurn, changeTurn, players, getTurn, checkWinner };
+  return { init, handleTurn, changeTurn, players, getTurn, checkWinner, pvpGamemode, getRivalTurn };
 };
 
 export default gameInstance;
