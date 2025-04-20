@@ -6,6 +6,35 @@ import Gameboard from "./Gameboard";
 import createMainPage from "./createMainPage";
 
 const handlers = (function () {
+  const isValidArea = function isValidArea(row, col, length, isHorizontal, boardNode, shipID) {
+    // const {row, col} = Gameboard.validateCoordinates(rowcol)
+
+    const {rowStart, rowEnd, colStart, colEnd} = Gameboard.getSorroundings(row, col, isHorizontal, length)
+    // const boardNode = gridCell.closest('.gameboard');
+
+    for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
+      for (let curCol = colStart; curCol <= colEnd; curCol++) {
+        const rowNode = boardNode.children[curRow]
+        // if (rowNode == null) return [false]
+        const cell = rowNode.children[curCol];
+        if (cell == null) return false
+
+        // If cell is free, or same ship
+        // cell != null &&
+        const sameShip = cell.classList.contains(`by-ship-${shipID}`);
+        const occupied = cell.classList.contains(`occupied`);
+        if (occupied && sameShip) {
+          console.log("Ship overlaps itself. So it is a realocation at "  + curRow + '' + curCol);
+          // console.log('valid cell ' + row + '' + col)
+        } else if (occupied) {
+          console.log("Ship element overlaps another ship element at "  + curRow + '' + curCol);
+          // console.log('invalid cell ' + row + '' + col)
+          return false;
+        }
+      }
+    }
+    return true;
+  }
   const occupyCells = function occupyCells(ship, isOccupy = true) {
     const isGridCell = (ship.parentNode.classList.contains('gameboard-col'))
     if (!isGridCell) return
@@ -54,6 +83,17 @@ const handlers = (function () {
     boardNode,
     shipID,
   ) {
+
+    const validArea = isValidArea(
+      row,
+      col,
+      length,
+      horizontal,
+      boardNode,
+      shipID,
+    )
+
+    return validArea;
     // Ship element overlaps other ship elements
     for (let i = 0; i < length; i++) {
       let cell = null;
