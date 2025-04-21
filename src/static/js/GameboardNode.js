@@ -22,7 +22,8 @@ const GameboardNode = (function () {
   const doneFn = function (e) {
     if (shipsPlaced !== false) return;
     // If there are still ship element to allocate
-    const shipsContainer = e.currentTarget.parentNode.querySelector('.ships-container');
+    const shipsWrapper = e.currentTarget.closest('.place-ships-wrapper');
+    const shipsContainer = shipsWrapper.querySelector('.ships-container');
     if (shipsContainer.firstChild) return
 
     const turn = game.getTurn();
@@ -159,9 +160,9 @@ const GameboardNode = (function () {
         if (pass === false && boardNo === turn) {
           const shipIndex = shipsBoard[rowIndex][colIndex];
           if (shipIndex !== null) {
-            colNode.dataset.shipIndex = shipIndex;
+            colNode.dataset.shipIndex = shipIndex; // unnused
             colNode.classList.add("hasShip");
-            colNode.textContent = shipIndex;
+            // colNode.textContent = shipIndex; // no longer used
           }
 
           // Add drag and drop handlers if enabled

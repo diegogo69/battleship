@@ -9,8 +9,13 @@ svg {
 
 body {
     --shadow: #f1f5f9;
-    --ship-bg: #bae6fd;
-    --ship-border: #22d3ee;
+    --grid-border: #ddd6fe;
+    --ship-bg: hsl(201, 96%, 80%);
+    --ship-border: hsl(188, 88%, 46%);
+    --ship-hit: #fb7185;
+    --ship-miss: hsl(60, 96%, 85%);
+    --ship-miss-border: #cdbfdb;
+    --ship-hit-border: hsl(345, 83%, 46%);
     
     height: 100vh;
     display: flex;
@@ -85,6 +90,8 @@ body > footer {
 .boards-container > div {
     min-width: 340px;
     min-height: 340px;
+    user-select: none;
+
 }
 
 .player1-container {

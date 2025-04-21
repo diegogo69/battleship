@@ -326,9 +326,12 @@ const handlers = (function () {
     randomBtn.classList.add("random-btn");
     randomBtn.addEventListener("click", placeShipsRandomly);
 
+    const btnWrapper = document.createElement('div');
+    btnWrapper.classList.add('ships-btns')
+    btnWrapper.appendChild(randomBtn);
+    btnWrapper.appendChild(doneBtn);
     placeShipsNode.appendChild(ships);
-    placeShipsNode.appendChild(randomBtn);
-    placeShipsNode.appendChild(doneBtn);
+    placeShipsNode.appendChild(btnWrapper);
     domHandler.render.ships(placeShipsNode, rivalTurn);
   };
 

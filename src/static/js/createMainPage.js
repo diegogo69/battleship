@@ -27,9 +27,9 @@ const createMainPage = ( function () {
 
   const footer = function footer(gamemodes=true) {
     const boardsFooter = document.createElement("footer");
-    boardsFooter.classList.add("boardsFooter");
+    boardsFooter.classList.add("boards-footer");
     const footerText = document.createElement("p");
-    footerText.classList.add('footerText');
+    footerText.classList.add('footer-text');
     const btnWrapper = document.createElement("div");
     btnWrapper.classList.add("boards-btns");
 
