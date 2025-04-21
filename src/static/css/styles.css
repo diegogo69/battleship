@@ -1,46 +1,143 @@
+* {
+    margin: 0;
+    padding: 0;
+}
+
 svg {
     width: 24px;
 }
 
-.boards-container {
+body {
+    --shadow: #f1f5f9;
+    --ship-bg: #bae6fd;
+    --ship-border: #22d3ee;
+    
+    height: 100vh;
     display: flex;
+    flex-direction: column;
+
+    color: #171717;
 }
 
-.boards-container > div {
-    min-width: 200px;
-    min-height: 200px;
-}
-
-.ship {
-    max-width: max-content;
-    background-color: salmon;
+body > header {
     display: flex;
-    outline: 1px solid red;
+    align-content: center;
+    height: 5;
+    padding: 1rem 2rem;
 }
 
-.flex-row {
-    flex-direction: row;
+body > main {
+    flex: 1;
+    display: flex;
+    padding: 0 2rem;
 }
 
-.flex-col {
+body > footer {
+    height: 4rem;
+    display: grid;
+    place-content: center;
+    padding: 1rem 2rem;
+}
+
+.game-container {
+    flex: 1;
+    display: flex;
     flex-direction: column;
 }
 
-.ship-cell {
-    width: 20px;
-    height: 20px;
-    border: 1px solid red;
-    position: relative;
+.boards-header {
+    display: grid;
+    place-content: center;
 }
 
-.gameboard-col.hovered {
-    background-color: yellow;
+.boards-container {
+    flex: 1;
+    display: grid;
+    justify-content: space-evenly;
+    align-content: center;
+    grid-template-areas: "board-1 board-2";
+    gap: 2rem;
 }
 
-.ship.dragging {
-    opacity: 0.7;
+.boards-footer {
+    display: grid;
+    justify-content: center;
+    padding: 1.4rem 0;
+    gap: 0.8rem;
+    text-align: center;
 }
 
-.cell.invalid-drop {
-    background-color: red;
+.footer-text {
+    height: 1.5rem;
+}
+.boards-btns {
+    display: flex;
+    gap: 1rem;
+}
+
+.boards-btns > button {
+    padding: .4rem 1rem;
+    border-radius: 1rem;
+    border: none;
+    cursor: pointer;
+}
+
+.boards-container > div {
+    min-width: 340px;
+    min-height: 340px;
+}
+
+.player1-container {
+    grid-area: board-1;
+}
+
+.player2-container {
+    grid-area: board-2;
+}
+
+.player1-container,
+.player2-container {
+    box-shadow: 1px 1px 8px 3px var(--shadow);
+    display: flex;
+    /* width: 200px;
+    height: 200px; */
+}
+
+.place-ships-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-items: center;
+    padding: .8rem;
+}
+
+.ships-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: .8rem;
+    justify-self: start;
+    align-self: start;
+}
+
+.place-ships-wrapper .ships-btns {
+    height: max-content;
+    padding: .8rem 0 0 0;
+    display: flex;
+    gap: .8rem;
+}
+.ships-btns button {
+    width: 5rem;
+    height: 2rem;
+}
+.passScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: grid;
+    place-content: center;
+    background-color: rgba(255, 194, 224, 0.178);
 }
