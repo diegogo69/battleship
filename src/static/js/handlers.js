@@ -152,7 +152,7 @@ const handlers = (function () {
     e.dataTransfer.setData("length", ship.dataset.length);
     e.dataTransfer.setData("orientation", ship.dataset.orientation);
 
-    e.dataTransfer.setDragImage(e.currentTarget, 10, 15); // 10, 10 -> drag image xOffset, yOffset
+    e.dataTransfer.setDragImage(e.currentTarget, 10, 25); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
 
@@ -167,13 +167,12 @@ const handlers = (function () {
 
   const dragover = function dragoverHandler(e) {
     e.preventDefault(); // Necessary to allow dropping
-    console.log("drago overrr");
 
     const shipClass = e.dataTransfer.getData("ship-class");
     if (shipClass !== "true") return;
 
-    e.currentTarget.classList.add("hovered");
-    e.dataTransfer.dropEffect = "move";
+    // e.currentTarget.classList.add("hovered");
+    // e.dataTransfer.dropEffect = "move";
   };
 
   const drop = function dropHandler(e, gameboard) {
@@ -387,6 +386,8 @@ const handlers = (function () {
     const dialHeader = document.createElement("h2");
     if (!isPvp && winner === 2) {
       dialHeader.textContent = "Computer wins! :(";
+    } else if (!isPvp && winner === 1) {
+      dialHeader.textContent = "You won!";
     } else {
       dialHeader.textContent = `Player ${winner} wins!`;
     }
@@ -411,32 +412,26 @@ const handlers = (function () {
   };
   const displayHeader = function displayHeader(
     turn,
-    pvp,
+    isPvP,
     winner = null,
     placingShips = false,
   ) {
     let headerText = null;
 
-    if (winner) {
-      if (pvp) {
-        headerText = `Player ${winner} won the battle!`;
-      } else {
-        headerText = "Computer wins! :/";
-      }
-    }
-
-    else if (turn === 1) {
-      if (placingShips == true) {
-        headerText = `Player ${turn} deploy your fleet`;
-      } else {
-        headerText = `Player ${turn} launch your attack`;
-      }
+    if (placingShips && !isPvP) {
+      headerText = `Deploy your fleet`;
+    } else if (placingShips) {
+      headerText = `Player ${turn} place your navy`;
+    } else if (winner == 2 && !isPvP) {
+      headerText = "Computer wins! :/";
+    } else if (winner == 1 && !isPvP) {
+      headerText = "You won! :D";
+    } else if (winner) {
+      headerText = `Player ${winner} emerges victorious!`;
+    } else if (turn === 1) {
+      headerText = `Player ${turn} launch your attack`;
     } else {
-      if (placingShips == true) {
-        headerText = `Player ${turn} place your navy`;
-      } else {
-        headerText = `Player ${turn} time to attack back`;
-      }
+      headerText = `Player ${turn} time to attack back`;
     }
     const header = document.createElement("h2");
     header.textContent = headerText;

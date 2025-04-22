@@ -9,6 +9,7 @@ svg {
 
 body {
     --shadow: #f1f5f9;
+    --hit-shadow: #fb7185;
     --grid-border: #ddd6fe;
     --ship-bg: hsl(201, 96%, 80%);
     --ship-border: hsl(188, 88%, 46%);
@@ -28,7 +29,7 @@ body > header {
     display: flex;
     align-content: center;
     height: 5;
-    padding: 1rem 2rem;
+    padding: .6rem 2rem;
 }
 
 body > main {
@@ -44,6 +45,9 @@ body > footer {
     padding: 1rem 2rem;
 }
 
+body > header > h1 {
+    font-size: 1.6rem;
+}
 .game-container {
     flex: 1;
     display: flex;
@@ -150,13 +154,33 @@ body > footer {
     height: 2rem;
 }
 .passScreen {
+    z-index: 4;
     position: absolute;
     top: 0;
+    width: 100%;
+    height: 100%;
     left: 0;
     z-index: 1;
     display: grid;
+    gap: .8rem;
+    /* justify-items: center; */
     place-content: center;
-    background-color: rgba(255, 194, 224, 0.178);
+    background-color: rgba(255, 255, 255, 0.8);
+}
+
+.passScreen > h3 {
+    font-size: 1.6rem;
+}
+
+.passScreen > button {
+    font-size: 1.3rem;
+    color: white;
+    font-weight: 900;
+    padding: .3rem 1rem;
+    background-color: var(--ship-bg);
+    border-radius: .2rem;
+    border: 3px solid var(--ship-border);
+    cursor: pointer;
 }
 
 .cell-type {
