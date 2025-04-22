@@ -21,9 +21,9 @@ const GameboardNode = (function () {
   const doneFn = function (e) {
     if (shipsPlaced !== false) return;
     // If there are still ship element to allocate
-    const shipsWrapper = e.currentTarget.closest('.place-ships-wrapper');
-    const shipsContainer = shipsWrapper.querySelector('.ships-container');
-    if (shipsContainer.firstChild) return
+    const shipsWrapper = e.currentTarget.closest(".place-ships-wrapper");
+    const shipsContainer = shipsWrapper.querySelector(".ships-container");
+    if (shipsContainer.firstChild) return;
 
     const turn = gameInstance.getTurn();
 
@@ -45,23 +45,28 @@ const GameboardNode = (function () {
       console.log(ship);
     });
 
-    console.log(gameInstance.isPvPGamemode())
+    console.log(gameInstance.isPvPGamemode());
     if (gameInstance.isPvPGamemode() == true) {
       if (turn === 1) {
         gameInstance.changeTurn(); // Now it's 2
         const turn = gameInstance.getTurn(); // 2
-        handlers.displayHeader(turn, gameInstance.isPvPGamemode(), null, true)
+        handlers.displayHeader(turn, gameInstance.isPvPGamemode(), null, true);
         handlers.displayBoard(turn);
         handlers.displayShips(doneFn, turn);
         return;
       }
       gameInstance.changeTurn(); // Change again to 1
     }
-    
+
     disableDragDrop();
     enableTurnHandler();
     shipsPlaced = true;
-    handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), null, false)
+    handlers.displayHeader(
+      gameInstance.getTurn(),
+      gameInstance.isPvPGamemode(),
+      null,
+      false,
+    );
     handlers.displayBoards();
   };
 
@@ -88,10 +93,16 @@ const GameboardNode = (function () {
       const hit = turnFn(e);
       if (hit === true) {
         const winner = gameInstance.checkWinner();
-        if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
+        if (winner !== null) {
+          // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
           handlers.displayWinner(winner, gameInstance.isPvPGamemode());
-          handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), winner, false)
+          handlers.displayHeader(
+            gameInstance.getTurn(),
+            gameInstance.isPvPGamemode(),
+            winner,
+            false,
+          );
         }
         handlers.displayBoards(); // Display boards as player continue hitting
         return;
@@ -102,17 +113,28 @@ const GameboardNode = (function () {
 
       // HIt false: is miss
       if (gameInstance.isPvPGamemode() === true) {
-        handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), null, false)
+        handlers.displayHeader(
+          gameInstance.getTurn(),
+          gameInstance.isPvPGamemode(),
+          null,
+          false,
+        );
         handlers.displayPassScreen();
-        return
+        return;
       } else {
         const winner = gameInstance.checkWinner();
-        if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
+        if (winner !== null) {
+          // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
-          handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), winner, false)
+          handlers.displayHeader(
+            gameInstance.getTurn(),
+            gameInstance.isPvPGamemode(),
+            winner,
+            false,
+          );
           handlers.displayWinner(winner, gameInstance.isPvPGamemode());
         }
-        handlers.displayBoards(); 
+        handlers.displayBoards();
       }
       // handlers.displayPassScreen();
     };
@@ -135,22 +157,30 @@ const GameboardNode = (function () {
     dragleaveFn = null;
   };
 
-  const boardNode = function boardNode(boardNo, pass = false, board = null) {
+  const boardNode = function boardNode(
+    boardNo,
+    pass = false,
+    boardInstance = null,
+  ) {
     // Kinda use arguments, instead of module coupling and direct reference
     let gameboard;
-    if (board == null) gameboard = gameInstance.players[boardNo].gameboard;
-    else gameboard = board;
-
-    const turn = gameInstance.getTurn();
+    if (boardInstance !== null) gameboard = boardInstance;
+    else gameboard = gameInstance.players[boardNo].gameboard;
 
     const boardNode = document.createElement("div");
     boardNode.id = `gameboard-${boardNo}`;
     boardNode.classList.add("gameboard");
     boardNode.dataset.boardNo = boardNo;
 
-    const winner = gameInstance.checkWinner
+    // Empty board
+    const isMockup = boardInstance !== null;
+    if (isMockup) {
+    }
+    const turn = isMockup ? boardNo : gameInstance.getTurn(); //
+
+    const winner = isMockup ? null : gameInstance.checkWinner(); //
     if (!winner && boardNo !== turn) {
-      boardNode.classList.add('being-attacked')
+      boardNode.classList.add("being-attacked");
     }
 
     const shipsBoard = gameboard.shipsBoard;
@@ -222,17 +252,20 @@ const GameboardNode = (function () {
       if (clickFn) boardNode.addEventListener("click", clickFn);
     }
 
-    const playerBoardSpan = document.createElement('span')
-    playerBoardSpan.classList.add('player-board-span')
-    if (shipsPlaced && gameInstance.isPvPGamemode()) {
-      playerBoardSpan.textContent = `Player ${boardNo} board`
-    } else if (shipsPlaced && boardNo == 1) {
-      playerBoardSpan.textContent = 'Your board'
-    } else if (shipsPlaced) {
-    playerBoardSpan.textContent = "Computer's board"
-    }
+    if (!isMockup) {
+      const playerBoardSpan = document.createElement("span"); //
+      playerBoardSpan.classList.add("player-board-span");
+      if (shipsPlaced && gameInstance.isPvPGamemode()) {
+        //
+        playerBoardSpan.textContent = `Player ${boardNo} board`;
+      } else if (shipsPlaced && boardNo == 1) {
+        playerBoardSpan.textContent = "Your board";
+      } else if (shipsPlaced) {
+        playerBoardSpan.textContent = "Computer's board";
+      }
 
-    boardNode.appendChild(playerBoardSpan)
+      boardNode.appendChild(playerBoardSpan);
+    }
 
     return boardNode;
   };
