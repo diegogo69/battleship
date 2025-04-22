@@ -8,8 +8,15 @@ svg {
 }
 
 body {
+    --green-btn: #34d399;
+    --green-border: #10b981;
+    --blue-btn: #0ea5e9;
+    --blue-border: #2563eb;
+    --red-btn: #f43f5e;
+    --red-border: #be123c;
+
     --shadow: #f1f5f9;
-    --hit-shadow: #fb7185;
+    --red-shadow: #fb7185;
     --grid-border: #ddd6fe;
     --ship-bg: hsl(201, 96%, 80%);
     --ship-border: hsl(188, 88%, 46%);
@@ -57,6 +64,7 @@ body > header > h1 {
 .boards-header {
     display: grid;
     place-content: center;
+    padding: 0 0 1rem;
 }
 
 .boards-container {
@@ -96,13 +104,6 @@ body > header > h1 {
     gap: 1rem;
 }
 
-.boards-btns > button {
-    padding: .4rem 1rem;
-    border-radius: 1rem;
-    border: none;
-    cursor: pointer;
-}
-
 .boards-container > div {
     min-width: 340px;
     min-height: 340px;
@@ -120,8 +121,11 @@ body > header > h1 {
 .player2-container {
     box-shadow: 1px 1px 8px 3px var(--shadow);
     display: flex;
-    /* width: 200px;
-    height: 200px; */
+}
+
+.ships-btns button {
+    width: 5.2rem;
+    height: 2.1rem;
 }
 
 .place-ships-wrapper {
@@ -149,21 +153,16 @@ body > header > h1 {
     display: flex;
     gap: .8rem;
 }
-.ships-btns button {
-    width: 5rem;
-    height: 2rem;
-}
+
 .passScreen {
     z-index: 4;
     position: absolute;
     top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
-    left: 0;
-    z-index: 1;
     display: grid;
     gap: .8rem;
-    /* justify-items: center; */
     place-content: center;
     background-color: rgba(255, 255, 255, 0.8);
 }
@@ -172,15 +171,41 @@ body > header > h1 {
     font-size: 1.6rem;
 }
 
-.passScreen > button {
-    font-size: 1.3rem;
+.passScreen > button,
+.boards-btns button,
+.place-ships-wrapper button {
     color: white;
     font-weight: 900;
-    padding: .3rem 1rem;
-    background-color: var(--ship-bg);
     border-radius: .2rem;
-    border: 3px solid var(--ship-border);
     cursor: pointer;
+}
+
+.passScreen > button,
+.place-ships-wrapper button.done-btn {
+    background-color:var(--green-btn);
+    border: 3px solid var(--green-border);
+}
+
+.boards-btns button,
+.place-ships-wrapper button.random-btn {
+    background-color:var(--blue-btn);
+    border: 3px solid var(--blue-border);
+}
+
+.boards-btns button.new-pvp-btn {
+    background-color: var(--red-btn);
+    border: 3px solid var(--red-border);
+}
+
+.boards-btns > button {
+    padding: .4rem 1rem;
+    border-radius: 1rem;
+}
+
+.passScreen > button {
+    padding: .3rem 1rem;
+    border-radius: .2rem;
+    font-size: 1.3rem;
 }
 
 .cell-type {
