@@ -148,19 +148,6 @@ const GameboardNode = (function () {
     boardNode.classList.add("gameboard");
     boardNode.dataset.boardNo = boardNo;
 
-    const playerBoardSpan = document.createElement('span')
-    playerBoardSpan.classList.add('player-board-span')
-    if (shipsPlaced && gameInstance.isPvPGamemode()) {
-      playerBoardSpan.textContent = `Player ${boardNo} board`
-    } else if (shipsPlaced && boardNo == 1) {
-      playerBoardSpan.textContent = 'Your board'
-    } else if (shipsPlaced) {
-    playerBoardSpan.textContent = "Computer's board"
-    }
-
-    boardNode.appendChild(playerBoardSpan)
-
-    
     if (boardNo !== turn) {
       boardNode.classList.add('being-attacked')
     }
@@ -233,6 +220,19 @@ const GameboardNode = (function () {
     if (pass === false) {
       if (clickFn) boardNode.addEventListener("click", clickFn);
     }
+
+    const playerBoardSpan = document.createElement('span')
+    playerBoardSpan.classList.add('player-board-span')
+    if (shipsPlaced && gameInstance.isPvPGamemode()) {
+      playerBoardSpan.textContent = `Player ${boardNo} board`
+    } else if (shipsPlaced && boardNo == 1) {
+      playerBoardSpan.textContent = 'Your board'
+    } else if (shipsPlaced) {
+    playerBoardSpan.textContent = "Computer's board"
+    }
+
+    boardNode.appendChild(playerBoardSpan)
+    
     return boardNode;
   };
 
