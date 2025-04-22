@@ -59,6 +59,8 @@
 
 .isMiss {
     z-index: 1;
+    outline: 1px solid var(--miss-border);
+    border: 1px solid var(--miss-border);
     background-color: var(--ship-miss);
 }
 

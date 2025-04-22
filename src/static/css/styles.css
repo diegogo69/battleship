@@ -14,13 +14,13 @@ body {
     --ship-border: hsl(188, 88%, 46%);
     --ship-hit: #fb7185;
     --ship-miss: hsl(60, 96%, 85%);
-    --ship-miss-border: #cdbfdb;
+    --miss-border: hsl(60, 46%, 75%);
     --ship-hit-border: hsl(345, 83%, 46%);
     
     height: 100vh;
     display: flex;
     flex-direction: column;
-
+    user-select: none;
     color: #171717;
 }
 
@@ -73,10 +73,22 @@ body > footer {
 }
 
 .footer-text {
-    height: 1.5rem;
+    height: 2rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    font-weight: 900;
 }
+
+.footer-text > div {
+    display: flex;
+    gap: .4rem;
+    align-items: center;
+}
+
 .boards-btns {
     display: flex;
+    justify-content: center;
     gap: 1rem;
 }
 
@@ -90,8 +102,6 @@ body > footer {
 .boards-container > div {
     min-width: 340px;
     min-height: 340px;
-    user-select: none;
-
 }
 
 .player1-container {
@@ -147,4 +157,9 @@ body > footer {
     display: grid;
     place-content: center;
     background-color: rgba(255, 194, 224, 0.178);
+}
+
+.cell-type {
+    width: 20px;
+    height: 20px;
 }

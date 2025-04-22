@@ -28,7 +28,7 @@ const createMainPage = ( function () {
   const footer = function footer(gamemodes=true) {
     const boardsFooter = document.createElement("footer");
     boardsFooter.classList.add("boards-footer");
-    const footerText = document.createElement("p");
+    const footerText = document.createElement("div");
     footerText.classList.add('footer-text');
     const btnWrapper = document.createElement("div");
     btnWrapper.classList.add("boards-btns");
@@ -42,11 +42,45 @@ const createMainPage = ( function () {
 
       const newPvPBtn = document.createElement("button");
       newPvPBtn.classList.add("new-pvp-btn");
-      newPvPBtn.textContent = "2 player";
+      newPvPBtn.textContent = "2 players";
 
       btnWrapper.appendChild(newPvCBtn);
       btnWrapper.appendChild(newPvPBtn);
     } else {
+      // Show grid cell kinds
+      // Ship, hit, miss, 
+      const shipSpan = document.createElement('div');
+      const shipCell = document.createElement('div');
+      shipCell.classList.add('hasShip');
+      shipCell.classList.add('cell-type');
+      const shipText = document.createElement('span');
+      shipText.textContent = "Ship";
+      shipSpan.appendChild(shipCell);
+      shipSpan.appendChild(shipText);
+
+      const hitSpan = document.createElement('div');
+      const hitCell = document.createElement('div');
+      hitCell.classList.add('isHit');
+      hitCell.classList.add('cell-type');
+      const hitText = document.createElement('span');
+      hitText.textContent = 'Hit';
+      hitSpan.appendChild(hitCell);
+      hitSpan.appendChild(hitText);
+
+      const missSpan = document.createElement('div');
+      const missCell = document.createElement('div');
+      missCell.classList.add('isMiss');
+      missCell.classList.add('cell-type');
+      const missText = document.createElement('span');
+      missText.textContent = 'Miss';
+      missSpan.appendChild(missCell);
+      missSpan.appendChild(missText);
+
+      
+      footerText.appendChild(shipSpan);
+      footerText.appendChild(hitSpan);
+      footerText.appendChild(missSpan);
+
       const goBackBtn = document.createElement("button");
       goBackBtn.classList.add("go-back-btn");
       goBackBtn.textContent = "Back to menu";
