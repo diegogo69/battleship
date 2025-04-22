@@ -142,16 +142,13 @@ const handlers = (function () {
 
   const dragstart = function dragstartHandler(e) {
     const ship = e.currentTarget;
-
     const isPlaced = ship.parentNode.classList.contains("gameboard-col");
-    if (isPlaced) {
-      occupyCells(ship, false);
-    }
+
     e.dataTransfer.setData("ship-id", ship.id);
     e.dataTransfer.setData("ship-class", ship.classList.contains("ship"));
     e.dataTransfer.setData("length", ship.dataset.length);
     e.dataTransfer.setData("orientation", ship.dataset.orientation);
-
+    e.dataTransfer.setData('is-placed', isPlaced)
     e.dataTransfer.setDragImage(e.currentTarget, 10, 25); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
@@ -188,14 +185,14 @@ const handlers = (function () {
     const shipID = e.dataTransfer.getData("ship-id");
     const dropCoordinate = cell.dataset.rowcol;
     const shipLength = parseInt(e.dataTransfer.getData("length"));
-    const orientation = e.dataTransfer.getData("orientation") === "horizontal";
+    const isHorizontal = e.dataTransfer.getData("orientation") === "horizontal";
     const boardNode = cell.closest(".gameboard");
     const boardNo = boardNode.dataset.boardNo;
 
     const validPlacement = isValidPlacement(
       dropCoordinate,
       shipLength,
-      orientation,
+      isHorizontal,
       gameboard,
       boardNode,
       shipID,
@@ -217,6 +214,13 @@ const handlers = (function () {
     cell.classList.remove("hovered");
 
     const ship = document.getElementById(shipID);
+
+    // Free the cells previously occupy by ship
+    const shipIsPlaced = e.dataTransfer.getData('is-placed')
+    if (shipIsPlaced === true) {
+      occupyCells(ship, false);
+    }
+
     // ship.parentNode.removeChild(ship);
     ship.classList.add("positioned");
     ship.classList.remove("dragging");
@@ -225,13 +229,9 @@ const handlers = (function () {
     occupyCells(ship, true);
     // If all ships have been placed
     if (validPlacement === null) {
-      // Remove ships container
-
       GameboardNode.disableDragDrop();
       GameboardNode.enableTurnHandler();
     }
-    // displayBoard(boardNo, gameboard);
-    // displayBoards();
   };
 
   const dragleave = function dragleaveHandler(e) {
