@@ -366,7 +366,7 @@ const handlers = (function () {
       const emptyGameboard = new Gameboard();
       board = GameboardNode.boardNode(playerNo, pass, emptyGameboard);
     } else {
-      board = GameboardNode.boardNode(playerNo);
+      board = GameboardNode.boardNode(playerNo, pass);
     }
     domHandler.render.board[playerNo](board);
   };
