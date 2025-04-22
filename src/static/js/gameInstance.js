@@ -26,6 +26,9 @@ const gameInstance = function gameInstance() {
     [players[1], players[2]] = createPlayers();
   };
 
+  const isPvPGamemode = function isPvPGamemode() {
+    return pvpGamemode
+  }
   const getRivalTurn = function getRivalTurn() {
     return turn === 1 ? 2 : 1;
   };
@@ -104,7 +107,7 @@ const gameInstance = function gameInstance() {
     players,
     getTurn,
     checkWinner,
-    pvpGamemode,
+    isPvPGamemode,
     getRivalTurn,
   };
 };

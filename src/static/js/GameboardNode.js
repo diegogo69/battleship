@@ -5,7 +5,6 @@
 // a shotsBoard array with the received attacks
 // The board dipslays a player ships, and the received shots
 
-import gameInstance from "./gameInstance";
 import handlers from "./handlers";
 import shipsFromBoard from "./shipsFromBoard";
 
@@ -16,7 +15,7 @@ const GameboardNode = (function () {
   let dragleaveFn = null;
   let turnFn = null;
 
-  let game = null;
+  let gameInstance = null;
   let shipsPlaced = null;
 
   const doneFn = function (e) {
@@ -26,7 +25,7 @@ const GameboardNode = (function () {
     const shipsContainer = shipsWrapper.querySelector('.ships-container');
     if (shipsContainer.firstChild) return
 
-    const turn = game.getTurn();
+    const turn = gameInstance.getTurn();
 
     console.log("Done fn");
     const boardNode = document.querySelector(`#gameboard-${turn}`);
@@ -38,7 +37,7 @@ const GameboardNode = (function () {
     console.log(ships);
 
     ships.forEach((ship) => {
-      game.players[turn].gameboard.placeShip(
+      gameInstance.players[turn].gameboard.placeShip(
         ship.rowcol,
         ship.length,
         ship.orientation,
@@ -46,14 +45,17 @@ const GameboardNode = (function () {
       console.log(ship);
     });
 
-    if (game.pvpGamemode) {
+    console.log(gameInstance.isPvPGamemode())
+    if (gameInstance.isPvPGamemode() == true) {
       if (turn === 1) {
-        // game.changeTurn(); // Now it's 2
-        handlers.displayShips(doneFn, game.getRivalTurn());
-        handlers.displayBoard(game.getRivalTurn());
+        gameInstance.changeTurn(); // Now it's 2
+
+        const turn = gameInstance.getTurn(); // 2
+        handlers.displayBoard(turn);
+        handlers.displayShips(doneFn, turn);
         return;
       }
-      game.changeTurn(); // Change turn in dom
+      gameInstance.changeTurn(); // Change again to 1
     }
 
     disableDragDrop();
@@ -63,10 +65,10 @@ const GameboardNode = (function () {
   };
 
   // Reference game instance
-  const initGameboard = function init(gameInstance) {
+  const initGameboard = function init(game) {
     shipsPlaced = false;
-    game = gameInstance;
-    turnFn = game.handleTurn;
+    gameInstance = game;
+    turnFn = gameInstance.handleTurn;
   };
 
   const enableTurnHandler = function enableTurnHandler() {
@@ -74,7 +76,7 @@ const GameboardNode = (function () {
       const rowcol = e.target.dataset.rowcol;
       if (!rowcol) return;
 
-      const turn = game.getTurn();
+      const turn = gameInstance.getTurn();
 
       console.log("Turn on board node " + turn);
       if (turn == e.currentTarget.dataset.boardNo) {
@@ -84,10 +86,10 @@ const GameboardNode = (function () {
 
       const hit = turnFn(e);
       if (hit === true) {
-        const winner = game.checkWinner();
+        const winner = gameInstance.checkWinner();
         if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
-          handlers.displayWinner(winner, game.pvpGamemode);
+          handlers.displayWinner(winner, gameInstance.isPvPGamemode());
         }
         handlers.displayBoards(); // Display boards as player continue hitting
         return;
@@ -97,14 +99,14 @@ const GameboardNode = (function () {
       }
 
       // HIt false: is miss
-      if (game.pvpGamemode === true) {
+      if (gameInstance.isPvPGamemode() === true) {
         handlers.displayPassScreen();
         return
       } else {
-        const winner = game.checkWinner();
+        const winner = gameInstance.checkWinner();
         if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
-          handlers.displayWinner(winner, game.pvpGamemode);
+          handlers.displayWinner(winner, gameInstance.isPvPGamemode());
         }
         handlers.displayBoards(); 
       }
@@ -132,10 +134,10 @@ const GameboardNode = (function () {
   const boardNode = function boardNode(boardNo, pass = false, board = null) {
     // Kinda use arguments, instead of module coupling and direct reference
     let gameboard;
-    if (board == null) gameboard = game.players[boardNo].gameboard;
+    if (board == null) gameboard = gameInstance.players[boardNo].gameboard;
     else gameboard = board;
 
-    const turn = game.getTurn();
+    const turn = gameInstance.getTurn();
 
     const boardNode = document.createElement("div");
     boardNode.id = `gameboard-${boardNo}`;

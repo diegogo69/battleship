@@ -29,8 +29,12 @@ const domHandler = (function () {
 
   const initHandlers = {
     gamemodes(pvcFn, pvpFn) {
-      nodes.newPvCBtn.addEventListener("click", pvcFn);
-      nodes.newPvPBtn.addEventListener("click", pvpFn);
+      nodes.newPvCBtn.addEventListener("click", () => {
+        pvcFn(false)
+      });
+      nodes.newPvPBtn.addEventListener("click", () => {
+        pvcFn(true)
+      });
     },
     goBack(goBackFn) {
       nodes.goBackBtn = nodes.footer.querySelector(".go-back-btn");

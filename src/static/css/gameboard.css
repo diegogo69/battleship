@@ -94,3 +94,7 @@
 .cell.invalid-drop {
     background-color: red;
 }
+
+.invalid-cell {
+    cursor: not-allowed;
+}

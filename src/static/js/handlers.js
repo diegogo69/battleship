@@ -146,6 +146,7 @@ const handlers = (function () {
 
   const dragover = function dragoverHandler(e) {
     e.preventDefault(); // Necessary to allow dropping
+    console.log('drago overrr')
 
     const shipClass = e.dataTransfer.getData("ship-class");
     if (shipClass !== "true") return;
@@ -408,10 +409,8 @@ const handlers = (function () {
   };
 
   const initDomHandlers = function initDom() {
-    const pvpHandler = () => initGame(true);
-    const pvcHandler = () => initGame(false);
-
-    domHandler.initHandlers.gamemodes(pvcHandler, pvpHandler);
+    domHandler.initHandlers.gamemodes(initGame);
+    // domHandler.initHandlers.gamemodes(pvcHandler, pvpHandler);
   };
 
   const mainPage = function mainPage() {
