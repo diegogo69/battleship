@@ -148,7 +148,7 @@ const GameboardNode = (function () {
     boardNode.classList.add("gameboard");
     boardNode.dataset.boardNo = boardNo;
 
-    const winner = gameInstance.
+    const winner = gameInstance.checkWinner
     if (!winner && boardNo !== turn) {
       boardNode.classList.add('being-attacked')
     }
