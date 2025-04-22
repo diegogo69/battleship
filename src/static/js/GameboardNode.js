@@ -176,8 +176,8 @@ const GameboardNode = (function () {
     const isMockup = boardInstance !== null;
     if (isMockup) {
     }
+    
     const turn = isMockup ? boardNo : gameInstance.getTurn(); //
-
     const winner = isMockup ? null : gameInstance.checkWinner(); //
     if (!winner && boardNo !== turn) {
       boardNode.classList.add("being-attacked");
@@ -198,7 +198,7 @@ const GameboardNode = (function () {
         // Each node may contain classes that identify if:
         // contains a ship, have been shot (miss or hit)
         // Display ships only for current turn being-attacked
-        if (pass === false && boardNo === turn) {
+        if (!isMockup && pass === false && boardNo === turn) {
           const shipIndex = shipsBoard[rowIndex][colIndex];
           if (shipIndex !== null) {
             colNode.dataset.shipIndex = shipIndex; // unnused
@@ -230,7 +230,7 @@ const GameboardNode = (function () {
       boardNode.appendChild(rowNode);
     });
 
-    if (pass === true && boardNo !== turn) {
+    if (!isMockup && pass === true && boardNo !== turn) {
       const passDiv = document.createElement("div");
       const passHeading = document.createElement("h3");
       const passBtn = document.createElement("button");
@@ -248,11 +248,10 @@ const GameboardNode = (function () {
       passDiv.appendChild(passBtn);
       boardNode.appendChild(passDiv);
     }
-    if (pass === false) {
-      if (clickFn) boardNode.addEventListener("click", clickFn);
-    }
 
     if (!isMockup) {
+      if (pass === false && clickFn) boardNode.addEventListener("click", clickFn);
+
       const playerBoardSpan = document.createElement("span"); //
       playerBoardSpan.classList.add("player-board-span");
       if (shipsPlaced && gameInstance.isPvPGamemode()) {
