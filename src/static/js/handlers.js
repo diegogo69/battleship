@@ -6,44 +6,66 @@ import Gameboard from "./Gameboard";
 import createMainPage from "./createMainPage";
 
 const handlers = (function () {
-  const isValidDomArea = function isValidDomArea(row, col, length, isHorizontal, boardNode, shipID) {
+  const isValidDomArea = function isValidDomArea(
+    row,
+    col,
+    length,
+    isHorizontal,
+    boardNode,
+    shipID,
+  ) {
     // const {row, col} = Gameboard.validateCoordinates(rowcol)
 
-    const {rowStart, rowEnd, colStart, colEnd} = Gameboard.getSorroundings(row, col, isHorizontal, length)
+    const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
+      row,
+      col,
+      isHorizontal,
+      length,
+    );
     // const boardNode = gridCell.closest('.gameboard');
 
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
-        const rowNode = boardNode.children[curRow]
-        if (rowNode == null) return [false]
+        const rowNode = boardNode.children[curRow];
+        if (rowNode == null) return [false];
         const cell = rowNode.children[curCol];
-        if (cell == null) return false
+        if (cell == null) return false;
 
         // If cell is free, or same ship
         // cell != null &&
         const sameShip = cell.classList.contains(`by-ship-${shipID}`);
         const occupied = cell.classList.contains(`occupied`);
         if (occupied && sameShip) {
-          console.log("Ship overlaps itself. So it is a realocation at "  + curRow + '' + curCol);
+          console.log(
+            "Ship overlaps itself. So it is a realocation at " +
+              curRow +
+              "" +
+              curCol,
+          );
           // console.log('valid cell ' + row + '' + col)
         } else if (occupied) {
-          console.log("Ship element overlaps another ship element at "  + curRow + '' + curCol);
+          console.log(
+            "Ship element overlaps another ship element at " +
+              curRow +
+              "" +
+              curCol,
+          );
           // console.log('invalid cell ' + row + '' + col)
           return false;
         }
       }
     }
     return true;
-  }
+  };
   const occupyCells = function occupyCells(ship, isOccupy = true) {
-    const isGridCell = (ship.parentNode.classList.contains('gameboard-col'))
-    if (!isGridCell) return
-    
+    const isGridCell = ship.parentNode.classList.contains("gameboard-col");
+    if (!isGridCell) return;
+
     const gridCell = ship.parentNode;
     const row = parseInt(gridCell.dataset.rowcol[0]);
     const col = parseInt(gridCell.dataset.rowcol[1]);
     const length = parseInt(ship.dataset.length);
-    const isHorizontal = (ship.dataset.orientation == "horizontal");
+    const isHorizontal = ship.dataset.orientation == "horizontal";
     const boardNode = ship.closest(".gameboard");
     for (let i = 0; i < length; i++) {
       let cell = null;
@@ -83,7 +105,6 @@ const handlers = (function () {
     boardNode,
     shipID,
   ) {
-
     const validBounds = Gameboard.validateBounds(row, col, length, horizontal);
     if (!validBounds) return false;
 
@@ -94,7 +115,7 @@ const handlers = (function () {
       horizontal,
       boardNode,
       shipID,
-    )
+    );
 
     return validArea;
   };
@@ -146,7 +167,7 @@ const handlers = (function () {
 
   const dragover = function dragoverHandler(e) {
     e.preventDefault(); // Necessary to allow dropping
-    console.log('drago overrr')
+    console.log("drago overrr");
 
     const shipClass = e.dataTransfer.getData("ship-class");
     if (shipClass !== "true") return;
@@ -260,7 +281,7 @@ const handlers = (function () {
     // Get all ship elements
     const ships = document.querySelectorAll(".ship");
     const boardNode = document.querySelector(".gameboard");
-    boardNode.classList.remove
+    boardNode.classList.remove;
     ships.forEach((ship) => {
       if (ship.parentNode.classList.contains("gameboard-col")) {
         occupyCells(ship, false);
@@ -268,23 +289,26 @@ const handlers = (function () {
       const length = parseInt(ship.dataset.length);
       // Set a random orientation
       const random01 = Math.floor(Math.random() * 2);
-      if (random01  === 0) {
-        ship.classList.remove('flex-row')
-        ship.classList.add('flex-col')
-        ship.dataset.orientation = 'vertical'
+      if (random01 === 0) {
+        ship.classList.remove("flex-row");
+        ship.classList.add("flex-col");
+        ship.dataset.orientation = "vertical";
       } else {
-        ship.classList.remove('flex-col')
-        ship.classList.add('flex-row')
-        ship.dataset.orientation = 'horizontal'
+        ship.classList.remove("flex-col");
+        ship.classList.add("flex-row");
+        ship.dataset.orientation = "horizontal";
       }
       const orientation = ship.dataset.orientation;
-      const isHorizontal = (orientation === "horizontal");
+      const isHorizontal = orientation === "horizontal";
 
       let i = 0;
       while (true) {
         if (i >= 100) throw "Something went wrong positioning the ships";
 
-        const { row, col } = Gameboard.getValidRandomCoordinate(length, isHorizontal);
+        const { row, col } = Gameboard.getValidRandomCoordinate(
+          length,
+          isHorizontal,
+        );
         const isDomValid = isValidDomPlacement(
           row,
           col,
@@ -327,8 +351,8 @@ const handlers = (function () {
     randomBtn.classList.add("random-btn");
     randomBtn.addEventListener("click", placeShipsRandomly);
 
-    const btnWrapper = document.createElement('div');
-    btnWrapper.classList.add('ships-btns')
+    const btnWrapper = document.createElement("div");
+    btnWrapper.classList.add("ships-btns");
     btnWrapper.appendChild(randomBtn);
     btnWrapper.appendChild(doneBtn);
     placeShipsNode.appendChild(ships);
@@ -359,10 +383,10 @@ const handlers = (function () {
   const displayWinner = function displayWinner(winner, isPvp) {
     console.log("display winner fn");
     const dialog = document.createElement("dialog");
-    
+
     const dialHeader = document.createElement("h2");
-    if ((!isPvp) && (winner === 2)) {
-      dialHeader.textContent = 'Computer wins! :(';
+    if (!isPvp && winner === 2) {
+      dialHeader.textContent = "Computer wins! :(";
     } else {
       dialHeader.textContent = `Player ${winner} wins!`;
     }
@@ -385,6 +409,39 @@ const handlers = (function () {
     player.gameboard.placeShip("01", 2, true);
     player.gameboard.placeShip("10", 2, false);
   };
+  const displayHeader = function displayHeader(
+    turn,
+    pvp,
+    winner = null,
+    placingShips = false,
+  ) {
+    let headerText = null;
+
+    if (winner) {
+      if (pvp) {
+        headerText = `Player ${winner} won the battle!`;
+      } else {
+        headerText = "Computer wins! :/";
+      }
+    }
+
+    else if (turn === 1) {
+      if (placingShips == true) {
+        headerText = `Player ${turn} deploy your fleet`;
+      } else {
+        headerText = `Player ${turn} launch your attack`;
+      }
+    } else {
+      if (placingShips == true) {
+        headerText = `Player ${turn} place your navy`;
+      } else {
+        headerText = `Player ${turn} time to attack back`;
+      }
+    }
+    const header = document.createElement("h2");
+    header.textContent = headerText;
+    domHandler.render.boardsHeader(header);
+  };
 
   const initGame = function initGame(pvp) {
     // Creeate new game instance
@@ -397,6 +454,7 @@ const handlers = (function () {
 
     // Display gameboard only for player 1. As the other will hold the ships elements
     const turn = game.getTurn(); // 1
+    displayHeader(turn, game.isPvPGamemode(), null, true);
     displayBoard(turn);
     displayShips(GameboardNode.doneFn, turn);
     hideGamemodes();
@@ -435,6 +493,7 @@ const handlers = (function () {
     rotateShip,
     testPlaceShips,
     initDomHandlers,
+    displayHeader,
     mainPage,
   };
 })();

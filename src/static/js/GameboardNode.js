@@ -49,18 +49,19 @@ const GameboardNode = (function () {
     if (gameInstance.isPvPGamemode() == true) {
       if (turn === 1) {
         gameInstance.changeTurn(); // Now it's 2
-
         const turn = gameInstance.getTurn(); // 2
+        handlers.displayHeader(turn, gameInstance.isPvPGamemode(), null, true)
         handlers.displayBoard(turn);
         handlers.displayShips(doneFn, turn);
         return;
       }
       gameInstance.changeTurn(); // Change again to 1
     }
-
+    
     disableDragDrop();
     enableTurnHandler();
     shipsPlaced = true;
+    handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), null, false)
     handlers.displayBoards();
   };
 
@@ -90,6 +91,7 @@ const GameboardNode = (function () {
         if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
           handlers.displayWinner(winner, gameInstance.isPvPGamemode());
+          handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), winner, false)
         }
         handlers.displayBoards(); // Display boards as player continue hitting
         return;
@@ -100,12 +102,14 @@ const GameboardNode = (function () {
 
       // HIt false: is miss
       if (gameInstance.isPvPGamemode() === true) {
+        handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), null, false)
         handlers.displayPassScreen();
         return
       } else {
         const winner = gameInstance.checkWinner();
         if (winner !== null) { // Why null. Ah bcs it's initialize to null. and only change when a winner
           disableTurnHandler();
+          handlers.displayHeader(gameInstance.getTurn(), gameInstance.isPvPGamemode(), winner, false)
           handlers.displayWinner(winner, gameInstance.isPvPGamemode());
         }
         handlers.displayBoards(); 

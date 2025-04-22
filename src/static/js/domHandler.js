@@ -1,6 +1,7 @@
 const domHandler = (function () {
   const nodes = {
     main: document.querySelector("main"),
+    boardsHeader: null,
     gameContainer: null,
     boardsContainer: null,
     btnWrapper: null,
@@ -17,6 +18,7 @@ const domHandler = (function () {
 
   const referenceDom = function () {
     nodes.gameContainer = nodes.main.querySelector(".game-container");
+    nodes.boardsHeader = nodes.gameContainer.querySelector(".boards-header");
     nodes.boardsContainer = nodes.gameContainer.querySelector(".boards-container");
     nodes.player[1] = nodes.boardsContainer.querySelector(".player1-container");
     nodes.player[2] = nodes.boardsContainer.querySelector(".player2-container");
@@ -75,6 +77,11 @@ const domHandler = (function () {
     mainPage(node) {
       clear.node(nodes.main);
       nodes.main.appendChild(node);
+    },
+
+    boardsHeader(header) {
+      clear.node(nodes.boardsHeader);
+      nodes.boardsHeader.appendChild(header);
     },
 
     footer(node) {
