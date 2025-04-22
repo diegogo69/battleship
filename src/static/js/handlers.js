@@ -360,8 +360,14 @@ const handlers = (function () {
   };
 
   // Display gameboards
-  const displayBoard = function displayBoard(playerNo, pass) {
-    const board = GameboardNode.boardNode(playerNo, pass);
+  const displayBoard = function displayBoard(playerNo, pass=false, isMock=null) {
+    let board = null;
+    if (isMock !== null) {
+      const emptyGameboard = new Gameboard();
+      board = GameboardNode.boardNode(playerNo, pass, emptyGameboard);
+    } else {
+      board = GameboardNode.boardNode(playerNo);
+    }
     domHandler.render.board[playerNo](board);
   };
 
@@ -370,13 +376,11 @@ const handlers = (function () {
     const pass = true;
     displayBoard(1, pass);
     displayBoard(2, pass);
-
-    // Display pass header and button
   };
 
-  const displayBoards = function displayBoards() {
-    displayBoard(1);
-    displayBoard(2);
+  const displayBoards = function displayBoards(isMock=null, pass=false) {
+    displayBoard(1, pass, isMock);
+    displayBoard(2, pass, isMock);
   };
 
   const displayWinner = function displayWinner(winner, isPvp) {
@@ -471,6 +475,8 @@ const handlers = (function () {
     domHandler.render.mainPage(homeNode);
     domHandler.referenceDom();
     initDomHandlers();
+    const isMock = true;
+    displayBoards(isMock);
   };
 
   return {
