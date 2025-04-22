@@ -85,7 +85,7 @@ const handlers = (function () {
       if (isOccupy == true) {
         cell.classList.add(`occupied`);
         cell.classList.add(`by-ship-${ship.id}`);
-      } else if (isOccupy == false) {
+      } else {
         if (
           cell != null &&
           cell.classList.contains(`occupied`) &&
@@ -216,8 +216,8 @@ const handlers = (function () {
     const ship = document.getElementById(shipID);
 
     // Free the cells previously occupy by ship
-    const shipIsPlaced = e.dataTransfer.getData('is-placed')
-    if (shipIsPlaced === true) {
+    const shipIsPlaced = e.dataTransfer.getData('is-placed') === 'true';
+    if (shipIsPlaced) {
       occupyCells(ship, false);
     }
 
