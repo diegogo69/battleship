@@ -148,7 +148,8 @@ const GameboardNode = (function () {
     boardNode.classList.add("gameboard");
     boardNode.dataset.boardNo = boardNo;
 
-    if (boardNo !== turn) {
+    const winner = gameInstance.
+    if (!winner && boardNo !== turn) {
       boardNode.classList.add('being-attacked')
     }
 
@@ -232,7 +233,7 @@ const GameboardNode = (function () {
     }
 
     boardNode.appendChild(playerBoardSpan)
-    
+
     return boardNode;
   };
 
