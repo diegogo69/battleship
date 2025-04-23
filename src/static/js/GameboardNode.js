@@ -241,23 +241,25 @@ const GameboardNode = (function () {
     }
 
     if (!isMockup) {
-      if (pass === false && clickFn) boardNode.addEventListener("click", clickFn);
+      if (pass === false && clickFn)
+        boardNode.addEventListener("click", clickFn);
 
       const playerBoardSpan = document.createElement("div"); //
       playerBoardSpan.classList.add("player-board-span");
       const playerSpan = document.createElement("span"); //
       playerBoardSpan.appendChild(playerSpan);
 
-      if (shipsPlaced && gameInstance.isPvPGamemode()) {
-        for (let i = 0; i < gameboard.shipsNo; i++) {
-          const shipSpan = document.createElement('div');
-          if (i < gameboard.sunks) {
-            shipSpan.classList.add('isHit')
-          } else {
-            shipSpan.classList.add('hasShip')
-          }
-          playerBoardSpan.appendChild(shipSpan)
+      for (let i = 0; i < gameboard.shipsNo; i++) {
+        const shipSpan = document.createElement("div");
+        if (i < gameboard.sunks) {
+          shipSpan.classList.add("isHit");
+        } else {
+          shipSpan.classList.add("hasShip");
         }
+        playerBoardSpan.appendChild(shipSpan);
+      }
+
+      if (shipsPlaced && gameInstance.isPvPGamemode()) {
         playerSpan.textContent = `Player ${boardNo} ships:`;
       } else if (shipsPlaced && boardNo == 1) {
         playerSpan.textContent = "Your ships:";
