@@ -75,6 +75,17 @@ const GameboardNode = (function () {
     turnFn = gameInstance.handleTurn;
   };
 
+  const endGame = function endGame(winner) {
+    disableTurnHandler();
+    handlers.displayWinner(winner, gameInstance.isPvPGamemode());
+    handlers.displayHeader(
+      gameInstance.getTurn(),
+      gameInstance.isPvPGamemode(),
+      winner,
+      false,
+    );
+  };
+
   const enableTurnHandler = function enableTurnHandler() {
     clickFn = (e) => {
       const rowcol = e.target.dataset.rowcol;
@@ -82,35 +93,56 @@ const GameboardNode = (function () {
 
       const turn = gameInstance.getTurn();
 
-      console.log("Turn on board node " + turn);
       if (turn == e.currentTarget.dataset.boardNo) {
         console.log("Ignored, player click in its own board");
         return;
       }
 
       const hit = turnFn(e);
-      if (hit === true) {
-        const winner = gameInstance.checkWinner();
-        if (winner !== null) {
-          // Why null. Ah bcs it's initialize to null. and only change when a winner
-          disableTurnHandler();
-          handlers.displayWinner(winner, gameInstance.isPvPGamemode());
-          handlers.displayHeader(
-            gameInstance.getTurn(),
-            gameInstance.isPvPGamemode(),
-            winner,
-            false,
-          );
+      if (hit === null) return;
+
+      // If computer hits a ship, check if it won or keep the turn
+      // When a computer gets a hit the turn value is set to two in the game instance
+      // If the computer does not wins, and gets a miss, change turn back to 1
+      if (
+        !gameInstance.isPvPGamemode() &&
+        gameInstance.getTurn() === 2 &&
+        hit === true
+      ) {
+        let aiWin = null;
+        let aiHit = true;
+
+        while (aiHit == true) {
+          aiWin = gameInstance.checkWinner();
+          if (aiWin) {
+            endGame(aiWin);
+            break;
+          } else {
+            // handlers.displayBoard(1); // unnecesary if not applying effects for ai hit
+            aiHit = gameInstance.playAITurn();
+          }
         }
-        handlers.displayBoards(); // Display boards as player continue hitting
-        return;
-      } else if (hit === null) {
-        console.log("Board node: hitting same spot twice");
+
+        gameInstance.changeTurn();
+        handlers.displayBoards();
         return;
       }
 
-      // HIt false: is miss
-      if (gameInstance.isPvPGamemode() === true) {
+      // If a real player gets a hit, both in 1 player and 2 player gamemodes
+      // Check if it's the winner
+      if (hit === true) {
+        const winner = gameInstance.checkWinner();
+        if (winner !== null) {
+          endGame(winner);
+        }
+        handlers.displayBoards(); // Display boards as player continue hitting
+        return;
+      }
+
+      // When a player gets a miss in 2 players gamemode
+      // Display a pass screen to hide the rival ships
+      if (gameInstance.isPvPGamemode() && hit === false) {
+        // HIt false: is miss
         handlers.displayHeader(
           gameInstance.getTurn(),
           gameInstance.isPvPGamemode(),
@@ -119,23 +151,13 @@ const GameboardNode = (function () {
         );
         handlers.displayPassScreen();
         return;
-      } else {
-        const winner = gameInstance.checkWinner();
-        if (winner !== null) {
-          // Why null. Ah bcs it's initialize to null. and only change when a winner
-          disableTurnHandler();
-          handlers.displayHeader(
-            gameInstance.getTurn(),
-            gameInstance.isPvPGamemode(),
-            winner,
-            false,
-          );
-          handlers.displayWinner(winner, gameInstance.isPvPGamemode());
-        }
+      }
+
+      // For a miss in 1 player gamemode render the gameboards
+      if (hit === false) {
         handlers.displayBoards();
       }
     };
-    console.log("Click attack handler enabled");
   };
 
   const disableTurnHandler = function disableTurnHandler() {

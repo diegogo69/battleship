@@ -1,3 +1,17 @@
+try adjacent slots after getting a ‘hit’
+So, i make a hit
+if it's a hit, a decide to hit an adjacent cell
+whatever, that is within bounds
+if it's a miss, i discart that orientation
+try a diferent one
+if it's a hit
+I continue i that direction
+
+So, if it's a hit. I store that hit location
+try and adjacent one, with that direction,
+if it's a miss, change the direction
+try and adjacent one
+
 so we have a game instance
 that controls the players
 the turns

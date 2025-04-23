@@ -51,11 +51,17 @@ const gameInstance = function gameInstance() {
   };
 
   const playAITurn = function playAITurn() {
-    const AIplayer = getRivalTurn();
-    const AIrival = turn;
+    const AIplayer = 2; //getRivalTurn();
+    const AIrival = 1;
 
     const AIrowcol = players[AIplayer].generateRandomMove();
-    return players[AIrival].gameboard.receiveAttack(AIrowcol);
+    const hit = players[AIrival].gameboard.receiveAttack(AIrowcol);
+    if (hit) {
+      turn = AIplayer;
+      const gameover = players[AIrival].gameboard.areSunk();
+      if (gameover === true) winner = AIplayer;
+    }
+    return hit;
   };
 
   const handleTurn = function handleTurn(e) {
@@ -89,14 +95,12 @@ const gameInstance = function gameInstance() {
     if (pvpGamemode === true) {
       changeTurn();
     } else {
-      const AIPlayer = rival;
+      const AIplayer = rival;
       const AIrival = turn;
       hit = playAITurn();
-
-      let gameover = players[AIrival].gameboard.areSunk();
-      if (gameover === true) winner = AIPlayer;
+      return hit
     }
-
+    changeTurn(); // both ai 
     return false;
   };
 
@@ -105,6 +109,7 @@ const gameInstance = function gameInstance() {
     handleTurn,
     changeTurn,
     players,
+    playAITurn,
     getTurn,
     checkWinner,
     isPvPGamemode,
