@@ -14,6 +14,7 @@ const gameInstance = function gameInstance() {
     if (pvpGamemode === true) return [new Player(3), new Player(3)];
     const computer = new AIPlayer(3);
     computer.gameboard.randomShips();
+    console.log(computer.gameboard.shipsBoard)
     return [new Player(3), computer];
   };
 
@@ -27,8 +28,8 @@ const gameInstance = function gameInstance() {
   };
 
   const isPvPGamemode = function isPvPGamemode() {
-    return pvpGamemode
-  }
+    return pvpGamemode;
+  };
   const getRivalTurn = function getRivalTurn() {
     return turn === 1 ? 2 : 1;
   };
@@ -54,14 +55,29 @@ const gameInstance = function gameInstance() {
     const AIplayer = 2; //getRivalTurn();
     const AIrival = 1;
 
-    const AIrowcol = players[AIplayer].generateRandomMove();
-    const hit = players[AIrival].gameboard.receiveAttack(AIrowcol);
-    if (hit) {
-      turn = AIplayer;
+    const difficulty = "hard";
+
+    let rowcol = players[AIplayer].generateRandomMove(difficulty);
+    let isHit = players[AIrival].gameboard.receiveAttack(rowcol);
+    players[AIplayer].setLastHit({ isHit, rowcol });
+    let i = 1;
+    while (isHit || isHit === null) {
+      // turn = AIplayer;
       const gameover = players[AIrival].gameboard.areSunk();
-      if (gameover === true) winner = AIplayer;
+      if (gameover === true) {
+        winner = AIplayer;
+        console.log('AI WINS. shot at: ' + rowcol)
+        break;
+      }
+      if (isHit === null) alert('AI hit same coordinate twice')
+      rowcol = players[AIplayer].generateRandomMove(difficulty);
+      isHit = players[AIrival].gameboard.receiveAttack(rowcol);
+      i++;
     }
-    return hit;
+    console.log('AI CONSECUTIVE TURNS: ' + i)
+    // Return an array of array of the shots coordinates
+    // To be render with set time outs in the dom
+    return isHit;
   };
 
   const handleTurn = function handleTurn(e) {
@@ -82,9 +98,11 @@ const gameInstance = function gameInstance() {
 
     // If attacking the same spot twice
     if (hit === null) return null;
+    console.log("PLayer hit at: " + rowcol);
+
 
     // If ship is hit. Do not change turn
-    if (hit === true) {
+    if (hit) {
       let gameover = players[rival].gameboard.areSunk();
       if (gameover === true) {
         winner = turn;
@@ -98,9 +116,9 @@ const gameInstance = function gameInstance() {
       const AIplayer = rival;
       const AIrival = turn;
       hit = playAITurn();
-      return hit
+      return hit;
     }
-    changeTurn(); // both ai 
+    // changeTurn(); // both ai
     return false;
   };
 
