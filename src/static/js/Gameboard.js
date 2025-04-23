@@ -192,15 +192,15 @@ class Gameboard {
   }
   // Check if a ship has already been placed in the given coordinates
   // Check if a ship's lenght and orientation does not exceed board limits
-  canBePlaced(row, col, length, horizontal) {
+  canBePlaced(row, col, length, isHorizontal) {
     // Validate bounds
-    const validBounds = Gameboard.validateBounds(row, col, length, horizontal);
+    const validBounds = Gameboard.validateBounds(row, col, length, isHorizontal);
     if (!validBounds) return false;
     // Validate area, at least one free cell in all directions
     const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
       row,
       col,
-      horizontal,
+      isHorizontal,
       length,
     );
 
@@ -218,8 +218,8 @@ class Gameboard {
 
   // Return index of added ship
   // As it was added with push, it is the last item (e.i. length - 1)
-  #addShip(shipLength) {
-    const shipsArrLength = this.ships.push(new Ship(shipLength));
+  #addShip(row, col, shipLength, isHorizontal) {
+    const shipsArrLength = this.ships.push(new Ship(row, col, shipLength, isHorizontal));
     return shipsArrLength - 1;
   }
 
@@ -230,22 +230,22 @@ class Gameboard {
 
   // Place a ship in the board.
   // Return true is placed, false if not, null if placed and limit reached
-  placeShip(rowcol, length, horizontal) {
-    if (typeof horizontal !== "boolean") throw "Invalid orientation argument";
+  placeShip(rowcol, length, isHorizontal) {
+    if (typeof isHorizontal !== "boolean") throw "Invalid orientation argument";
 
     // Throw error if ship limit is met beforehand
     if (this.shipsNo === this.ships.length)
       throw new Error("Cannot place more ships, limit has been reached");
 
     let { row, col } = Gameboard.validateCoordinates(rowcol);
-    if (!this.canBePlaced(row, col, length, horizontal)) return false;
+    if (!this.canBePlaced(row, col, length, isHorizontal)) return false;
 
-    const shipIndex = this.#addShip(length);
+    const shipIndex = this.#addShip(row, col, length, isHorizontal);
 
     for (let i = 0; i < length; i++) {
       this.shipsBoard[row][col] = shipIndex;
 
-      if (horizontal) col += 1;
+      if (isHorizontal) col += 1;
       else row += 1;
     }
 
@@ -275,7 +275,14 @@ class Gameboard {
 
       this.shotsBoard[row][col] = true;
 
-      if (ship.isSunk()) this.sunks += 1;
+      if (ship.isSunk()) {
+        this.sunks += 1;
+        const row = ship.row;
+        const col = ship.col;
+        const length = ship.length;
+        const isHorizontal = ship.isHorizontal;
+        return {row, col, length, isHorizontal};
+      }
 
       console.log("Ship hit");
       return true;
@@ -283,7 +290,6 @@ class Gameboard {
 
     // If no ship at coordinate. MISS
     this.shotsBoard[row][col] = false;
-    console.log("No ship at coordinate. MISS");
     return false;
   }
 }
