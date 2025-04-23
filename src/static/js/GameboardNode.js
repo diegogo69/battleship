@@ -95,6 +95,8 @@ const GameboardNode = (function () {
 
       if (turn == e.currentTarget.dataset.boardNo) {
         console.log("Ignored, player click in its own board");
+        // throw "Ignored, player click in its own board";
+
         return;
       }
 
@@ -104,33 +106,18 @@ const GameboardNode = (function () {
       // If computer hits a ship, check if it won or keep the turn
       // When a computer gets a hit the turn value is set to two in the game instance
       // If the computer does not wins, and gets a miss, change turn back to 1
-      if (
-        !gameInstance.isPvPGamemode() &&
-        gameInstance.getTurn() === 2 &&
-        hit === true
-      ) {
-        let aiWin = null;
-        let aiHit = true;
-
-        while (aiHit == true) {
-          aiWin = gameInstance.checkWinner();
-          if (aiWin) {
-            endGame(aiWin);
-            break;
-          } else {
-            // handlers.displayBoard(1); // unnecesary if not applying effects for ai hit
-            aiHit = gameInstance.playAITurn();
+      if (!gameInstance.isPvPGamemode()) {
+          const winner = gameInstance.checkWinner();
+          if (winner !== null) {
+            endGame(winner);
           }
-        }
-
-        gameInstance.changeTurn();
-        handlers.displayBoards();
-        return;
+          handlers.displayBoards(); // Display boards as player continue hitting
+          return;
       }
 
       // If a real player gets a hit, both in 1 player and 2 player gamemodes
       // Check if it's the winner
-      if (hit === true) {
+      if (hit) {
         const winner = gameInstance.checkWinner();
         if (winner !== null) {
           endGame(winner);
@@ -154,9 +141,9 @@ const GameboardNode = (function () {
       }
 
       // For a miss in 1 player gamemode render the gameboards
-      if (hit === false) {
-        handlers.displayBoards();
-      }
+      // if (hit === false) {
+      //   handlers.displayBoards();
+      // }
     };
   };
 
