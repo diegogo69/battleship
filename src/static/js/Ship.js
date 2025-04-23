@@ -1,8 +1,13 @@
 class Ship {
-  constructor(length) {
+  constructor(row, col, length, isHorizontal) {
     if (typeof length !== "number") throw "Invalid length argument";
     if (length <= 0) throw "Invalid length argument";
+    if (typeof isHorizontal !== "boolean") throw "Invalid orientation argument";
+
+    this.row = row;
+    this.col = col;
     this.length = length;
+    this.isHorizontal = isHorizontal;
     this.hits = 0;
     this.sunk = false;
   }
