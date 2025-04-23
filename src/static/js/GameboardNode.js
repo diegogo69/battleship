@@ -31,8 +31,6 @@ const GameboardNode = (function () {
     const boardNode = document.querySelector(`#gameboard-${turn}`);
     console.log(boardNode);
 
-    // const boardNo = boardNode.dataset.boardNo;
-    // players[boardNo].gameboard
     const ships = shipsFromBoard(boardNode);
     console.log(ships);
 
@@ -136,7 +134,6 @@ const GameboardNode = (function () {
         }
         handlers.displayBoards();
       }
-      // handlers.displayPassScreen();
     };
     console.log("Click attack handler enabled");
   };
@@ -174,9 +171,6 @@ const GameboardNode = (function () {
 
     // Empty board
     const isMockup = boardInstance !== null;
-    if (isMockup) {
-    }
-    
     const turn = isMockup ? boardNo : gameInstance.getTurn(); //
     const winner = isMockup ? null : gameInstance.checkWinner(); //
     if (!winner && boardNo !== turn) {
@@ -201,9 +195,7 @@ const GameboardNode = (function () {
         if (!isMockup && pass === false && boardNo === turn) {
           const shipIndex = shipsBoard[rowIndex][colIndex];
           if (shipIndex !== null) {
-            colNode.dataset.shipIndex = shipIndex; // unnused
             colNode.classList.add("hasShip");
-            // colNode.textContent = shipIndex; // no longer used
           }
 
           // Add drag and drop handlers if enabled
@@ -236,7 +228,6 @@ const GameboardNode = (function () {
       const passBtn = document.createElement("button");
 
       passDiv.classList.add("passScreen");
-      // passHeading.textContent = "Pass the turn!";
       passHeading.textContent = `Player ${turn} attacks`;
       passBtn.textContent = "Ready";
       passBtn.addEventListener("click", (e) => {
@@ -252,15 +243,26 @@ const GameboardNode = (function () {
     if (!isMockup) {
       if (pass === false && clickFn) boardNode.addEventListener("click", clickFn);
 
-      const playerBoardSpan = document.createElement("span"); //
+      const playerBoardSpan = document.createElement("div"); //
       playerBoardSpan.classList.add("player-board-span");
+      const playerSpan = document.createElement("span"); //
+      playerBoardSpan.appendChild(playerSpan);
+
       if (shipsPlaced && gameInstance.isPvPGamemode()) {
-        //
-        playerBoardSpan.textContent = `Player ${boardNo} board`;
+        for (let i = 0; i < gameboard.shipsNo; i++) {
+          const shipSpan = document.createElement('div');
+          if (i < gameboard.sunks) {
+            shipSpan.classList.add('isHit')
+          } else {
+            shipSpan.classList.add('hasShip')
+          }
+          playerBoardSpan.appendChild(shipSpan)
+        }
+        playerSpan.textContent = `Player ${boardNo} ships:`;
       } else if (shipsPlaced && boardNo == 1) {
-        playerBoardSpan.textContent = "Your board";
+        playerSpan.textContent = "Your ships:";
       } else if (shipsPlaced) {
-        playerBoardSpan.textContent = "Computer's board";
+        playerSpan.textContent = "Computer's ships:";
       }
 
       boardNode.appendChild(playerBoardSpan);
