@@ -28,6 +28,7 @@ class Gameboard {
   static get SHIPS_NO() {
     return 5;
   }
+
   randomShips() {
     const shipsArr = Ship.createShips(this.shipsNo);
     // Create an array of available coordinates
@@ -70,20 +71,28 @@ class Gameboard {
         if (shipIsPlaced === true) {
           const length = shipData.length;
           const isHorizontal = shipData.horizontal;
-          
+
           const { rowStart, rowEnd, colStart, colEnd } =
             Gameboard.getSorroundings(row, col, isHorizontal, length);
 
-          for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
-            for (let curCol = colStart; curCol <= colEnd; curCol++) {
-              const sorroundCell = `${curRow}${curCol}`;
+          const removeCell = (curRow, curCol, availableCells) => {
+            const sorroundCell = `${curRow}${curCol}`;
 
-              const availablesIndex = availables.indexOf(sorroundCell);
-              if (availablesIndex !== -1) {
-                availables.splice(availablesIndex, 1);
-              }
+            const availablesIndex = availableCells.indexOf(sorroundCell);
+            if (availablesIndex !== -1) {
+              availableCells.splice(availablesIndex, 1);
             }
-          }
+          };
+
+          Gameboard.iterateSorroundings(
+            rowStart,
+            rowEnd,
+            colStart,
+            colEnd,
+            (curRow, curCol) => {
+              removeCell(curRow, curCol, availables);
+            },
+          );
         }
       }
     });
@@ -185,7 +194,7 @@ class Gameboard {
   static iterateSorroundings(rowStart, rowEnd, colStart, colEnd, fn) {
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
-        fn(curRow, curCol)
+        fn(curRow, curCol);
       }
     }
   }
