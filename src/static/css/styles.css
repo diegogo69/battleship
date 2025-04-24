@@ -8,6 +8,7 @@ svg {
 }
 
 body {
+    --body-bg: #fafafa;
     --green-bg: #34d399;
     --green-border: #10b981;
     --blue-bg: #0ea5e9;
@@ -27,8 +28,9 @@ body {
     height: 100vh;
     display: flex;
     flex-direction: column;
-    user-select: none;
+    background-color: var(--body-bg);
     color: #262626;
+    user-select: none;
 }
 
 body > header {
@@ -119,6 +121,8 @@ body > header > h1 {
 .boards-container > div {
     min-width: 340px;
     min-height: 340px;
+    max-width: 344px;
+    max-height: 344px;
 }
 
 .player1-container,
@@ -136,26 +140,22 @@ body > header > h1 {
     flex: 1;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-items: center;
     padding: .8rem;
 }
 
 .ships-container {
     flex: 1;
+    height: 260px;
     display: flex;
-    flex-direction: column;
-    flex-wrap: wrap;
-    gap: .8rem;
-    justify-self: start;
-    align-self: start;
+    flex-flow: column wrap;
+    gap: 1rem;
 }
 
 .place-ships-wrapper .ships-btns {
-    height: max-content;
     padding: .8rem 0 0 0;
     display: flex;
     gap: .8rem;
+    justify-content: center;
 }
 
 .passScreen {
