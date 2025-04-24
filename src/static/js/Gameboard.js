@@ -188,9 +188,11 @@ class Gameboard {
   static iterateSorroundings(rowStart, rowEnd, colStart, colEnd, fn) {
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
-        fn(curRow, curCol);
+        const returnVal = fn(curRow, curCol);
+        if (returnVal === false) return false
       }
     }
+    return true
   }
 
   // UNUSED FUNCTIONF
