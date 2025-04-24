@@ -148,7 +148,7 @@ const handlers = (function () {
     e.dataTransfer.setData("ship-class", ship.classList.contains("ship"));
     e.dataTransfer.setData("length", ship.dataset.length);
     e.dataTransfer.setData("orientation", ship.dataset.orientation);
-    e.dataTransfer.setData('is-placed', isPlaced)
+    e.dataTransfer.setData("is-placed", isPlaced);
     e.dataTransfer.setDragImage(e.currentTarget, 10, 25); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
@@ -216,7 +216,7 @@ const handlers = (function () {
     const ship = document.getElementById(shipID);
 
     // Free the cells previously occupy by ship
-    const shipIsPlaced = e.dataTransfer.getData('is-placed') === 'true';
+    const shipIsPlaced = e.dataTransfer.getData("is-placed") === "true";
     if (shipIsPlaced) {
       occupyCells(ship, false);
     }
@@ -240,6 +240,7 @@ const handlers = (function () {
 
   const rotateShip = function rotateShip(e) {
     const ship = e.currentTarget;
+    // if (ship.parentNode.classList.contains('ships-container')) return
 
     if (ship.parentNode.classList.contains("gameboard-col")) {
       const row = parseInt(ship.parentNode.dataset.rowcol[0]);
@@ -277,15 +278,17 @@ const handlers = (function () {
   };
 
   const placeShipsRandomly = function placeShipsRandomly() {
-    // Get all ship elements
+    // Get all ship elements in the dom and reference gameboard node
     const ships = document.querySelectorAll(".ship");
     const boardNode = document.querySelector(".gameboard");
-    boardNode.classList.remove;
+
+    // Array with available cells to place
+    const availableCells = Gameboard.getValidCoordinates();
+
     ships.forEach((ship) => {
       if (ship.parentNode.classList.contains("gameboard-col")) {
         occupyCells(ship, false);
       }
-      const length = parseInt(ship.dataset.length);
       // Set a random orientation
       const random01 = Math.floor(Math.random() * 2);
       if (random01 === 0) {
@@ -297,18 +300,23 @@ const handlers = (function () {
         ship.classList.add("flex-row");
         ship.dataset.orientation = "horizontal";
       }
+
+      const length = parseInt(ship.dataset.length);
       const orientation = ship.dataset.orientation;
-      const isHorizontal = orientation === "horizontal";
+      let isHorizontal = orientation === "horizontal";
 
       let i = 0;
-      while (true) {
-        if (i >= 100) throw "Something went wrong positioning the ships";
+      let isDomValid = false;
 
-        const { row, col } = Gameboard.getValidRandomCoordinate(
-          length,
-          isHorizontal,
-        );
-        const isDomValid = isValidDomPlacement(
+      while (!isDomValid) {
+        // Get a random coordinate from the available coordinates arr
+        const randomIndex = Math.floor(Math.random() * availableCells.length);
+        const rowcol = availableCells[randomIndex];
+        const row = parseInt(rowcol[0]);
+        const col = parseInt(rowcol[1]);
+
+        // Check if ship can be placed in the given coordinates
+        isDomValid = isValidDomPlacement(
           row,
           col,
           length,
@@ -317,6 +325,31 @@ const handlers = (function () {
           ship.id,
         );
 
+        // If not, change ship's orientation and check again
+        if (!isDomValid) {
+          if (isHorizontal) {
+            ship.classList.remove("flex-row");
+            ship.classList.add("flex-col");
+            ship.dataset.orientation = "vertical";
+          } else {
+            ship.classList.remove("flex-col");
+            ship.classList.add("flex-row");
+            ship.dataset.orientation = "horizontal";
+          }
+          isHorizontal = !isHorizontal;
+
+          isDomValid = isValidDomPlacement(
+            row,
+            col,
+            length,
+            isHorizontal,
+            boardNode,
+            ship.id,
+          );
+        }
+
+        // If it can be placed, add the ship node to the respective grid cell node
+        // And remove ship's adjacent coordinates from the available cells array
         if (isDomValid == true) {
           console.log("Dom valid?");
           const shipNode = document.getElementById(ship.id);
@@ -326,10 +359,19 @@ const handlers = (function () {
           gridCell.appendChild(shipNode);
           occupyCells(shipNode, true);
 
-          break;
-        } else {
-          i++;
-          console.log("invalid");
+          const { rowStart, rowEnd, colStart, colEnd } =
+            Gameboard.getSorroundings(row, col, isHorizontal, length);
+
+          for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
+            for (let curCol = colStart; curCol <= colEnd; curCol++) {
+              const sorroundCell = `${curRow}${curCol}`;
+
+              const availablesIndex = availableCells.indexOf(sorroundCell);
+              if (availablesIndex !== -1) {
+                availableCells.splice(availablesIndex, 1);
+              }
+            }
+          }
         }
       }
     });
@@ -360,7 +402,11 @@ const handlers = (function () {
   };
 
   // Display gameboards
-  const displayBoard = function displayBoard(playerNo, pass=false, isMock=null) {
+  const displayBoard = function displayBoard(
+    playerNo,
+    pass = false,
+    isMock = null,
+  ) {
     let board = null;
     if (isMock !== null) {
       const emptyGameboard = new Gameboard();
@@ -378,7 +424,7 @@ const handlers = (function () {
     displayBoard(2, pass);
   };
 
-  const displayBoards = function displayBoards(isMock=null, pass=false) {
+  const displayBoards = function displayBoards(isMock = null, pass = false) {
     displayBoard(1, pass, isMock);
     displayBoard(2, pass, isMock);
   };
