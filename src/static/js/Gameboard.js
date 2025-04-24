@@ -34,6 +34,17 @@ class Gameboard {
     // Create an array of available coordinates
     const availables = Gameboard.getValidCoordinates();
 
+    // Declare a callback function to be used within an iterator
+    // that refences the current availables arr
+    const removeCell = (curRow, curCol) => {
+      const sorroundCell = `${curRow}${curCol}`;
+
+      const availablesIndex = availables.indexOf(sorroundCell);
+      if (availablesIndex !== -1) {
+        availables.splice(availablesIndex, 1);
+      }
+    };
+
     shipsArr.forEach((shipData) => {
       // For each ship
       let shipIsPlaced = false;
@@ -75,23 +86,12 @@ class Gameboard {
           const { rowStart, rowEnd, colStart, colEnd } =
             Gameboard.getSorroundings(row, col, isHorizontal, length);
 
-          const removeCell = (curRow, curCol, availableCells) => {
-            const sorroundCell = `${curRow}${curCol}`;
-
-            const availablesIndex = availableCells.indexOf(sorroundCell);
-            if (availablesIndex !== -1) {
-              availableCells.splice(availablesIndex, 1);
-            }
-          };
-
           Gameboard.iterateSorroundings(
             rowStart,
             rowEnd,
             colStart,
             colEnd,
-            (curRow, curCol) => {
-              removeCell(curRow, curCol, availables);
-            },
+            removeCell,
           );
         }
       }
