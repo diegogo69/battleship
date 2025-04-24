@@ -1,3 +1,6 @@
+Try setting the classlist timer directy by using the coordinates
+instead of comparing with each and every grid cell
+
 try adjacent slots after getting a ‘hit’
 So, i make a hit
 if it's a hit, a decide to hit an adjacent cell
