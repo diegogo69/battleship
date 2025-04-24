@@ -91,6 +91,8 @@ class AIPlayer extends Player {
     });
   }
 
+
+
   removeAdjacents() {
     if (this.adjacents[0] == null) return;
     // Get the data of the sunk ship: coordinates, length and orientation
@@ -104,23 +106,29 @@ class AIPlayer extends Player {
       length,
     );
 
-    for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
-      for (let curCol = colStart; curCol <= colEnd; curCol++) {
-        const sorroundCell = `${curRow}${curCol}`;
-
-        const availablesIndex = this.availableCoordinates.indexOf(sorroundCell);
-        if (availablesIndex !== -1) {
-          this.availableCoordinates.splice(availablesIndex, 1);
-        }
-
-        if (this.adjacents[0]) {
-          const adjacentIndex = this.adjacents.indexOf(sorroundCell);
-          if (adjacentIndex !== -1) {
-            this.adjacents.splice(adjacentIndex, 1);
-          }
+    const removeAdjacentMove = (rowIndex, colIndex) => {
+      const sorroundCell = `${rowIndex}${colIndex}`;
+  
+      const availablesIndex = this.availableCoordinates.indexOf(sorroundCell);
+      if (availablesIndex !== -1) {
+        this.availableCoordinates.splice(availablesIndex, 1);
+      }
+  
+      if (this.adjacents[0]) {
+        const adjacentIndex = this.adjacents.indexOf(sorroundCell);
+        if (adjacentIndex !== -1) {
+          this.adjacents.splice(adjacentIndex, 1);
         }
       }
     }
+
+    Gameboard.iterateSorroundings(
+      rowStart,
+      rowEnd,
+      colStart,
+      colEnd,
+      removeAdjacentMove,
+    );
   }
 
   getAdjacent() {

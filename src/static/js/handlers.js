@@ -154,9 +154,6 @@ const handlers = (function () {
 
     const shipClass = e.dataTransfer.getData("ship-class");
     if (shipClass !== "true") return;
-
-    // e.currentTarget.classList.add("hovered");
-    // e.dataTransfer.dropEffect = "move";
   };
 
   const drop = function dropHandler(e, gameboard) {
@@ -275,8 +272,8 @@ const handlers = (function () {
     // Callback to remove spot after being occupied by a ship
     const removeOccupiedSpot = (row, col) => {
       const sorroundCell = `${row}${col}`;
-
       const availablesIndex = availableCells.indexOf(sorroundCell);
+
       if (availablesIndex !== -1) {
         availableCells.splice(availablesIndex, 1);
       }
@@ -301,7 +298,6 @@ const handlers = (function () {
       if (ship.parentNode.classList.contains("gameboard-col")) {
         occupyCells(ship, false);
       }
-
       // Set a random orientation
       let isHorizontal = Math.floor(Math.random() * 2) === 0;
       setShipOrientarion(isHorizontal, shipIndex);
