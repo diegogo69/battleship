@@ -163,6 +163,7 @@ const GameboardNode = (function () {
     dragleaveFn = null;
   };
 
+
   const boardNode = function boardNode(
     boardNo,
     pass = false,
@@ -188,6 +189,7 @@ const GameboardNode = (function () {
 
     const shipsBoard = gameboard.shipsBoard;
     const shotsBoard = gameboard.shotsBoard;
+    let timer = 1;
 
     shipsBoard.forEach(function iterateRows(row, rowIndex) {
       const rowNode = document.createElement("div");
@@ -196,7 +198,8 @@ const GameboardNode = (function () {
       shipsBoard[rowIndex].forEach(function iterateCols(col, colIndex) {
         const colNode = document.createElement("div");
         colNode.classList.add("gameboard-col");
-        colNode.dataset.rowcol = `${rowIndex}${colIndex}`;
+        const rowcolString = `${rowIndex}${colIndex}`
+        colNode.dataset.rowcol = rowcolString;
 
         // Each node may contain classes that identify if:
         // contains a ship, have been shot (miss or hit)
@@ -217,12 +220,40 @@ const GameboardNode = (function () {
           if (dragleaveFn) colNode.addEventListener("dragleave", dragleaveFn);
         }
 
-        if (shotsBoard[rowIndex][colIndex] === false) {
-          colNode.classList.add("isMiss");
-        }
-
-        if (shotsBoard[rowIndex][colIndex] === true) {
-          colNode.classList.add("isHit");
+        if (!isMockup && !gameInstance.isPvPGamemode() && boardNo == 1) {
+          const aiLastShots = gameInstance.players[2].getLastShots();
+          const isLastShot = aiLastShots.indexOf(rowcolString);
+          
+          const timeOut = 300 * timer;
+          if (shotsBoard[rowIndex][colIndex] === false) {
+            if (isLastShot !== -1) {
+              setTimeout(() => {
+                colNode.classList.add("isMiss");
+              }, timeOut);
+              timer += 1.5;
+            } else {
+              colNode.classList.add("isMiss");
+            }
+          }
+  
+          if (shotsBoard[rowIndex][colIndex] === true) {
+            if (isLastShot !== -1) {
+              setTimeout(() => {
+                colNode.classList.add("isHit");
+              }, timeOut);
+              timer += 1.5;
+            } else {
+              colNode.classList.add("isHit");
+            }
+          }
+        } else {
+          if (shotsBoard[rowIndex][colIndex] === false) {
+            colNode.classList.add("isMiss");
+          }
+  
+          if (shotsBoard[rowIndex][colIndex] === true) {
+            colNode.classList.add("isHit");
+          }
         }
 
         rowNode.appendChild(colNode);
@@ -279,6 +310,9 @@ const GameboardNode = (function () {
       boardNode.appendChild(playerBoardSpan);
     }
 
+    if (!isMockup && !gameInstance.isPvPGamemode() && boardNo == 1) {
+      gameInstance.players[2].emptyLastShots();
+    }
     return boardNode;
   };
 
