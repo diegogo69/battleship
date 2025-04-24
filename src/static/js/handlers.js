@@ -22,41 +22,32 @@ const handlers = (function () {
       isHorizontal,
       length,
     );
+
     // const boardNode = gridCell.closest('.gameboard');
+    const checkOverlapping = (row, col) => {
+      const rowNode = boardNode.children[row];
+      if (rowNode == null) return false;
+      const cell = rowNode.children[col];
+      if (cell == null) return false;
 
-    for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
-      for (let curCol = colStart; curCol <= colEnd; curCol++) {
-        const rowNode = boardNode.children[curRow];
-        if (rowNode == null) return [false];
-        const cell = rowNode.children[curCol];
-        if (cell == null) return false;
+      const sameShip = cell.classList.contains(`by-ship-${shipID}`);
+      const occupied = cell.classList.contains(`occupied`);
 
-        // If cell is free, or same ship
-        // cell != null &&
-        const sameShip = cell.classList.contains(`by-ship-${shipID}`);
-        const occupied = cell.classList.contains(`occupied`);
-        if (occupied && sameShip) {
-          console.log(
-            "Ship overlaps itself. So it is a realocation at " +
-              curRow +
-              "" +
-              curCol,
-          );
-          // console.log('valid cell ' + row + '' + col)
-        } else if (occupied) {
-          console.log(
-            "Ship element overlaps another ship element at " +
-              curRow +
-              "" +
-              curCol,
-          );
-          // console.log('invalid cell ' + row + '' + col)
-          return false;
-        }
+      if (occupied && !sameShip) {
+        console.log("Invalid ship overlapping");
+        return false;
       }
-    }
-    return true;
+    };
+
+    return Gameboard.iterateSorroundings(
+      rowStart,
+      rowEnd,
+      colStart,
+      colEnd,
+      checkOverlapping,
+    );
   };
+
   const occupyCells = function occupyCells(ship, isOccupy = true) {
     const isGridCell = ship.parentNode.classList.contains("gameboard-col");
     if (!isGridCell) return;
