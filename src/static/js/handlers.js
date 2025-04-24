@@ -23,7 +23,6 @@ const handlers = (function () {
       length,
     );
 
-    // const boardNode = gridCell.closest('.gameboard');
     const checkOverlapping = (row, col) => {
       const rowNode = boardNode.children[row];
       if (rowNode == null) return false;
@@ -143,9 +142,6 @@ const handlers = (function () {
     e.dataTransfer.setDragImage(e.currentTarget, 10, 25); // 10, 10 -> drag image xOffset, yOffset
 
     ship.classList.add("dragging");
-
-    console.log(`Dragging ship of length: ${ship.dataset.length}`);
-    console.log(`Dragging ship of orientation: ${ship.dataset.orientation}`);
   };
 
   const dragend = function dragendHandler(e) {
@@ -276,29 +272,42 @@ const handlers = (function () {
     // Array with available cells to place
     const availableCells = Gameboard.getValidCoordinates();
 
-    ships.forEach((ship) => {
+    // Callback to remove spot after being occupied by a ship
+    const removeOccupiedSpot = (row, col) => {
+      const sorroundCell = `${row}${col}`;
+
+      const availablesIndex = availableCells.indexOf(sorroundCell);
+      if (availablesIndex !== -1) {
+        availableCells.splice(availablesIndex, 1);
+      }
+    };
+
+    // Set orientation helper function
+    // References a node list of all the ship elements
+    const setShipOrientarion = (horizontal, index) => {
+      console.log("Set ship orientation functionnnnnn");
+      if (horizontal) {
+        ships[index].classList.remove("flex-col");
+        ships[index].classList.add("flex-row");
+        ships[index].dataset.orientation = "horizontal";
+      } else {
+        ships[index].classList.remove("flex-row");
+        ships[index].classList.add("flex-col");
+        ships[index].dataset.orientation = "vertical";
+      }
+    };
+
+    ships.forEach((ship, shipIndex) => {
       if (ship.parentNode.classList.contains("gameboard-col")) {
         occupyCells(ship, false);
       }
+
       // Set a random orientation
-      const random01 = Math.floor(Math.random() * 2);
-      if (random01 === 0) {
-        ship.classList.remove("flex-row");
-        ship.classList.add("flex-col");
-        ship.dataset.orientation = "vertical";
-      } else {
-        ship.classList.remove("flex-col");
-        ship.classList.add("flex-row");
-        ship.dataset.orientation = "horizontal";
-      }
-
+      let isHorizontal = Math.floor(Math.random() * 2) === 0;
+      setShipOrientarion(isHorizontal, shipIndex);
       const length = parseInt(ship.dataset.length);
-      const orientation = ship.dataset.orientation;
-      let isHorizontal = orientation === "horizontal";
 
-      let i = 0;
       let isDomValid = false;
-
       while (!isDomValid) {
         // Get a random coordinate from the available coordinates arr
         const randomIndex = Math.floor(Math.random() * availableCells.length);
@@ -318,16 +327,8 @@ const handlers = (function () {
 
         // If not, change ship's orientation and check again
         if (!isDomValid) {
-          if (isHorizontal) {
-            ship.classList.remove("flex-row");
-            ship.classList.add("flex-col");
-            ship.dataset.orientation = "vertical";
-          } else {
-            ship.classList.remove("flex-col");
-            ship.classList.add("flex-row");
-            ship.dataset.orientation = "horizontal";
-          }
           isHorizontal = !isHorizontal;
+          setShipOrientarion(isHorizontal, shipIndex);
 
           isDomValid = isValidDomPlacement(
             row,
@@ -353,16 +354,13 @@ const handlers = (function () {
           const { rowStart, rowEnd, colStart, colEnd } =
             Gameboard.getSorroundings(row, col, isHorizontal, length);
 
-          for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
-            for (let curCol = colStart; curCol <= colEnd; curCol++) {
-              const sorroundCell = `${curRow}${curCol}`;
-
-              const availablesIndex = availableCells.indexOf(sorroundCell);
-              if (availablesIndex !== -1) {
-                availableCells.splice(availablesIndex, 1);
-              }
-            }
-          }
+          Gameboard.iterateSorroundings(
+            rowStart,
+            rowEnd,
+            colStart,
+            colEnd,
+            removeOccupiedSpot,
+          );
         }
       }
     });
