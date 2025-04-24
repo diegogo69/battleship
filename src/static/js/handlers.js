@@ -378,11 +378,32 @@ const handlers = (function () {
   };
 
   // Display ships container
-  const displayShips = function displayShipContainer(doneFn, turn) {
+  const displayShips = function displayShipContainer(
+    doneFn,
+    turn,
+    isPvP = false,
+  ) {
     const rivalTurn = turn === 1 ? 2 : 1;
     const placeShipsNode = document.createElement("div");
     placeShipsNode.classList.add("place-ships-wrapper");
-    const ships = createShips();
+    const btnWrapper = document.createElement("div");
+    btnWrapper.classList.add("ships-btns");
+
+    if (!isPvP) {
+      const levelSelect = document.createElement("select");
+      levelSelect.classList.add("lvl-select");
+
+      const lvls = ["easy", "normal", "hard"];
+      lvls.forEach((lvl) => {
+        const lvlOpt = document.createElement("option");
+        lvlOpt.value = lvl;
+        lvlOpt.textContent = lvl[0].toUpperCase() + lvl.slice(1);
+        levelSelect.appendChild(lvlOpt);
+      });
+
+      btnWrapper.appendChild(levelSelect);
+    }
+
     const doneBtn = document.createElement("button");
     doneBtn.textContent = "Done";
     doneBtn.classList.add("done-btn");
@@ -392,11 +413,10 @@ const handlers = (function () {
     randomBtn.classList.add("random-btn");
     randomBtn.addEventListener("click", placeShipsRandomly);
 
-    const btnWrapper = document.createElement("div");
-    btnWrapper.classList.add("ships-btns");
+    const ships = createShips();
+    placeShipsNode.appendChild(ships);
     btnWrapper.appendChild(randomBtn);
     btnWrapper.appendChild(doneBtn);
-    placeShipsNode.appendChild(ships);
     placeShipsNode.appendChild(btnWrapper);
     domHandler.render.ships(placeShipsNode, rivalTurn);
   };
@@ -488,10 +508,10 @@ const handlers = (function () {
     domHandler.render.boardsHeader(header);
   };
 
-  const initGame = function initGame(pvp) {
+  const initGame = function initGame(isPvP) {
     // Creeate new game instance
     const game = gameInstance();
-    game.init(pvp);
+    game.init(isPvP);
 
     // Initialize the gameboard DOM handlers to current game instance
     GameboardNode.initGameboard(game);
@@ -499,9 +519,9 @@ const handlers = (function () {
 
     // Display gameboard only for player 1. As the other will hold the ships elements
     const turn = game.getTurn(); // 1
-    displayHeader(turn, game.isPvPGamemode(), null, true);
+    displayHeader(turn, isPvP, null, true);
     displayBoard(turn);
-    displayShips(GameboardNode.doneFn, turn);
+    displayShips(GameboardNode.doneFn, turn, isPvP);
     hideGamemodes();
   };
 

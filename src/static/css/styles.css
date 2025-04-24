@@ -15,6 +15,9 @@ body {
     --blue-border: #2563eb;
     --red-bg: #f43f5e;
     --red-border: #be123c;
+    --yellow-bg: hsl(53, 96%, 60%);
+    --yellow-border: #fde047;
+
     --shadow: #f1f5f9;
     --red-shadow: #fb7185;
     --grid-border: #ddd6fe;
@@ -24,12 +27,13 @@ body {
     --ship-miss: hsl(60, 96%, 85%);
     --miss-border: hsl(60, 46%, 75%);
     --ship-hit-border: hsl(345, 83%, 46%);
-    
+    --dark-bg: #262626;
+
     height: 100vh;
     display: flex;
     flex-direction: column;
     background-color: var(--body-bg);
-    color: #262626;
+    color: var(--dark-bg);
     user-select: none;
 }
 
@@ -53,7 +57,7 @@ h1 > span:last-child {
 body > main {
     flex: 1;
     display: flex;
-    padding: 0 2rem;
+    padding: 0 1rem;
 }
 
 body > footer {
@@ -131,9 +135,27 @@ body > header > h1 {
     display: flex;
 }
 
-.ships-btns button {
+.ships-btns button{
     width: 5.2rem;
     height: 2.1rem;
+}
+
+.ships-btns select {
+    width: min-content;
+    height: 2.1rem;
+    padding-left: .2rem;
+
+    background-color: #ddd6fe;
+    border: 3px solid #c4b5fd;
+    border-radius: .2rem;
+    font-weight: 900;
+    cursor: pointer;
+    outline: none;
+}
+
+select option {
+    /* background-color: #f5f3ff; */
+    background-color: #ede9fe;
 }
 
 .place-ships-wrapper {
