@@ -46,7 +46,6 @@ class Gameboard {
     };
 
     shipsArr.forEach((shipData) => {
-      // For each ship
       let shipIsPlaced = false;
 
       while (shipIsPlaced === false) {
@@ -55,19 +54,15 @@ class Gameboard {
         const rowcol = availables[randomIndex];
         const row = parseInt(rowcol[0]);
         const col = parseInt(rowcol[1]);
-        // let { row, col } = Gameboard.getValidRandomCoordinate(
-        //   shipData.length,
-        //     shipData.horizontal,
-        //   );
-        // Check if ship can be placed
+
+        // Try to place the ship instance
         shipIsPlaced = this.placeShip(
           `${row}${col}`,
           shipData.length,
           shipData.horizontal,
         );
 
-        // If not
-        // Change orientation. Check again
+        // If cannot be placed, change orientation and try again
         if (shipIsPlaced === false) {
           shipData.horizontal = !shipData.horizontal;
           shipIsPlaced = this.placeShip(
@@ -77,8 +72,7 @@ class Gameboard {
           );
         }
 
-        // Place
-        // and remove its sorroundings from available coordinates arr
+        // If it was placed remove its sorroundings from available coordinates arr
         if (shipIsPlaced === true) {
           const length = shipData.length;
           const isHorizontal = shipData.horizontal;
