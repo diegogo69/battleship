@@ -54,6 +54,13 @@ const GameboardNode = (function () {
         return;
       }
       gameInstance.changeTurn(); // Change again to 1
+    } else {
+      const lvlSelect = shipsWrapper.querySelector('.lvl-select')
+      const lvl = lvlSelect.value;
+
+      if (gameInstance.getAiLevels().includes(lvl)) {
+        gameInstance.setAiLevel(lvl)
+      }
     }
 
     disableDragDrop();

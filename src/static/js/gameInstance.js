@@ -6,10 +6,26 @@ const gameInstance = function gameInstance() {
     1: null,
     2: null,
   };
+  const SHIPS_NO = 5;
+  const aiLevels = ['easy', 'normal', 'hard'];
   let turn = 1;
   let winner = null;
   let pvpGamemode = null;
-  const SHIPS_NO = 5;
+  let aiLevel = aiLevels[0];
+
+  const getAiLevels = function getDifficulty() {
+    return aiLevels;
+  }
+
+  const getAiLevel = function getAiLevel() {
+    return aiLevel;
+  }
+
+  const setAiLevel = function setAiLevel(lvl) {
+    aiLevel = lvl;
+    console.log('ai level: ' + aiLevel)
+  }
+
   const createPlayers = function createPlayers() {
     if (pvpGamemode === true) return [new Player(SHIPS_NO), new Player(SHIPS_NO)];
     const computer = new AIPlayer(SHIPS_NO);
@@ -17,6 +33,8 @@ const gameInstance = function gameInstance() {
     console.log(computer.gameboard.shipsBoard)
     return [new Player(SHIPS_NO), computer];
   };
+
+
 
   // Create players and reference game instance for creating gameboard elements
   // Setup ship placement by enabling drag and drop handlers for ships and gameboards
@@ -55,9 +73,9 @@ const gameInstance = function gameInstance() {
     const AIplayer = 2; //getRivalTurn();
     const AIrival = 1;
 
-    const difficulty = "hard";
+    // const difficulty = "hard";
 
-    let rowcol = players[AIplayer].generateRandomMove(difficulty);
+    let rowcol = players[AIplayer].generateRandomMove(aiLevel);
     let isHit = players[AIrival].gameboard.receiveAttack(rowcol);
     players[AIplayer].setLastHit({ isHit, rowcol });
     players[AIplayer].addLastShots(rowcol)
@@ -71,7 +89,7 @@ const gameInstance = function gameInstance() {
         break;
       }
       if (isHit === null) alert('AI hit same coordinate twice')
-      rowcol = players[AIplayer].generateRandomMove(difficulty);
+      rowcol = players[AIplayer].generateRandomMove(aiLevel);
       isHit = players[AIrival].gameboard.receiveAttack(rowcol);
       players[AIplayer].addLastShots(rowcol)
       i++;
@@ -134,6 +152,9 @@ const gameInstance = function gameInstance() {
     checkWinner,
     isPvPGamemode,
     getRivalTurn,
+    getAiLevels,
+    getAiLevel,
+    setAiLevel,
   };
 };
 

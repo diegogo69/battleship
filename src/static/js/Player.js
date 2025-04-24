@@ -144,24 +144,26 @@ class AIPlayer extends Player {
     return rowcol;
   }
 
-  generateRandomMove(difficulty) {
+  generateRandomMove(aiLevel) {
+    console.log('AI turn aiLevel: ' + aiLevel)
+
     if (this.availableCoordinates.length === 0) {
       throw new Error("No more available moves");
     }
 
-    if (difficulty !== "easy" && this.lastHit.isHit) {
+    if (aiLevel !== "easy" && this.lastHit.isHit) {
       // Add adjacents cells from the last cell hit
       this.addAdjacents();
     }
 
     // If previous turn was a hit. try adjacent coordinates
     // Ensure there are available adjacents
-    if (difficulty === "normal" && this.lastHit.isHit && this.adjacents[0]) {
+    if (aiLevel === "normal" && this.lastHit.isHit && this.adjacents[0]) {
       const rowcol = this.getRandomAdjacent();
       return rowcol;
     }
 
-    if (difficulty === "hard") {
+    if (aiLevel === "hard") {
       // Remove adjacents within the sorroundings of a sunk ship
       if (typeof this.lastHit.isHit === "object") {
         this.removeAdjacents(true);
