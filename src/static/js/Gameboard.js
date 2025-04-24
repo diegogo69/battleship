@@ -8,7 +8,7 @@ import Ship from "./Ship";
 // 4 of 1
 
 class Gameboard {
-  constructor(shipsNo = 5) {
+  constructor(shipsNo = Gameboard.SHIPS_NO) {
     this.shipsNo = shipsNo;
     this.sunks = 0;
     this.ships = [];
@@ -25,21 +25,66 @@ class Gameboard {
     return 10;
   }
 
+  static get SHIPS_NO() {
+    return 5;
+  }
   randomShips() {
     const shipsArr = Ship.createShips(this.shipsNo);
+    // Create an array of available coordinates
+    const availables = Gameboard.getValidCoordinates();
+
     shipsArr.forEach((shipData) => {
+      // For each ship
       let shipIsPlaced = false;
 
       while (shipIsPlaced === false) {
-        let { row, col } = Gameboard.getValidRandomCoordinate(
-          shipData.length,
-          shipData.horizontal,
-        );
+        // Get a random coordinate from the available coordinates arr
+        const randomIndex = Math.floor(Math.random() * availables.length);
+        const rowcol = availables[randomIndex];
+        const row = parseInt(rowcol[0]);
+        const col = parseInt(rowcol[1]);
+        // let { row, col } = Gameboard.getValidRandomCoordinate(
+        //   shipData.length,
+        //     shipData.horizontal,
+        //   );
+        // Check if ship can be placed
         shipIsPlaced = this.placeShip(
           `${row}${col}`,
           shipData.length,
           shipData.horizontal,
         );
+
+        // If not
+        // Change orientation. Check again
+        if (shipIsPlaced === false) {
+          shipData.horizontal = !shipData.horizontal;
+          shipIsPlaced = this.placeShip(
+            `${row}${col}`,
+            shipData.length,
+            shipData.horizontal,
+          );
+        }
+
+        // Place
+        // and remove its sorroundings from available coordinates arr
+        if (shipIsPlaced === true) {
+          const length = shipData.length;
+          const isHorizontal = shipData.horizontal;
+          
+          const { rowStart, rowEnd, colStart, colEnd } =
+            Gameboard.getSorroundings(row, col, isHorizontal, length);
+
+          for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
+            for (let curCol = colStart; curCol <= colEnd; curCol++) {
+              const sorroundCell = `${curRow}${curCol}`;
+
+              const availablesIndex = availables.indexOf(sorroundCell);
+              if (availablesIndex !== -1) {
+                availables.splice(availablesIndex, 1);
+              }
+            }
+          }
+        }
       }
     });
   }
@@ -60,7 +105,7 @@ class Gameboard {
     const row = Math.floor(Math.random() * (limitRow + 1));
     const col = Math.floor(Math.random() * (limitCol + 1));
 
-    console.log('GIVEN COORDINATES: ' + row + col)
+    console.log("GIVEN COORDINATES: " + row + col);
     return { row, col };
   }
 
@@ -194,7 +239,12 @@ class Gameboard {
   // Check if a ship's lenght and orientation does not exceed board limits
   canBePlaced(row, col, length, isHorizontal) {
     // Validate bounds
-    const validBounds = Gameboard.validateBounds(row, col, length, isHorizontal);
+    const validBounds = Gameboard.validateBounds(
+      row,
+      col,
+      length,
+      isHorizontal,
+    );
     if (!validBounds) return false;
     // Validate area, at least one free cell in all directions
     const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
@@ -219,7 +269,9 @@ class Gameboard {
   // Return index of added ship
   // As it was added with push, it is the last item (e.i. length - 1)
   #addShip(row, col, shipLength, isHorizontal) {
-    const shipsArrLength = this.ships.push(new Ship(row, col, shipLength, isHorizontal));
+    const shipsArrLength = this.ships.push(
+      new Ship(row, col, shipLength, isHorizontal),
+    );
     return shipsArrLength - 1;
   }
 
@@ -281,7 +333,7 @@ class Gameboard {
         const col = ship.col;
         const length = ship.length;
         const isHorizontal = ship.isHorizontal;
-        return {row, col, length, isHorizontal};
+        return { row, col, length, isHorizontal };
       }
 
       console.log("Ship hit");
