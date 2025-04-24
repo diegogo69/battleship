@@ -18,6 +18,19 @@ class AIPlayer extends Player {
       isSunk: false,
     };
     this.adjacents = [];
+    this.lastShots = [];
+  }
+
+  getLastShots() {
+    return this.lastShots
+  }
+
+  emptyLastShots()  {
+    this.lastShots = []
+  }
+
+  addLastShots(shot) {
+    this.lastShots.push(shot)
   }
 
   setLastHit({ isHit, rowcol }) {
@@ -78,7 +91,7 @@ class AIPlayer extends Player {
     });
   }
 
-  removeAdjacents(removeCorners = false) {
+  removeAdjacents() {
     // Get the data of the sunk ship: coordinates, length and orientation
     // Remove its sorroundings from the available adjacent coordinates
     // {row, col, length, isHorizontal}
@@ -93,39 +106,19 @@ class AIPlayer extends Player {
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
         const sorroundCell = `${curRow}${curCol}`;
-        const adjacentIndex = this.adjacents.indexOf(sorroundCell);
+        
         const availablesIndex = this.availableCoordinates.indexOf(sorroundCell);
-
-        if (adjacentIndex !== -1) {
-          this.adjacents.splice(adjacentIndex, 1);
-        }
         if (availablesIndex !== -1) {
-          this.adjacents.splice(availablesIndex, 1);
+          this.availableCoordinates.splice(availablesIndex, 1);
+        }
+
+        if (this.adjacents[0]) {
+          const adjacentIndex = this.adjacents.indexOf(sorroundCell);
+          if (adjacentIndex !== -1) {
+            this.adjacents.splice(adjacentIndex, 1);
+          }
         }
       }
-    }
-
-    // Remove adjacent of the ship
-    if (removeCorners) {
-      const { nextTop, nextBottom, nextLeft, nextRight } = this.getAdjacents();
-
-      const leftTop = nextLeft && nextTop;
-      const leftBottom = nextLeft && nextBottom;
-      const rightTop = nextRight && nextTop;
-      const rightBottom = nextRight && nextBottom;
-
-      const corners = []; // bad written
-      if (leftTop) corners.push(`${nextTop}${nextLeft}`);
-      if (leftBottom) corners.push(`${nextBottom}${nextLeft}`);
-      if (rightTop) corners.push(`${nextTop}${nextRight}`);
-      if (rightBottom) corners.push(`${nextBottom}${nextRight}`);
-
-      corners.forEach((corner) => {
-        const isAvailable = this.availableCoordinates.indexOf(corner);
-        if (isAvailable !== -1) {
-          this.availableCoordinates.splice(isAvailable, 1);
-        }
-      });
     }
   }
 
@@ -168,7 +161,7 @@ class AIPlayer extends Player {
       return rowcol;
     }
 
-    if (difficulty === "hard" && this.adjacents[0]) {
+    if (difficulty === "hard") {
       // Remove adjacents within the sorroundings of a sunk ship
       if (typeof this.lastHit.isHit === "object") {
         this.removeAdjacents(true);
