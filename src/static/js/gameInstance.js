@@ -9,13 +9,13 @@ const gameInstance = function gameInstance() {
   let turn = 1;
   let winner = null;
   let pvpGamemode = null;
-
+  const SHIPS_NO = 5;
   const createPlayers = function createPlayers() {
-    if (pvpGamemode === true) return [new Player(3), new Player(3)];
-    const computer = new AIPlayer(3);
+    if (pvpGamemode === true) return [new Player(SHIPS_NO), new Player(SHIPS_NO)];
+    const computer = new AIPlayer(SHIPS_NO);
     computer.gameboard.randomShips();
     console.log(computer.gameboard.shipsBoard)
-    return [new Player(3), computer];
+    return [new Player(SHIPS_NO), computer];
   };
 
   // Create players and reference game instance for creating gameboard elements
@@ -60,6 +60,7 @@ const gameInstance = function gameInstance() {
     let rowcol = players[AIplayer].generateRandomMove(difficulty);
     let isHit = players[AIrival].gameboard.receiveAttack(rowcol);
     players[AIplayer].setLastHit({ isHit, rowcol });
+    players[AIplayer].addLastShots(rowcol)
     let i = 1;
     while (isHit || isHit === null) {
       // turn = AIplayer;
@@ -72,6 +73,7 @@ const gameInstance = function gameInstance() {
       if (isHit === null) alert('AI hit same coordinate twice')
       rowcol = players[AIplayer].generateRandomMove(difficulty);
       isHit = players[AIrival].gameboard.receiveAttack(rowcol);
+      players[AIplayer].addLastShots(rowcol)
       i++;
     }
     console.log('AI CONSECUTIVE TURNS: ' + i)
