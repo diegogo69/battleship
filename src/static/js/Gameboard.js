@@ -182,6 +182,14 @@ class Gameboard {
     return { rowStart, rowEnd, colStart, colEnd };
   }
 
+  static iterateSorroundings(rowStart, rowEnd, colStart, colEnd, fn) {
+    for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
+      for (let curCol = colStart; curCol <= colEnd; curCol++) {
+        fn(curRow, curCol)
+      }
+    }
+  }
+
   // UNUSED FUNCTIONF
   static getRandomCoordinate() {
     // Choose a random rowcol
