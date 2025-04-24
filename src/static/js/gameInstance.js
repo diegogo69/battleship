@@ -73,14 +73,12 @@ const gameInstance = function gameInstance() {
     const AIplayer = 2; //getRivalTurn();
     const AIrival = 1;
 
-    // const difficulty = "hard";
-
     let rowcol = players[AIplayer].generateRandomMove(aiLevel);
     let isHit = players[AIrival].gameboard.receiveAttack(rowcol);
     players[AIplayer].setLastHit({ isHit, rowcol });
     players[AIplayer].addLastShots(rowcol)
     let i = 1;
-    while (isHit || isHit === null) {
+    while (isHit) {
       // turn = AIplayer;
       const gameover = players[AIrival].gameboard.areSunk();
       if (gameover === true) {
@@ -88,15 +86,15 @@ const gameInstance = function gameInstance() {
         console.log('AI WINS. shot at: ' + rowcol)
         break;
       }
-      if (isHit === null) alert('AI hit same coordinate twice')
+      
       rowcol = players[AIplayer].generateRandomMove(aiLevel);
       isHit = players[AIrival].gameboard.receiveAttack(rowcol);
+      players[AIplayer].setLastHit({ isHit, rowcol });
       players[AIplayer].addLastShots(rowcol)
       i++;
     }
+
     console.log('AI CONSECUTIVE TURNS: ' + i)
-    // Return an array of array of the shots coordinates
-    // To be render with set time outs in the dom
     return isHit;
   };
 

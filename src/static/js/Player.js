@@ -22,15 +22,15 @@ class AIPlayer extends Player {
   }
 
   getLastShots() {
-    return this.lastShots
+    return this.lastShots;
   }
 
-  emptyLastShots()  {
-    this.lastShots = []
+  emptyLastShots() {
+    this.lastShots = [];
   }
 
   addLastShots(shot) {
-    this.lastShots.push(shot)
+    this.lastShots.push(shot);
   }
 
   setLastHit({ isHit, rowcol }) {
@@ -92,6 +92,7 @@ class AIPlayer extends Player {
   }
 
   removeAdjacents() {
+    if (this.adjacents[0] == null) return;
     // Get the data of the sunk ship: coordinates, length and orientation
     // Remove its sorroundings from the available adjacent coordinates
     // {row, col, length, isHorizontal}
@@ -106,7 +107,7 @@ class AIPlayer extends Player {
     for (let curRow = rowStart; curRow <= rowEnd; curRow++) {
       for (let curCol = colStart; curCol <= colEnd; curCol++) {
         const sorroundCell = `${curRow}${curCol}`;
-        
+
         const availablesIndex = this.availableCoordinates.indexOf(sorroundCell);
         if (availablesIndex !== -1) {
           this.availableCoordinates.splice(availablesIndex, 1);
@@ -122,12 +123,13 @@ class AIPlayer extends Player {
     }
   }
 
+  getAdjacent() {
+    return this.adjacents.shift();
+  }
+
   getRandomAdjacent() {
     const randomIndex = Math.floor(Math.random() * this.adjacents.length);
-    console.log(this.adjacents);
     const rowcol = this.adjacents[randomIndex];
-
-    // Remove the chosen rowcol from the available moves
     this.adjacents.splice(randomIndex, 1);
     return rowcol;
   }
@@ -145,41 +147,46 @@ class AIPlayer extends Player {
   }
 
   generateRandomMove(aiLevel) {
-    console.log('AI turn aiLevel: ' + aiLevel)
+    console.log("AI turn aiLevel: " + aiLevel);
 
-    if (this.availableCoordinates.length === 0) {
+    if (this.availableCoordinates[0] == null) {
       throw new Error("No more available moves");
     }
 
-    if (aiLevel !== "easy" && this.lastHit.isHit) {
-      // Add adjacents cells from the last cell hit
+    // Add adjacents cells from the last cell hit
+    if (this.lastHit.isHit) {
       this.addAdjacents();
     }
 
-    // If previous turn was a hit. try adjacent coordinates
-    // Ensure there are available adjacents
-    if (aiLevel === "normal" && this.lastHit.isHit && this.adjacents[0]) {
-      const rowcol = this.getRandomAdjacent();
-      return rowcol;
-    }
+    if (this.adjacents[0]) {
+      if (aiLevel === "easy") {
+        return this.getRandomAdjacent();
+      }
 
-    if (aiLevel === "hard") {
-      // Remove adjacents within the sorroundings of a sunk ship
+      // Remove sorrounding cells of a sunk ship from available coordinates
       if (typeof this.lastHit.isHit === "object") {
         this.removeAdjacents(true);
       }
 
-      // Ensure there are stil adjacents after removal
-      if (this.adjacents[0]) {
-        const rowcol = this.getRandomAdjacent();
-        return rowcol;
+      // Hit random adjacent coordinate
+      if (aiLevel === "normal") {
+        // Ensure there are available adjacents after removal
+        if (this.adjacents[0]) {
+          return this.getRandomAdjacent();
+        }
+      }
+
+      // Hit succesive adjacent coordinate
+      if (aiLevel === "hard") {
+        // Ensure there are stil adjacents after removal
+        if (this.adjacents[0]) {
+          return this.getAdjacent();
+        }
       }
     }
 
-    // Always executed in easy mode, and when there are no adjacent cells
-    // Choose a random adjacent rowcol
-    const rowcol = this.getRandomRowcol();
-    return rowcol;
+    // If no adjacent coordinates registered
+    return this.getRandomRowcol();
   }
 }
 
