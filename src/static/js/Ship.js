@@ -12,16 +12,58 @@ class Ship {
     this.sunk = false;
   }
 
-  static createShips(shipsNo) {
-    const shipsArr = [];
-    for (let i = 1; i <= shipsNo; i++) {
-      const ship = {
-        length: i,
-        horizontal: Math.floor(Math.random() * 2) === 0,
-      };
+  static SHIPS = [
+    { name: "patrol boat", length: 1 },
+    { name: "submarine", length: 2 },
+    { name: "destroyer", length: 3 },
+    { name: "battleship", length: 4 },
+    { name: "carrier", length: 5 },
+  ];
+  
+  static shipFleets = {
+    1: [
+      { units: 1, ...Ship.SHIPS[0] },
+      { units: 1, ...Ship.SHIPS[1] },
+      { units: 1, ...Ship.SHIPS[2] },
+      { units: 1, ...Ship.SHIPS[3] },
+      { units: 1, ...Ship.SHIPS[4] },
+    ],
+    2: [
+      { units: 1, ...Ship.SHIPS[1] },
+      { units: 2, ...Ship.SHIPS[2] },
+      { units: 1, ...Ship.SHIPS[3] },
+      { units: 1, ...Ship.SHIPS[4] },
+    ],
+    3: [
+      { units: 1, ...Ship.SHIPS[0] },
+      { units: 3, ...Ship.SHIPS[1] },
+      { units: 2, ...Ship.SHIPS[2] },
+      { units: 1, ...Ship.SHIPS[3] },
+      { units: 1, ...Ship.SHIPS[4] },
+    ],
 
-      shipsArr.push(ship);
-    }
+    4: [
+      { units: 4, ...Ship.SHIPS[1] },
+      { units: 2, ...Ship.SHIPS[2] },
+      { units: 2, ...Ship.SHIPS[3] },
+      { units: 1, ...Ship.SHIPS[0] },
+    ],
+  };
+
+  static createShips(fleet=1) {
+    const shipsArr = [];
+
+    Ship.shipFleets[fleet].forEach((shipType) => {
+      for (let i = 0; i < shipType.units; i++) {
+        const ship = {
+          name: shipType.name,
+          length: shipType.length,
+          horizontal: Math.floor(Math.random() * 2) === 0,
+        };
+        shipsArr.push(ship);
+      }
+    });
+
     return shipsArr;
   }
 
