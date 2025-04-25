@@ -1,9 +1,9 @@
 import Gameboard from "./Gameboard";
 
 class Player {
-  constructor(shipsNo) {
+  constructor(fleet) {
     this.type = "real";
-    this.gameboard = new Gameboard(shipsNo);
+    this.gameboard = new Gameboard(fleet);
   }
 }
 

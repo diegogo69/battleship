@@ -1,12 +1,12 @@
 import { Player, AIPlayer } from "./Player";
-
+git
 const gameInstance = function gameInstance() {
   // Create players. One real, one computer. Populate each gameboard
   const players = {
     1: null,
     2: null,
   };
-  const SHIPS_NO = 5;
+
   const aiLevels = ['easy', 'normal', 'hard'];
   let turn = 1;
   let winner = null;
@@ -36,11 +36,9 @@ const gameInstance = function gameInstance() {
   }
 
   const createPlayers = function createPlayers() {
-    if (pvpGamemode === true) return [new Player(SHIPS_NO), new Player(SHIPS_NO)];
-    const computer = new AIPlayer(SHIPS_NO);
-    computer.gameboard.randomShips(shipFleet);
-    console.log(computer.gameboard.shipsBoard)
-    return [new Player(SHIPS_NO), computer];
+    if (pvpGamemode === true) return [new Player(shipFleet), new Player(shipFleet)];
+    const computer = new AIPlayer(shipFleet);
+    return [new Player(shipFleet), computer];
   };
 
 
