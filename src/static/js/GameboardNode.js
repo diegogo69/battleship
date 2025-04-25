@@ -50,7 +50,8 @@ const GameboardNode = (function () {
         const turn = gameInstance.getTurn(); // 2
         handlers.displayHeader(turn, gameInstance.isPvPGamemode(), null, true);
         handlers.displayBoard(turn);
-        handlers.displayShips(doneFn, turn);
+        const fleet = gameInstance.getFleet();
+        handlers.displayShips(fleet, doneFn, turn);
         return;
       }
       gameInstance.changeTurn(); // Change again to 1
@@ -74,6 +75,21 @@ const GameboardNode = (function () {
     );
     handlers.displayBoards();
   };
+  
+  const changeFleet = function changeFleet(e) {
+    const fleet = e.currentTarget.value;
+    if (fleet == gameInstance.getFleet()) return
+
+    const allShips = document.querySelectorAll('.ship')
+    allShips.forEach(shipDomEl => {
+      handlers.occupyCells(shipDomEl, false);
+      shipDomEl.parentNode.removeChild(shipDomEl)
+    })
+
+    gameInstance.setFleet(fleet);
+    const turn = gameInstance.getTurn();
+    handlers.displayShips(gameInstance.getFleet(), doneFn, turn);
+  }
 
   // Reference game instance
   const initGameboard = function init(game) {
@@ -326,6 +342,7 @@ const GameboardNode = (function () {
   return {
     boardNode,
     doneFn,
+    changeFleet,
     initGameboard,
     enableTurnHandler,
     disableTurnHandler,
