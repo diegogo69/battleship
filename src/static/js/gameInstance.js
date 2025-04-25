@@ -1,5 +1,5 @@
 import { Player, AIPlayer } from "./Player";
-git
+
 const gameInstance = function gameInstance() {
   // Create players. One real, one computer. Populate each gameboard
   const players = {

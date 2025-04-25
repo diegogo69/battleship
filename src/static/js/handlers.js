@@ -225,7 +225,7 @@ const handlers = (function () {
 
   const rotateShip = function rotateShip(e) {
     const ship = e.currentTarget;
-    // if (ship.parentNode.classList.contains('ships-container')) return
+    if (ship.parentNode.classList.contains('ships-container')) return
 
     if (ship.parentNode.classList.contains("gameboard-col")) {
       const row = parseInt(ship.parentNode.dataset.rowcol[0]);
