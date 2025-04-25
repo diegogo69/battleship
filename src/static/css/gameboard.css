@@ -106,14 +106,15 @@
     top: -2.2rem;
     left: 1px;
     display: flex;
-    gap: 1rem;
+    gap: .8rem;
     align-items: center;
     width: 340px;
+    cursor: default;
 }
 
 .gameboard > .player-board-span > div {
-    width: 15px;
-    height: 15px;
+    width: 12px;
+    height: 12px;
 }
 
 .being-attacked {
