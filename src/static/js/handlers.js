@@ -4,6 +4,7 @@ import GameboardNode from "./GameboardNode";
 import gameInstance from "./gameInstance";
 import Gameboard from "./Gameboard";
 import createMainPage from "./createMainPage";
+import Ship from "./Ship";
 
 const handlers = (function () {
   const isValidDomArea = function isValidDomArea(
@@ -364,6 +365,7 @@ const handlers = (function () {
 
   // Display ships container
   const displayShips = function displayShipContainer(
+    fleet,
     doneFn,
     turn,
     isPvP = false,
@@ -373,6 +375,20 @@ const handlers = (function () {
     placeShipsNode.classList.add("place-ships-wrapper");
     const btnWrapper = document.createElement("div");
     btnWrapper.classList.add("ships-btns");
+
+    if (fleet && turn === 1) {}
+    const fleetSelect = document.createElement("select");
+    fleetSelect.classList.add("fleet-select");
+    const fleetTypes = Object.keys(Ship.shipFleets);
+    fleetTypes.forEach((fleetType, fleetIndex) => {
+      const fleetOpt = document.createElement("option");
+      if (fleet == fleetType) fleetOpt.setAttribute('selected', true)
+      fleetOpt.value = fleetType;
+      fleetOpt.textContent = `Fleet ${fleetIndex + 1}`;
+      fleetSelect.appendChild(fleetOpt);
+    });
+  
+    fleetSelect.addEventListener('change', GameboardNode.changeFleet)
 
     if (!isPvP) {
       const levelSelect = document.createElement("select");
@@ -393,15 +409,19 @@ const handlers = (function () {
     doneBtn.textContent = "Done";
     doneBtn.classList.add("done-btn");
     doneBtn.addEventListener("click", doneFn);
+    btnWrapper.appendChild(doneBtn);
+
     const randomBtn = document.createElement("button");
     randomBtn.textContent = "Random";
     randomBtn.classList.add("random-btn");
     randomBtn.addEventListener("click", placeShipsRandomly);
-
-    const ships = createShips();
-    placeShipsNode.appendChild(ships);
     btnWrapper.appendChild(randomBtn);
-    btnWrapper.appendChild(doneBtn);
+
+    const shipsArr = Ship.createShips(fleet);
+    const shipsNode = createShips(shipsArr);
+
+    placeShipsNode.appendChild(fleetSelect);
+    placeShipsNode.appendChild(shipsNode);
     placeShipsNode.appendChild(btnWrapper);
     domHandler.render.ships(placeShipsNode, rivalTurn);
   };
@@ -504,9 +524,10 @@ const handlers = (function () {
 
     // Display gameboard only for player 1. As the other will hold the ships elements
     const turn = game.getTurn(); // 1
+    const fleet = game.getFleet()
     displayHeader(turn, isPvP, null, true);
     displayBoard(turn);
-    displayShips(GameboardNode.doneFn, turn, isPvP);
+    displayShips(fleet, GameboardNode.doneFn, turn, isPvP);
     hideGamemodes();
   };
 
@@ -543,6 +564,7 @@ const handlers = (function () {
     dragover,
     dragleave,
     rotateShip,
+    occupyCells,
     testPlaceShips,
     initDomHandlers,
     displayHeader,
