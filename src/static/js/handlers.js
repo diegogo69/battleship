@@ -365,9 +365,9 @@ const handlers = (function () {
 
   // Display ships container
   const displayShips = function displayShipContainer(
-    fleet,
     doneFn,
     turn,
+    fleet = null,  
     isPvP = false,
   ) {
     const rivalTurn = turn === 1 ? 2 : 1;
@@ -376,19 +376,21 @@ const handlers = (function () {
     const btnWrapper = document.createElement("div");
     btnWrapper.classList.add("ships-btns");
 
-    if (fleet && turn === 1) {}
-    const fleetSelect = document.createElement("select");
-    fleetSelect.classList.add("fleet-select");
-    const fleetTypes = Object.keys(Ship.shipFleets);
-    fleetTypes.forEach((fleetType, fleetIndex) => {
-      const fleetOpt = document.createElement("option");
-      if (fleet == fleetType) fleetOpt.setAttribute('selected', true)
-      fleetOpt.value = fleetType;
-      fleetOpt.textContent = `Fleet ${fleetIndex + 1}`;
-      fleetSelect.appendChild(fleetOpt);
-    });
-  
-    fleetSelect.addEventListener('change', GameboardNode.changeFleet)
+    if (fleet && turn === 1) {
+      const fleetSelect = document.createElement("select");
+      fleetSelect.classList.add("fleet-select");
+      const fleetTypes = Object.keys(Ship.fleets);
+      fleetTypes.forEach((fleetType, fleetIndex) => {
+        const fleetOpt = document.createElement("option");
+        if (fleet == fleetType) fleetOpt.setAttribute('selected', true)
+        fleetOpt.value = fleetType;
+        fleetOpt.textContent = `Fleet ${fleetIndex + 1}`;
+        fleetSelect.appendChild(fleetOpt);
+      });
+    
+      fleetSelect.addEventListener('change', GameboardNode.changeFleet)
+      placeShipsNode.appendChild(fleetSelect);
+    }
 
     if (!isPvP) {
       const levelSelect = document.createElement("select");
@@ -420,7 +422,6 @@ const handlers = (function () {
     const shipsArr = Ship.createShips(fleet);
     const shipsNode = createShips(shipsArr);
 
-    placeShipsNode.appendChild(fleetSelect);
     placeShipsNode.appendChild(shipsNode);
     placeShipsNode.appendChild(btnWrapper);
     domHandler.render.ships(placeShipsNode, rivalTurn);
@@ -485,6 +486,7 @@ const handlers = (function () {
     player.gameboard.placeShip("01", 2, true);
     player.gameboard.placeShip("10", 2, false);
   };
+  
   const displayHeader = function displayHeader(
     turn,
     isPvP,
@@ -527,7 +529,7 @@ const handlers = (function () {
     const fleet = game.getFleet()
     displayHeader(turn, isPvP, null, true);
     displayBoard(turn);
-    displayShips(fleet, GameboardNode.doneFn, turn, isPvP);
+    displayShips(GameboardNode.doneFn, turn, fleet, isPvP);
     hideGamemodes();
   };
 
