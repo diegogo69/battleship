@@ -12,6 +12,15 @@ const gameInstance = function gameInstance() {
   let winner = null;
   let pvpGamemode = null;
   let aiLevel = aiLevels[0];
+  let shipFleet = 1;
+
+  const getFleet = function getFleet() {
+    return shipFleet
+  }
+
+  const setFleet = function setFleet(fleet) {
+    shipFleet = fleet
+  }
 
   const getAiLevels = function getDifficulty() {
     return aiLevels;
@@ -29,7 +38,7 @@ const gameInstance = function gameInstance() {
   const createPlayers = function createPlayers() {
     if (pvpGamemode === true) return [new Player(SHIPS_NO), new Player(SHIPS_NO)];
     const computer = new AIPlayer(SHIPS_NO);
-    computer.gameboard.randomShips();
+    computer.gameboard.randomShips(shipFleet);
     console.log(computer.gameboard.shipsBoard)
     return [new Player(SHIPS_NO), computer];
   };
@@ -153,6 +162,8 @@ const gameInstance = function gameInstance() {
     getAiLevels,
     getAiLevel,
     setAiLevel,
+    getFleet,
+    setFleet,
   };
 };
 
