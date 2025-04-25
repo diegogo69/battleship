@@ -162,15 +162,11 @@ class AIPlayer extends Player {
     }
 
     // Add adjacents cells from the last cell hit
-    if (this.lastHit.isHit) {
+    if (this.lastHit.isHit && aiLevel !== "easy") {
       this.addAdjacents();
     }
 
-    if (this.adjacents[0]) {
-      if (aiLevel === "easy") {
-        return this.getRandomAdjacent();
-      }
-
+    if (this.adjacents[0] && aiLevel !== "easy") {
       // Remove sorrounding cells of a sunk ship from available coordinates
       if (typeof this.lastHit.isHit === "object") {
         this.removeAdjacents(true);
@@ -193,7 +189,7 @@ class AIPlayer extends Player {
       }
     }
 
-    // If no adjacent coordinates registered
+    // If easy mode or no adjacent coordinates registered
     return this.getRandomRowcol();
   }
 }
