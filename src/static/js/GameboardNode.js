@@ -31,6 +31,9 @@ const GameboardNode = (function () {
     const boardNode = document.querySelector(`#gameboard-${turn}`);
     console.log(boardNode);
 
+    const fleet = gameInstance.getFleet();
+    gameInstance.players[turn].gameboard.setFleet(fleet)
+    
     const ships = shipsFromBoard(boardNode);
     console.log(ships);
 
@@ -43,19 +46,23 @@ const GameboardNode = (function () {
       console.log(ship);
     });
 
-    console.log(gameInstance.isPvPGamemode());
-    if (gameInstance.isPvPGamemode() == true) {
+    const isPvP = gameInstance.isPvPGamemode();
+    console.log(isPvP);
+    if (isPvP == true) {
       if (turn === 1) {
         gameInstance.changeTurn(); // Now it's 2
         const turn = gameInstance.getTurn(); // 2
-        handlers.displayHeader(turn, gameInstance.isPvPGamemode(), null, true);
+        handlers.displayHeader(turn, isPvP, null, true);
         handlers.displayBoard(turn);
-        const fleet = gameInstance.getFleet();
-        handlers.displayShips(fleet, doneFn, turn);
+        handlers.displayShips(doneFn, turn, fleet, isPvP);
         return;
       }
       gameInstance.changeTurn(); // Change again to 1
     } else {
+      gameInstance.players[2].gameboard.setFleet(fleet)
+      gameInstance.players[2].gameboard.randomShips(fleet);
+      console.log(gameInstance.players[2].gameboard.shipsBoard)
+
       const lvlSelect = shipsWrapper.querySelector('.lvl-select')
       const lvl = lvlSelect.value;
 
@@ -88,7 +95,8 @@ const GameboardNode = (function () {
 
     gameInstance.setFleet(fleet);
     const turn = gameInstance.getTurn();
-    handlers.displayShips(gameInstance.getFleet(), doneFn, turn);
+    const isPvP = gameInstance.isPvPGamemode();
+    handlers.displayShips(doneFn, turn, fleet, isPvP);
   }
 
   // Reference game instance
@@ -303,10 +311,11 @@ const GameboardNode = (function () {
       boardNode.appendChild(passDiv);
     }
 
-    if (!isMockup) {
-      if (pass === false && clickFn)
-        boardNode.addEventListener("click", clickFn);
+    if (!isMockup && pass === false && clickFn){
+      boardNode.addEventListener("click", clickFn);
+    }
 
+    if (!isMockup && shipsPlaced) {
       const playerBoardSpan = document.createElement("div"); //
       playerBoardSpan.classList.add("player-board-span");
       const playerSpan = document.createElement("span"); //
@@ -327,7 +336,7 @@ const GameboardNode = (function () {
       } else if (shipsPlaced && boardNo == 1) {
         playerSpan.textContent = "Your ships:";
       } else if (shipsPlaced) {
-        playerSpan.textContent = "Computer's ships:";
+        playerSpan.textContent = "Computer's:";
       }
 
       boardNode.appendChild(playerBoardSpan);
