@@ -8,8 +8,9 @@ import Ship from "./Ship";
 // 4 of 1
 
 class Gameboard {
-  constructor(shipsNo = Gameboard.SHIPS_NO) {
-    this.shipsNo = shipsNo;
+  constructor(fleet=1) {
+    this.fleet = fleet;
+    this.shipsNo = Ship.fleets[fleet].shipsNo;
     this.sunks = 0;
     this.ships = [];
     const SIZE = Gameboard.SIZE;
@@ -25,8 +26,9 @@ class Gameboard {
     return 10;
   }
 
-  static get SHIPS_NO() {
-    return 5;
+  setFleet(fleet) {
+    this.fleet = fleet;
+    this.shipsNo = Ship.fleets[fleet].shipsNo;
   }
 
   randomShips(fleet) {

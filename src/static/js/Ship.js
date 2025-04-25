@@ -19,41 +19,55 @@ class Ship {
     { name: "battleship", length: 4 },
     { name: "carrier", length: 5 },
   ];
-  
-  static shipFleets = {
-    1: [
-      { units: 1, ...Ship.SHIPS[0] },
-      { units: 1, ...Ship.SHIPS[1] },
-      { units: 1, ...Ship.SHIPS[2] },
-      { units: 1, ...Ship.SHIPS[3] },
-      { units: 1, ...Ship.SHIPS[4] },
-    ],
-    2: [
-      { units: 1, ...Ship.SHIPS[1] },
-      { units: 2, ...Ship.SHIPS[2] },
-      { units: 1, ...Ship.SHIPS[3] },
-      { units: 1, ...Ship.SHIPS[4] },
-    ],
-    3: [
-      { units: 1, ...Ship.SHIPS[0] },
-      { units: 3, ...Ship.SHIPS[1] },
-      { units: 2, ...Ship.SHIPS[2] },
-      { units: 1, ...Ship.SHIPS[3] },
-      { units: 1, ...Ship.SHIPS[4] },
-    ],
 
-    4: [
-      { units: 4, ...Ship.SHIPS[1] },
-      { units: 2, ...Ship.SHIPS[2] },
-      { units: 2, ...Ship.SHIPS[3] },
-      { units: 1, ...Ship.SHIPS[0] },
-    ],
+  static fleets = {
+    1: {
+      shipsNo: 5,
+      ships: [
+        { units: 1, ...Ship.SHIPS[0] },
+        { units: 1, ...Ship.SHIPS[1] },
+        { units: 1, ...Ship.SHIPS[2] },
+        { units: 1, ...Ship.SHIPS[3] },
+        { units: 1, ...Ship.SHIPS[4] },
+      ],
+    },
+
+    2: {
+      shipsNo: 5,
+      ships: [
+        { units: 1, ...Ship.SHIPS[1] },
+        { units: 2, ...Ship.SHIPS[2] },
+        { units: 1, ...Ship.SHIPS[3] },
+        { units: 1, ...Ship.SHIPS[4] },
+      ],
+    },
+
+    3: {
+      shipsNo: 8,
+      ships: [
+        { units: 1, ...Ship.SHIPS[0] },
+        { units: 3, ...Ship.SHIPS[1] },
+        { units: 2, ...Ship.SHIPS[2] },
+        { units: 1, ...Ship.SHIPS[3] },
+        { units: 1, ...Ship.SHIPS[4] },
+      ],
+    },
+
+    4: {
+      shipsNo: 9,
+      ships: [
+        { units: 4, ...Ship.SHIPS[1] },
+        { units: 2, ...Ship.SHIPS[2] },
+        { units: 2, ...Ship.SHIPS[3] },
+        { units: 1, ...Ship.SHIPS[0] },
+      ],
+    },
   };
 
-  static createShips(fleet=1) {
+  static createShips(fleet = 1) {
     const shipsArr = [];
 
-    Ship.shipFleets[fleet].forEach((shipType) => {
+    Ship.fleets[fleet].ships.forEach((shipType) => {
       for (let i = 0; i < shipType.units; i++) {
         const ship = {
           name: shipType.name,
