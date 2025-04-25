@@ -29,8 +29,7 @@ class Gameboard {
     return 5;
   }
 
-  randomShips() {
-    const shipsArr = Ship.createShips(this.shipsNo);
+  randomShips(fleet) {
     // Create an array of available coordinates
     const availables = Gameboard.getValidCoordinates();
 
@@ -45,6 +44,7 @@ class Gameboard {
       }
     };
 
+    const shipsArr = Ship.createShips(fleet);
     shipsArr.forEach((shipData) => {
       let shipIsPlaced = false;
 

@@ -1,8 +1,9 @@
 import handlers from "./handlers";
 import Gameboard from "./Gameboard";
-
+import Ship from "./Ship";
 const SHIPS_NO = Gameboard.SHIPS_NO;
 const createShips = function (
+  shipsArr,
   dragstartFn = handlers.dragstart,
   dragendFn = handlers.dragend,
   rotateFn = handlers.rotateShip,
@@ -10,28 +11,30 @@ const createShips = function (
   const shipContainer = document.createElement("div");
   shipContainer.classList.add("ships-container");
 
-  for (let i = 0; i < SHIPS_NO; i++) {
-    const shipLength = i + 1;
+  // name, length, horizontal, 
+  shipsArr.forEach((ship, shipIndex) => {
+    const shipNode = document.createElement("div");
+    shipNode.id = shipIndex;
+    shipNode.classList.add("ship");
+    shipNode.classList.add('flex-row');
+    shipNode.setAttribute("draggable", true);
+    shipNode.dataset.length = ship.length;
+    shipNode.dataset.orientation = "horizontal";
+    const shipName = ship.name[0].toUpperCase() + ship.name.slice(1) 
+    shipNode.setAttribute('title', shipName)
 
-    const ship = document.createElement("div");
-    ship.id = shipLength;
-    ship.classList.add("ship");
-    ship.classList.add('flex-row');
-    ship.setAttribute("draggable", true);
-    ship.dataset.length = shipLength;
-    ship.dataset.orientation = "horizontal";
-
-    for (let j = 0; j < shipLength; j++) {
+    for (let i = 0; i < ship.length; i++) {
       const shipCell = document.createElement("div");
       shipCell.classList.add("ship-cell");
-      ship.appendChild(shipCell);
+      shipNode.appendChild(shipCell);
     }
 
-    ship.addEventListener("dragstart", dragstartFn);
-    ship.addEventListener("dragend", dragendFn);
-    ship.addEventListener('dblclick', rotateFn)
-    shipContainer.appendChild(ship);
-  }
+    shipNode.addEventListener("dragstart", dragstartFn);
+    shipNode.addEventListener("dragend", dragendFn);
+    shipNode.addEventListener('dblclick', rotateFn)
+
+    shipContainer.appendChild(shipNode);
+  });
 
   return shipContainer;
 };
