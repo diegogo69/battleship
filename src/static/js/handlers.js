@@ -568,6 +568,7 @@ const handlers = (function () {
     rotateShip,
     occupyCells,
     testPlaceShips,
+    createShips,
     initDomHandlers,
     displayHeader,
     mainPage,

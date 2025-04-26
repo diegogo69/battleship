@@ -7,6 +7,7 @@
 
 import handlers from "./handlers";
 import shipsFromBoard from "./shipsFromBoard";
+import Ship from "./Ship";
 
 const GameboardNode = (function () {
   let clickFn = null;
@@ -94,9 +95,11 @@ const GameboardNode = (function () {
     })
 
     gameInstance.setFleet(fleet);
-    const turn = gameInstance.getTurn();
-    const isPvP = gameInstance.isPvPGamemode();
-    handlers.displayShips(doneFn, turn, fleet, isPvP);
+    const shipsArr = Ship.createShips(fleet);
+    const placeShipsWrapper = e.currentTarget.parentNode;
+    const curShipsContainer = placeShipsWrapper.querySelector('.ships-container')
+    const newShipsContainer = handlers.createShips(shipsArr);
+    placeShipsWrapper.replaceChild(newShipsContainer, curShipsContainer);
   }
 
   // Reference game instance
