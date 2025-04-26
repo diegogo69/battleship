@@ -1,7 +1,5 @@
 import handlers from "./handlers";
-import Gameboard from "./Gameboard";
-import Ship from "./Ship";
-const SHIPS_NO = Gameboard.SHIPS_NO;
+
 const createShips = function (
   shipsArr,
   dragstartFn = handlers.dragstart,

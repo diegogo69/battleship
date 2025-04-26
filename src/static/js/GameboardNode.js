@@ -1,13 +1,7 @@
-// Function to create a board node, of the same structure as a board array
-// A board node, with row nodes, each with col nodes
-// board argument is expected to be a Gameboard object wich contains
-// a shipsBoard array with the board ships
-// a shotsBoard array with the received attacks
-// The board dipslays a player ships, and the received shots
-
 import handlers from "./handlers";
 import shipsFromBoard from "./shipsFromBoard";
 import Ship from "./Ship";
+import createShips from "./createShips";
 
 const GameboardNode = (function () {
   let clickFn = null;
@@ -27,28 +21,20 @@ const GameboardNode = (function () {
     if (shipsContainer.firstChild) return;
 
     const turn = gameInstance.getTurn();
-
-    console.log("Done fn");
     const boardNode = document.querySelector(`#gameboard-${turn}`);
-    console.log(boardNode);
-
     const fleet = gameInstance.getFleet();
     gameInstance.players[turn].gameboard.setFleet(fleet)
     
     const ships = shipsFromBoard(boardNode);
-    console.log(ships);
-
     ships.forEach((ship) => {
       gameInstance.players[turn].gameboard.placeShip(
         ship.rowcol,
         ship.length,
         ship.orientation,
       );
-      console.log(ship);
     });
 
     const isPvP = gameInstance.isPvPGamemode();
-    console.log(isPvP);
     if (isPvP == true) {
       if (turn === 1) {
         gameInstance.changeTurn(); // Now it's 2
@@ -62,7 +48,6 @@ const GameboardNode = (function () {
     } else {
       gameInstance.players[2].gameboard.setFleet(fleet)
       gameInstance.players[2].gameboard.randomShips(fleet);
-      console.log(gameInstance.players[2].gameboard.shipsBoard)
 
       const lvlSelect = shipsWrapper.querySelector('.lvl-select')
       const lvl = lvlSelect.value;
@@ -98,7 +83,7 @@ const GameboardNode = (function () {
     const shipsArr = Ship.createShips(fleet);
     const placeShipsWrapper = e.currentTarget.parentNode;
     const curShipsContainer = placeShipsWrapper.querySelector('.ships-container')
-    const newShipsContainer = handlers.createShips(shipsArr);
+    const newShipsContainer = createShips(shipsArr);
     placeShipsWrapper.replaceChild(newShipsContainer, curShipsContainer);
   }
 
@@ -128,9 +113,6 @@ const GameboardNode = (function () {
       const turn = gameInstance.getTurn();
 
       if (turn == e.currentTarget.dataset.boardNo) {
-        console.log("Ignored, player click in its own board");
-        // throw "Ignored, player click in its own board";
-
         return;
       }
 
@@ -173,11 +155,6 @@ const GameboardNode = (function () {
         handlers.displayPassScreen();
         return;
       }
-
-      // For a miss in 1 player gamemode render the gameboards
-      // if (hit === false) {
-      //   handlers.displayBoards();
-      // }
     };
   };
 

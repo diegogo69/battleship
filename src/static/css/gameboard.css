@@ -85,15 +85,11 @@
 }
 
 .gameboard-col.hovered {
-    background-color: yellow;
+    background-color: var(--grid-border);
 }
 
 .ship.dragging {
     opacity: 1;
-}
-
-.cell.invalid-drop {
-    background-color: red;
 }
 
 .invalid-cell {

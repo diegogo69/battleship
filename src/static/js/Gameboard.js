@@ -1,11 +1,4 @@
 import Ship from "./Ship";
-/* eslint-disable no-plusplus */
-
-// Ships fleet
-// 1 of 4
-// 2 of 3
-// 3 of 2
-// 4 of 1
 
 class Gameboard {
   constructor(fleet=1) {
@@ -110,7 +103,6 @@ class Gameboard {
     const row = Math.floor(Math.random() * (limitRow + 1));
     const col = Math.floor(Math.random() * (limitCol + 1));
 
-    console.log("GIVEN COORDINATES: " + row + col);
     return { row, col };
   }
 
@@ -118,7 +110,6 @@ class Gameboard {
     const coordinates = [];
     for (let row = 0; row < Gameboard.SIZE; row++) {
       for (let col = 0; col < Gameboard.SIZE; col++) {
-        // this.availableCoordinates.push([row, col]);
         coordinates.push(`${row}${col}`);
       }
     }
@@ -156,25 +147,20 @@ class Gameboard {
       if (colLimitValid) {
         colEnd = colLimit;
       } else {
-        //if (colLimit >= Gameboard.SIZE) {
-        // colEnd = col;#######
         colEnd = Gameboard.SIZE - 1;
       }
       if (nextRow < Gameboard.SIZE) {
         rowEnd = nextRow;
       } else {
-        rowEnd = row; // ########
+        rowEnd = row;
       }
     } else {
       const rowLimit = row + length;
       const rowLimitValid = rowLimit < Gameboard.SIZE;
 
-      // if (rowLimitValid) {
       if (rowLimitValid) {
         rowEnd = rowLimit;
       } else {
-        //if ((rowLimit) > Gameboard.SIZE) {
-        // rowEnd = row;
         rowEnd = Gameboard.SIZE - 1;
       }
       if (nextCol < Gameboard.SIZE) {
@@ -228,7 +214,6 @@ class Gameboard {
       const targetRow = horizontal !== true ? row + i : row;
 
       if (this.shipsBoard[targetRow][targetCol] !== null) {
-        console.log("Invalid overlapping ship placement");
         return false;
       }
     }
@@ -239,12 +224,10 @@ class Gameboard {
   static validateBounds(row, col, length, horizontal) {
     if (horizontal) {
       if (col + length > Gameboard.SIZE) {
-        console.log("Invalid drop: Ship exceeds grid boundaries horizontally.");
         return false;
       }
     } else {
       if (row + length > Gameboard.SIZE) {
-        console.log("Invalid drop: Ship exceeds grid boundaries vertically.");
         return false;
       }
     }
@@ -330,7 +313,6 @@ class Gameboard {
 
     // If coordinate already attacked
     if (this.shotsBoard[row][col] !== null) {
-      console.log("coordinate already attacked");
       return null;
     }
 
@@ -351,7 +333,6 @@ class Gameboard {
         return { row, col, length, isHorizontal };
       }
 
-      console.log("Ship hit");
       return true;
     }
 

@@ -56,10 +56,10 @@ class Ship {
     4: {
       shipsNo: 9,
       ships: [
+        { units: 1, ...Ship.SHIPS[0] },
         { units: 4, ...Ship.SHIPS[1] },
         { units: 2, ...Ship.SHIPS[2] },
         { units: 2, ...Ship.SHIPS[3] },
-        { units: 1, ...Ship.SHIPS[0] },
       ],
     },
   };

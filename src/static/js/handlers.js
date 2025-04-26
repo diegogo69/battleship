@@ -15,7 +15,6 @@ const handlers = (function () {
     boardNode,
     shipID,
   ) {
-    // const {row, col} = Gameboard.validateCoordinates(rowcol)
 
     const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
       row,
@@ -34,7 +33,6 @@ const handlers = (function () {
       const occupied = cell.classList.contains(`occupied`);
 
       if (occupied && !sameShip) {
-        console.log("Invalid ship overlapping");
         return false;
       }
     };
@@ -140,7 +138,7 @@ const handlers = (function () {
     e.dataTransfer.setData("length", ship.dataset.length);
     e.dataTransfer.setData("orientation", ship.dataset.orientation);
     e.dataTransfer.setData("is-placed", isPlaced);
-    e.dataTransfer.setDragImage(e.currentTarget, 10, 25); // 10, 10 -> drag image xOffset, yOffset
+    e.dataTransfer.setDragImage(e.currentTarget, 15, 20); // drag image xOffset, yOffset
 
     ship.classList.add("dragging");
   };
@@ -153,6 +151,7 @@ const handlers = (function () {
   const dragover = function dragoverHandler(e) {
     e.preventDefault(); // Necessary to allow dropping
 
+    e.currentTarget.classList.add('hovered')
     const shipClass = e.dataTransfer.getData("ship-class");
     if (shipClass !== "true") return;
   };
@@ -172,7 +171,6 @@ const handlers = (function () {
     const shipLength = parseInt(e.dataTransfer.getData("length"));
     const isHorizontal = e.dataTransfer.getData("orientation") === "horizontal";
     const boardNode = cell.closest(".gameboard");
-    const boardNo = boardNode.dataset.boardNo;
 
     const validPlacement = isValidPlacement(
       dropCoordinate,
@@ -183,21 +181,13 @@ const handlers = (function () {
       shipID,
     );
 
-    // INVALID DROP
+    // INVALID DROP: Reject the drop and exit
     if (validPlacement == false) {
-      console.log("Invalid drop: Ship placement rejected.");
-      // Provide visual feedback
-      cell.classList.add("invalid-drop");
-      setTimeout(() => {
-        cell.classList.remove("invalid-drop");
-      }, 500); // Remove visual indicator after 0.5 seconds
-      return; // Reject the drop and exit
+      return; 
     }
 
     // VALID DROP
-    console.log(`Valid drop ship of length ${shipLength} at ${dropCoordinate}`);
     cell.classList.remove("hovered");
-
     const ship = document.getElementById(shipID);
 
     // Free the cells previously occupy by ship
@@ -242,13 +232,12 @@ const handlers = (function () {
         boardNode,
         shipID,
       );
-      if (!canRotate) {
-        console.log("Cannot rotate as it overlaps other ships");
-        return;
-      } else {
-        occupyCells(ship, false);
-      }
+
+      if (!canRotate) return;
+
+      occupyCells(ship, false);
     }
+
     const flexRow = ship.classList.contains("flex-row");
     if (flexRow === true) {
       ship.classList.remove("flex-row");
@@ -259,6 +248,7 @@ const handlers = (function () {
       ship.classList.add("flex-row");
       ship.dataset.orientation = "horizontal";
     }
+
     occupyCells(ship, true);
   };
 
@@ -283,7 +273,6 @@ const handlers = (function () {
     // Set orientation helper function
     // References a node list of all the ship elements
     const setShipOrientarion = (horizontal, index) => {
-      console.log("Set ship orientation functionnnnnn");
       if (horizontal) {
         ships[index].classList.remove("flex-col");
         ships[index].classList.add("flex-row");
@@ -340,7 +329,6 @@ const handlers = (function () {
         // If it can be placed, add the ship node to the respective grid cell node
         // And remove ship's adjacent coordinates from the available cells array
         if (isDomValid == true) {
-          console.log("Dom valid?");
           const shipNode = document.getElementById(ship.id);
           const gridCell = boardNode.children[row].children[col];
           shipNode.classList.add("positioned");
@@ -456,7 +444,6 @@ const handlers = (function () {
   };
 
   const displayWinner = function displayWinner(winner, isPvp) {
-    console.log("display winner fn");
     const dialog = document.createElement("dialog");
 
     const dialHeader = document.createElement("h2");
@@ -541,7 +528,6 @@ const handlers = (function () {
 
   const initDomHandlers = function initDom() {
     domHandler.initHandlers.gamemodes(initGame);
-    // domHandler.initHandlers.gamemodes(pvcHandler, pvpHandler);
   };
 
   const mainPage = function mainPage() {
@@ -568,7 +554,6 @@ const handlers = (function () {
     rotateShip,
     occupyCells,
     testPlaceShips,
-    createShips,
     initDomHandlers,
     displayHeader,
     mainPage,

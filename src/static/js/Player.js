@@ -97,7 +97,6 @@ class AIPlayer extends Player {
     if (this.adjacents[0] == null) return;
     // Get the data of the sunk ship: coordinates, length and orientation
     // Remove its sorroundings from the available adjacent coordinates
-    // {row, col, length, isHorizontal}
     const { row, col, length, isHorizontal } = this.lastHit.isHit;
     const { rowStart, rowEnd, colStart, colEnd } = Gameboard.getSorroundings(
       row,
@@ -155,8 +154,6 @@ class AIPlayer extends Player {
   }
 
   generateRandomMove(aiLevel) {
-    console.log("AI turn aiLevel: " + aiLevel);
-
     if (this.availableCoordinates[0] == null) {
       throw new Error("No more available moves");
     }

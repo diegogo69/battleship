@@ -32,7 +32,6 @@ const gameInstance = function gameInstance() {
 
   const setAiLevel = function setAiLevel(lvl) {
     aiLevel = lvl;
-    console.log('ai level: ' + aiLevel)
   }
 
   const createPlayers = function createPlayers() {
@@ -40,8 +39,6 @@ const gameInstance = function gameInstance() {
     const computer = new AIPlayer(shipFleet);
     return [new Player(shipFleet), computer];
   };
-
-
 
   // Create players and reference game instance for creating gameboard elements
   // Setup ship placement by enabling drag and drop handlers for ships and gameboards
@@ -77,7 +74,7 @@ const gameInstance = function gameInstance() {
   };
 
   const playAITurn = function playAITurn() {
-    const AIplayer = 2; //getRivalTurn();
+    const AIplayer = 2;
     const AIrival = 1;
 
     let rowcol = players[AIplayer].generateRandomMove(aiLevel);
@@ -90,7 +87,6 @@ const gameInstance = function gameInstance() {
       const gameover = players[AIrival].gameboard.areSunk();
       if (gameover === true) {
         winner = AIplayer;
-        console.log('AI WINS. shot at: ' + rowcol)
         break;
       }
       
@@ -101,7 +97,6 @@ const gameInstance = function gameInstance() {
       i++;
     }
 
-    console.log('AI CONSECUTIVE TURNS: ' + i)
     return isHit;
   };
 
@@ -112,19 +107,14 @@ const gameInstance = function gameInstance() {
     if (!rowcol) return;
 
     if (e.target.closest(".gameboard").dataset.boardNo == turn) {
-      console.log("Ignored. Player click on its own board");
       return;
     }
-
-    console.log("Turn on game Instance " + turn);
 
     const rival = getRivalTurn();
     let hit = playPlayerTurn(rowcol);
 
     // If attacking the same spot twice
     if (hit === null) return null;
-    console.log("PLayer hit at: " + rowcol);
-
 
     // If ship is hit. Do not change turn
     if (hit) {
@@ -143,7 +133,6 @@ const gameInstance = function gameInstance() {
       hit = playAITurn();
       return hit;
     }
-    // changeTurn(); // both ai
     return false;
   };
 

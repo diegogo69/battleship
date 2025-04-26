@@ -155,8 +155,7 @@ body > header > h1 {
 }
 
 select option {
-    /* background-color: #f5f3ff; */
-    background-color: #ede9fe;
+    background-color: #f5f3ff;
 }
 
 .place-ships-wrapper {
@@ -267,7 +266,6 @@ dialog button,
 
 body > header #help-opener  {
     position: absolute;
-    /* color: var(--grid-border); */
     color: var(--dark-bg);
     top: 1rem;  
     right: 2rem;
