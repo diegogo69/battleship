@@ -38,6 +38,7 @@ body {
 }
 
 body > header {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -264,12 +265,16 @@ dialog button,
     height: 20px;
 }
 
+body > header #help-opener  {
+    position: absolute;
+    /* color: var(--grid-border); */
+    color: var(--dark-bg);
+    top: 1rem;  
+    right: 2rem;
+}
+
 dialog {
     margin: auto;
-    display: grid;
-    justify-items: center;
-    place-content: center;
-    gap: 1.4rem;
     border: 5px solid var(--blue-bg);
     background-color: white;
 
@@ -277,6 +282,13 @@ dialog {
     border-radius: 1rem;
     user-select: none;
     ;
+}
+
+dialog:open {
+    display: grid;
+    justify-items: center;
+    place-content: center;
+    gap: 1.4rem;
 }
 
 dialog::backdrop {

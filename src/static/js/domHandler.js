@@ -1,4 +1,10 @@
 const domHandler = (function () {
+  const helpDial = document.querySelector('#help-dial')
+  const helpLink = document.querySelector('#help-opener')
+  helpLink.addEventListener('click', () => {
+    helpDial.showModal()
+  })
+
   const nodes = {
     main: document.querySelector("main"),
     boardsHeader: null,
