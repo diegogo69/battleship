@@ -1,10 +1,10 @@
 import Ship from "./Ship";
 
 describe('Ship class contains respective properties', () => {
-  const ship = new Ship();
+  const ship = new Ship(0, 0, 1 , true);
 
-  test('Ship contains length prop, initialized to zero', () => {
-    expect(ship).toHaveProperty('length', 0);
+  test('Ship contains length prop', () => {
+    expect(ship).toHaveProperty('length', 1);
   });
 
   test('Ship contains hits prop, initialized to zero', () => {

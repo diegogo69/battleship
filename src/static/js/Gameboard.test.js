@@ -65,16 +65,17 @@ describe("Place a single ship correctly", () => {
 });
 
 describe("Place two ships correctly", () => {
-  test("Place two one square ship in coordinates 00 and 11", () => {
+  test("Place two one square ship in coordinates 00 and 33", () => {
     const gameboard = new Gameboard();
 
     gameboard.placeShip("00", 1, true);
     gameboard.placeShip("11", 1, true);
+    gameboard.placeShip("33", 1, true);
 
     expect(gameboard.shipsBoard[0][0]).toBe(0);
-    expect(gameboard.shipsBoard[1][1]).toBe(1);
+    expect(gameboard.shipsBoard[1][1]).toBe(null);
     expect(gameboard.shipsBoard[1][0]).toBe(null);
-    expect(gameboard.shipsBoard[0][1]).toBe(null);
+    expect(gameboard.shipsBoard[3][3]).toBe(1);
 
     expect(gameboard.ships.length).toBe(2);
   });
@@ -83,30 +84,30 @@ describe("Place two ships correctly", () => {
     const gameboard = new Gameboard();
 
     gameboard.placeShip("00", 2, true);
-    gameboard.placeShip("10", 2, true);
+    gameboard.placeShip("20", 2, true);
 
     expect(gameboard.shipsBoard[0][0]).toBe(0);
     expect(gameboard.shipsBoard[0][1]).toBe(0);
-    expect(gameboard.shipsBoard[1][0]).toBe(1);
-    expect(gameboard.shipsBoard[1][1]).toBe(1);
-    expect(gameboard.shipsBoard[0][2]).toBe(null);
-    expect(gameboard.shipsBoard[2][0]).toBe(null);
+    expect(gameboard.shipsBoard[2][0]).toBe(1);
+    expect(gameboard.shipsBoard[2][1]).toBe(1);
+    expect(gameboard.shipsBoard[2][2]).toBe(null);
+    expect(gameboard.shipsBoard[1][0]).toBe(null);
 
     expect(gameboard.ships.length).toBe(2);
   });
 
-  test("Place vertical 2 square ship at 00 and 01", () => {
+  test("Place vertical 2 square ship at 00 and 02", () => {
     const gameboard = new Gameboard();
 
     gameboard.placeShip("00", 2, false);
-    gameboard.placeShip("01", 2, false);
+    gameboard.placeShip("02", 2, false);
 
     expect(gameboard.shipsBoard[0][0]).toBe(0);
     expect(gameboard.shipsBoard[1][0]).toBe(0);
-    expect(gameboard.shipsBoard[0][1]).toBe(1);
-    expect(gameboard.shipsBoard[1][1]).toBe(1);
-    expect(gameboard.shipsBoard[2][0]).toBe(null);
-    expect(gameboard.shipsBoard[0][2]).toBe(null);
+    expect(gameboard.shipsBoard[0][2]).toBe(1);
+    expect(gameboard.shipsBoard[1][2]).toBe(1);
+    expect(gameboard.shipsBoard[0][1]).toBe(null);
+    expect(gameboard.shipsBoard[1][1]).toBe(null);
 
     expect(gameboard.ships.length).toBe(2);
   });
@@ -132,19 +133,19 @@ describe("Check coordinates to be a valid format", () => {
   test("Only positive integer coordinates", () => {
     expect(() => {
       gameboard.placeShip("-1-1", 1, true);
-    }).toThrow("Invalid out of bounds coordinates");
+    }).toThrow("Invalid format/out of bound coordinates");
 
     expect(() => {
       gameboard.placeShip("100", 1, true);
-    }).toThrow("Invalid out of bounds coordinates");
+    }).toThrow("Invalid format/out of bound coordinates");
 
     expect(() => {
       gameboard.placeShip("catdog", 1, true);
-    }).toThrow("Invalid out of bounds coordinates");
+    }).toThrow("Invalid format/out of bound coordinates");
 
     expect(() => {
       gameboard.placeShip("", 1, true);
-    }).toThrow("Invalid out of bounds coordinates");
+    }).toThrow("Invalid format/out of bound coordinates");
   });
 });
 
@@ -189,12 +190,12 @@ describe("Reject overlapping ship placement", () => {
   });
 
   test("Place horizontal 3 len ship in an occupied spot", () => {
-    expect(gameboard.placeShip("10", 3, false)).toBe(true);
+    expect(gameboard.placeShip("20", 3, false)).toBe(true);
     expect(gameboard.placeShip("30", 3, false)).toBe(false);
   });
 
   test("Place vertical 3 len ship in an occupied spot", () => {
-    expect(gameboard.placeShip("01", 3, true)).toBe(true);
+    expect(gameboard.placeShip("02", 3, true)).toBe(true);
     expect(gameboard.placeShip("03", 3, true)).toBe(false);
   });
 });
@@ -212,28 +213,28 @@ describe("receiveAttack determines whether or not the attack hit a ship", () => 
     const gameboard = new Gameboard();
     gameboard.placeShip("00", 1, true);
 
-    expect(gameboard.receiveAttack("00")).toBe(false);
+    expect(gameboard.receiveAttack("00")).toEqual({"col": 0, "isHorizontal": true, "length": 1, "row": 0});
   });
 
   test("Valid attack hits ship on 99", () => {
     const gameboard = new Gameboard();
     gameboard.placeShip("99", 1, true);
 
-    expect(gameboard.receiveAttack("99")).toBe(false);
+    expect(gameboard.receiveAttack("99")).toEqual({"col": 9, "isHorizontal": true, "length": 1, "row": 9});
   });
 
   test("Invalid attack does not hits any ship at 00", () => {
     const gameboard = new Gameboard();
     gameboard.placeShip("01", 1, true);
 
-    expect(gameboard.receiveAttack("00")).toBe(null);
+    expect(gameboard.receiveAttack("00")).toBe(false);
   });
 
   test("Invalid attack does not hits any ship at 99", () => {
     const gameboard = new Gameboard();
     gameboard.placeShip("98", 1, true);
 
-    expect(gameboard.receiveAttack("99")).toBe(null);
+    expect(gameboard.receiveAttack("99")).toBe(false);
   });
 
   test("Reject invalid attack at 999", () => {
@@ -241,7 +242,7 @@ describe("receiveAttack determines whether or not the attack hit a ship", () => 
 
     expect(() => {
       gameboard.receiveAttack("999");
-    }).toThrow("Invalid out of bounds coordinates");
+    }).toThrow("Invalid format/out of bound coordinates");
   });
 });
 
@@ -266,9 +267,9 @@ describe("Report whether or not all of their ships have been sunk", () => {
     gameboard.placeShip("10", 1, true);
     gameboard.placeShip("20", 1, true);
 
-    expect(gameboard.receiveAttack("00")).toBe(false);
+    expect(gameboard.receiveAttack("00")).toEqual({"col": 0, "isHorizontal": true, "length": 1, "row": 0});
     expect(gameboard.receiveAttack("10")).toBe(false);
-    expect(gameboard.receiveAttack("20")).toBe(true);
+    expect(gameboard.receiveAttack("20")).toEqual({"col": 0, "isHorizontal": true, "length": 1, "row": 2});
   });
 
   test("Gameboard of three ships, place three multi sqr ships and hit all of them", () => {
@@ -279,12 +280,12 @@ describe("Report whether or not all of their ships have been sunk", () => {
     gameboard.placeShip("10", 2, true);
     gameboard.placeShip("20", 3, true);
 
-    expect(gameboard.receiveAttack("00")).toBe(false);
+    expect(gameboard.receiveAttack("00")).toEqual({"col": 0, "isHorizontal": true, "length": 1, "row": 0})
     expect(gameboard.receiveAttack("10")).toBe(false);
     expect(gameboard.receiveAttack("11")).toBe(false);
-    expect(gameboard.receiveAttack("20")).toBe(false);
-    expect(gameboard.receiveAttack("21")).toBe(false);
-    expect(gameboard.receiveAttack("22")).toBe(true);
+    expect(gameboard.receiveAttack("20")).toBe(true);
+    expect(gameboard.receiveAttack("21")).toBe(true);
+    expect(gameboard.receiveAttack("22")).toEqual({"col": 0, "isHorizontal": true, "length": 3, "row": 2})
   });
 
   test("Gameboard of three ships, place three multi sqr ships. Do not hit all of them", () => {
@@ -295,11 +296,11 @@ describe("Report whether or not all of their ships have been sunk", () => {
     gameboard.placeShip("10", 2, true);
     gameboard.placeShip("20", 3, true);
 
-    expect(gameboard.receiveAttack("00")).toBe(false);
+    expect(gameboard.receiveAttack("00")).toEqual({"col": 0, "isHorizontal": true, "length": 1, "row": 0})
     expect(gameboard.receiveAttack("10")).toBe(false);
     expect(gameboard.receiveAttack("11")).toBe(false);
-    expect(gameboard.receiveAttack("20")).toBe(false);
-    expect(gameboard.receiveAttack("21")).toBe(false);
-    expect(gameboard.receiveAttack("23")).toBe(null);
+    expect(gameboard.receiveAttack("20")).toBe(true);
+    expect(gameboard.receiveAttack("21")).toBe(true);
+    expect(gameboard.receiveAttack("23")).toBe(false);
   });
 });
